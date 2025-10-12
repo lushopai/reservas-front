@@ -1,0 +1,374 @@
+<div class="usuario-form-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Formulario -->
+  <div *ngIf="!loading" class="form-wrapper">
+    <!-- Header -->
+    <div class="form-header">
+      <div>
+        <h1 class="form-title">
+          <i
+            class="bi"
+            [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-person-plus'"
+          ></i>
+          {{ isEditMode ? "Editar Usuario" : "Nuevo Usuario" }}
+        </h1>
+        <p class="text-muted mb-0">
+          {{
+            isEditMode
+              ? "Modifica la información del usuario"
+              : "Completa los datos para crear un nuevo usuario"
+          }}
+        </p>
+      </div>
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        (click)="volver()"
+      >
+        <i class="bi bi-arrow-left me-2"></i>Volver
+      </button>
+    </div>
+
+    <!-- Formulario Card -->
+    <div class="card form-card">
+      <div class="card-body">
+        <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <!-- Información Personal -->
+            <div class="col-12">
+              <h5 class="section-title">
+                <i class="bi bi-person-badge me-2"></i>Información Personal
+              </h5>
+              <hr class="section-divider" />
+            </div>
+
+            <!-- Nombre -->
+            <div class="col-md-6 mb-4">
+              <label for="nombre" class="form-label">
+                Nombre <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-person"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="nombre"
+                  formControlName="nombre"
+                  placeholder="Ingresa el nombre"
+                  [class.is-invalid]="isFieldInvalid('nombre')"
+                />
+              </div>
+              <div
+                *ngIf="isFieldInvalid('nombre')"
+                class="invalid-feedback d-block"
+              >
+                {{ getErrorMessage("nombre") }}
+              </div>
+            </div>
+
+            <!-- Apellido -->
+            <div class="col-md-6 mb-4">
+              <label for="apellido" class="form-label">
+                Apellido <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-person"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="apellido"
+                  formControlName="apellido"
+                  placeholder="Ingresa el apellido"
+                  [class.is-invalid]="isFieldInvalid('apellido')"
+                />
+              </div>
+              <div
+                *ngIf="isFieldInvalid('apellido')"
+                class="invalid-feedback d-block"
+              >
+                {{ getErrorMessage("apellido") }}
+              </div>
+            </div>
+
+             <!-- Correo -->
+            <div class="col-md-6 mb-4">
+              <label for="nombre" class="form-label">
+                Email <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-person"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="email"
+                  formControlName="email"
+                  placeholder="Ingresa el email"
+                  [class.is-invalid]="isFieldInvalid('email')"
+                />
+              </div>
+              <div
+                *ngIf="isFieldInvalid('email')"
+                class="invalid-feedback d-block"
+              >
+                {{ getErrorMessage("email") }}
+              </div>
+            </div>
+
+            <!-- Documento -->
+            <div class="col-md-6 mb-4">
+              <label for="apellido" class="form-label">
+                Documento <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-person"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="documento"
+                  formControlName="documento"
+                  placeholder="Ingresa el documento"
+                  [class.is-invalid]="isFieldInvalid('documento')"
+                />
+              </div>
+              <div
+                *ngIf="isFieldInvalid('documento')"
+                class="invalid-feedback d-block"
+              >
+                {{ getErrorMessage("documento") }}
+              </div>
+            </div>
+
+            <!-- Tipo documento -->
+            <div class="col-md-6 mb-4">
+              <label for="email" class="form-label">
+                Tipo documento <span class="text-danger">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-envelope"></i>
+                </span>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="tipoDocumento"
+                  formControlName="tipoDocumento"
+                  [class.is-invalid]="isFieldInvalid('tipoDocumento')"
+                />
+              </div>
+              <div
+                *ngIf="isFieldInvalid('tipoDocumento')"
+                class="invalid-feedback d-block"
+              >
+                {{ getErrorMessage("tipoDocumento") }}
+              </div>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="col-md-6 mb-4">
+              <label for="telefono" class="form-label"> Teléfono </label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-telephone"></i>
+                </span>
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="telefono"
+                  formControlName="telefono"
+                  placeholder="912345678"
+                  [class.is-invalid]="isFieldInvalid('telefono')"
+                />
+              </div>
+              <div
+                *ngIf="isFieldInvalid('telefono')"
+                class="invalid-feedback d-block"
+              >
+                {{ getErrorMessage("telefono") }}
+              </div>
+              <small class="form-text text-muted"
+                >9-15 dígitos sin espacios</small
+              >
+            </div>
+
+            <!-- Seguridad -->
+            <div class="col-12 mt-3">
+              <h5 class="section-title">
+                <i class="bi bi-shield-lock me-2"></i>Seguridad
+              </h5>
+              <hr class="section-divider" />
+            </div>
+
+            <!-- Contraseña -->
+            <div class="col-md-6 mb-4">
+              <label for="password" class="form-label">
+                Contraseña
+                <span class="text-danger" *ngIf="!isEditMode">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-lock"></i>
+                </span>
+                <input
+                  [type]="showPassword ? 'text' : 'password'"
+                  class="form-control"
+                  id="password"
+                  formControlName="password"
+                  [placeholder]="
+                    isEditMode
+                      ? 'Dejar vacío para no cambiar'
+                      : 'Mínimo 6 caracteres'
+                  "
+                  [class.is-invalid]="isFieldInvalid('password')"
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="togglePasswordVisibility()"
+                >
+                  <i
+                    class="bi"
+                    [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"
+                  ></i>
+                </button>
+              </div>
+              <div
+                *ngIf="isFieldInvalid('password')"
+                class="invalid-feedback d-block"
+              >
+                {{ getErrorMessage("password") }}
+              </div>
+            </div>
+
+            <!-- Confirmar Contraseña -->
+            <div class="col-md-6 mb-4">
+              <label for="confirmPassword" class="form-label">
+                Confirmar Contraseña
+                <span class="text-danger" *ngIf="!isEditMode">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="bi bi-lock-fill"></i>
+                </span>
+                <input
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  class="form-control"
+                  id="confirmPassword"
+                  formControlName="confirmPassword"
+                  [placeholder]="
+                    isEditMode
+                      ? 'Dejar vacío para no cambiar'
+                      : 'Repite la contraseña'
+                  "
+                  [class.is-invalid]="isFieldInvalid('confirmPassword')"
+                />
+                <button
+                  class="btn btn-outline-secondary"
+                  type="button"
+                  (click)="toggleConfirmPasswordVisibility()"
+                >
+                  <i
+                    class="bi"
+                    [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"
+                  ></i>
+                </button>
+              </div>
+              <div
+                *ngIf="isFieldInvalid('confirmPassword')"
+                class="invalid-feedback d-block"
+              >
+                {{ getErrorMessage("confirmPassword") }}
+              </div>
+            </div>
+
+            <!-- Configuración -->
+            <div class="col-12 mt-3">
+              <h5 class="section-title">
+                <i class="bi bi-gear me-2"></i>Configuración
+              </h5>
+              <hr class="section-divider" />
+            </div>
+
+            <!-- Switches -->
+            <div class="col-12 mb-4">
+              <div class="row">
+
+
+                <!-- Usuario Activo -->
+                <div class="col-md-6">
+                  <div class="custom-switch-card">
+                    <div class="switch-content">
+                      <div class="switch-icon active">
+                        <i class="bi bi-check-circle-fill"></i>
+                      </div>
+                      <div class="switch-info">
+                        <h6>Usuario Activo</h6>
+                        <p>El usuario podrá acceder al sistema</p>
+                      </div>
+                    </div>
+                    <div class="form-check form-switch">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="enabled"
+                        formControlName="enabled"
+                      />
+                      <label class="form-check-label" for="enabled"></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-lg"
+              (click)="volver()"
+              [disabled]="submitting"
+            >
+              <i class="bi bi-x-circle me-2"></i>Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary btn-lg"
+              [disabled]="submitting"
+            >
+              <span
+                *ngIf="submitting"
+                class="spinner-border spinner-border-sm me-2"
+              ></span>
+              <i
+                *ngIf="!submitting"
+                class="bi me-2"
+                [ngClass]="isEditMode ? 'bi-save' : 'bi-plus-circle'"
+              ></i>
+              {{
+                submitting
+                  ? "Guardando..."
+                  : isEditMode
+                  ? "Guardar Cambios"
+                  : "Crear Usuario"
+              }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

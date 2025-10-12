@@ -1,0 +1,165 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top shadow-sm">
+  <div class="container-fluid">
+    <!-- Logo / Brand -->
+    <a class="navbar-brand d-flex align-items-center" routerLink="/dashboard">
+      <i class="fas fa-hotel me-2"></i>
+      <span class="fw-bold">Sistema de Reservas</span>
+    </a>
+
+    <!-- Mobile Toggle Button -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="isMenuOpen"
+      aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Content -->
+    <div class="collapse navbar-collapse" [class.show]="isMenuOpen" id="navbarContent">
+
+      <!-- Links principales (solo si está autenticado) -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0" *ngIf="isAuthenticated()">
+
+        <!-- Dashboard -->
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/dashboard"
+            routerLinkActive="active"
+            (click)="closeMenus()">
+            <i class="fas fa-th-large me-1"></i>
+            Dashboard
+          </a>
+        </li>
+
+        <!-- Reservas -->
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/reservas"
+            routerLinkActive="active"
+            (click)="closeMenus()">
+            <i class="fas fa-calendar-check me-1"></i>
+            Mis Reservas
+          </a>
+        </li>
+
+        <!-- Paquetes -->
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/paquetes"
+            routerLinkActive="active"
+            (click)="closeMenus()">
+            <i class="fas fa-box-open me-1"></i>
+            Paquetes
+          </a>
+        </li>
+
+        <!-- Recursos/Cabañas -->
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/recursos"
+            routerLinkActive="active"
+            (click)="closeMenus()">
+            <i class="fas fa-home me-1"></i>
+            Cabañas
+          </a>
+        </li>
+
+        <!-- Panel Admin (solo para admins) -->
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a
+            class="nav-link text-warning"
+            routerLink="/admin"
+            routerLinkActive="active"
+            (click)="closeMenus()">
+            <i class="fas fa-cog me-1"></i>
+            <strong>Administración</strong>
+          </a>
+        </li>
+      </ul>
+
+      <!-- User Menu (derecha) -->
+      <ul class="navbar-nav ms-auto">
+
+        <!-- Si NO está autenticado -->
+        <ng-container *ngIf="!isAuthenticated()">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              routerLink="/auth/login"
+              (click)="closeMenus()">
+              <i class="fas fa-sign-in-alt me-1"></i>
+              Iniciar Sesión
+            </a>
+          </li>
+          <li class="nav-item">
+            <a
+              class="nav-link btn btn-outline-light btn-sm ms-2"
+              routerLink="/auth/register"
+              (click)="closeMenus()">
+              <i class="fas fa-user-plus me-1"></i>
+              Registrarse
+            </a>
+          </li>
+        </ng-container>
+
+        <!-- Si SÍ está autenticado -->
+        <ng-container *ngIf="isAuthenticated()">
+
+          <!-- Dropdown Usuario -->
+          <li class="nav-item dropdown" [class.show]="isUserMenuOpen">
+            <a
+              class="nav-link dropdown-toggle d-flex align-items-center"
+              href="javascript:void(0)"
+              (click)="toggleUserMenu()"
+              role="button"
+              [attr.aria-expanded]="isUserMenuOpen">
+
+              <!-- Avatar -->
+              <div class="user-avatar me-2">
+                <i class="fas fa-user-circle fa-2x"></i>
+              </div>
+
+              <!-- Nombre -->
+              <span class="d-none d-lg-inline">{{ displayName }}</span>
+            </a>
+
+            <!-- Dropdown Menu -->
+            <ul class="dropdown-menu dropdown-menu-end" [class.show]="isUserMenuOpen">
+
+              <!-- Perfil -->
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="javascript:void(0)"
+                  (click)="goToProfile()">
+                  <i class="fas fa-user me-2"></i>
+                  Mi Perfil
+                </a>
+              </li>
+
+              <!-- Panel Admin -->
+              <li *ngIf="isAdmin()">
+                <a
+                  class="dropdown-item text-warning"
+                  href="javascript:void(0)"
+                  (click)="goToAdmin()">
+                  <i class="fas fa-cog me-2"></i>
+                  Panel Admin
+                </a>
+              </li>
+
+              <li><hr class="dropdown-divider"></li>
+
+              <!-- Configuración -->
+              <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/configuracion"
+                  (click)="closeMenus()">
+                  <i class="fas fa-sliders-h me-2"></i>

@@ -1,0 +1,478 @@
+// ============================================
+// REGISTER COMPONENT - SCSS COMPLETO
+// modules/auth/register/register.component.scss
+// ============================================
+
+.register-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px 0;
+
+  .card {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+    .card-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      border: none;
+
+      i {
+        animation: bounce 2s infinite;
+      }
+    }
+
+    .card-body {
+      background: white;
+    }
+
+    .card-footer {
+      background-color: #f8f9fa;
+      border-top: 1px solid #e0e0e0;
+    }
+  }
+
+  // Inputs y Select
+  .form-control,
+  .form-select {
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    padding: 10px 15px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+
+    &:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      outline: none;
+    }
+
+    &.is-invalid {
+      border-color: #dc3545;
+      padding-right: calc(1.5em + 0.75rem);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right calc(0.375em + 0.1875rem) center;
+      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+
+      &:focus {
+        border-color: #dc3545;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      }
+    }
+
+    &::placeholder {
+      color: #adb5bd;
+      font-size: 13px;
+    }
+  }
+
+  // Labels
+  .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 14px;
+
+    i {
+      color: #667eea;
+      width: 20px;
+    }
+  }
+
+  // Input Group (para password con botón)
+  .input-group {
+    .form-control {
+      border-right: none;
+
+      &:focus {
+        border-right: none;
+      }
+    }
+
+    .btn-outline-secondary {
+      border: 2px solid #e0e0e0;
+      border-left: none;
+      background: white;
+      color: #6c757d;
+      border-radius: 0 8px 8px 0;
+
+      &:hover {
+        background-color: #f8f9fa;
+        border-color: #667eea;
+        border-left: none;
+        color: #667eea;
+      }
+
+      &:focus {
+        box-shadow: none;
+        border-color: #667eea;
+      }
+
+      i {
+        font-size: 14px;
+      }
+    }
+  }
+
+  // Mensajes de error
+  .invalid-feedback {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #dc3545;
+
+    i {
+      margin-right: 5px;
+    }
+  }
+
+  // Texto de ayuda
+  .form-text {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 5px;
+  }
+
+  // Checkbox de términos
+  .form-check {
+    padding-left: 1.5rem;
+
+    .form-check-input {
+      width: 18px;
+      height: 18px;
+      margin-top: 0.15rem;
+      border: 2px solid #e0e0e0;
+      cursor: pointer;
+
+      &:checked {
+        background-color: #667eea;
+        border-color: #667eea;
+      }
+
+      &:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      }
+
+      &.is-invalid {
+        border-color: #dc3545;
+      }
+    }
+
+    .form-check-label {
+      font-size: 13px;
+      color: #495057;
+      cursor: pointer;
+      margin-left: 8px;
+      line-height: 1.5;
+    }
+  }
+
+  // Botón principal
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    i {
+      font-size: 16px;
+    }
+
+    .spinner-border-sm {
+      width: 1rem;
+      height: 1rem;
+      border-width: 0.15em;
+    }
+  }
+
+  // Links
+  a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+  }
+
+  // Separador HR
+  hr {
+    border: none;
+    border-top: 2px solid #e9ecef;
+    opacity: 1;
+    margin: 20px 0;
+  }
+
+  // Row spacing
+  .row {
+    .col-md-6,
+    .col-md-4,
+    .col-md-8 {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Animaciones
+.card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+// Focus visible para accesibilidad
+*:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+// Estados de los inputs con animación
+.form-control,
+.form-select {
+  &:hover:not(:focus):not(.is-invalid) {
+    border-color: #b8c1ec;
+  }
+}
+
+// Mejoras de UX
+.form-control,
+.form-select,
+.btn {
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+// Responsive Design
+@media (max-width: 992px) {
+  .register-container {
+    .card {
+      .card-body {
+        padding: 30px 20px;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    padding: 10px;
+
+    .card {
+      margin: 10px;
+
+      .card-header {
+        padding: 20px 15px;
+
+        i {
+          font-size: 2.5rem;
+        }
+
+        h3 {
+          font-size: 1.5rem;
+        }
+      }
+
+      .card-body {
+        padding: 20px 15px;
+      }
+
+      .card-footer {
+        padding: 15px;
+      }
+    }
+
+    .form-label {
+      font-size: 13px;
+    }
+
+    .form-control,
+    .form-select {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
+
+    .btn-primary {
+      font-size: 14px;
+      padding: 10px 15px;
+    }
+
+    // Ajustar columnas en móvil
+    .row {
+      .col-md-6,
+      .col-md-4,
+      .col-md-8 {
+        margin-bottom: 15px;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .register-container {
+    .card {
+      border-radius: 10px;
+
+      .card-header {
+        h3 {
+          font-size: 1.3rem;
+        }
+
+        p {
+          font-size: 0.85rem;
+        }
+      }
+    }
+
+    .input-group {
+      .btn-outline-secondary {
+        padding: 8px 12px;
+
+        i {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+// Mejoras para modo oscuro (opcional)
+@media (prefers-color-scheme: dark) {
+  .register-container {
+    .card {
+      .card-body {
+        background: #2d3748;
+        color: #e2e8f0;
+      }
+
+      .form-control,
+      .form-select {
+        background-color: #1a202c;
+        color: #e2e8f0;
+        border-color: #4a5568;
+
+        &::placeholder {
+          color: #718096;
+        }
+
+        &:focus {
+          background-color: #1a202c;
+          border-color: #667eea;
+        }
+      }
+
+      .form-label {
+        color: #e2e8f0;
+      }
+
+      .form-text {
+        color: #a0aec0;
+      }
+
+      .card-footer {
+        background-color: #1a202c;
+        border-top-color: #4a5568;
+      }
+    }
+  }
+}
+
+// Estados de validación mejorados
+.was-validated {
+  .form-control:valid,
+  .form-select:valid {
+    border-color: #28a745;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+
+    &:focus {
+      border-color: #28a745;
+      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+  }
+
+  .form-check-input:valid {
+    border-color: #28a745;
+
+    &:checked {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+  }
+}
+
+// Transiciones suaves
+.form-control,
+.form-select,
+.btn,
+.form-check-input,
+a {
+  transition: all 0.3s ease;
+}
+
+// Loading state
+.btn-primary {
+  position: relative;
+
+  &:disabled {
+    .spinner-border {
+      animation: spinner-border 0.75s linear infinite;
+    }
+  }
+}
+
+@keyframes spinner-border {
+  to {
+    transform: rotate(360deg);
+  }
+}

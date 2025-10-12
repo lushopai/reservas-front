@@ -1,0 +1,251 @@
+<div class="usuario-detail-container">
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && usuario" class="content-wrapper">
+    <!-- Header con información básica y acciones -->
+    <div class="detail-header">
+      <div class="header-content">
+        <div class="user-info-header">
+          <div class="user-avatar">
+            <i class="bi bi-person-circle"></i>
+          </div>
+          <div class="user-basic-info">
+            <h1 class="user-name">{{ usuario.nombre }} {{ usuario.apellido }}</h1>
+            <div class="user-meta">
+              <span class="badge bg-primary me-2">
+                <i class="bi bi-envelope me-1"></i>{{ usuario.email }}
+              </span>
+              <span class="badge bg-success ms-2">
+                <i class="bi bi-check-circle me-1"></i>Activo
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn btn-outline-secondary btn-sm me-2" (click)="volver()">
+            <i class="bi bi-arrow-left me-1"></i>Volver
+          </button>
+          <button class="btn btn-primary btn-sm me-2" (click)="editarUsuario()">
+            <i class="bi bi-pencil me-1"></i>Editar
+          </button>
+          <div class="btn-group">
+            <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" (click)="cambiarEstado()" style="cursor: pointer;">
+                  <i class="bi bi-toggle-on me-2"></i>Cambiar estado
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger" (click)="eliminarUsuario()" style="cursor: pointer;">
+                  <i class="bi bi-trash me-2"></i>Eliminar usuario
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs de navegación -->
+    <div class="detail-tabs">
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'info'" (click)="setActiveTab('info')" style="cursor: pointer;">
+            <i class="bi bi-info-circle me-2"></i>Información
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'reservas'" (click)="setActiveTab('reservas')" style="cursor: pointer;">
+            <i class="bi bi-calendar-check me-2"></i>Reservas
+            <span class="badge bg-primary ms-2">{{ reservas.length }}</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'actividad'" (click)="setActiveTab('actividad')" style="cursor: pointer;">
+            <i class="bi bi-activity me-2"></i>Actividad
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Tab: Información -->
+      <div *ngIf="activeTab === 'info'" class="tab-pane-content">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="info-card">
+              <h3 class="info-card-title">
+                <i class="bi bi-person-badge me-2"></i>Información Personal
+              </h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <label>Nombre completo:</label>
+                  <span>{{ usuario.nombre }} {{ usuario.apellido }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Correo electrónico:</label>
+                  <span>{{ usuario.email }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Teléfono:</label>
+                  <span>{{ usuario.telefono || 'No registrado' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="info-card">
+              <h3 class="info-card-title">
+                <i class="bi bi-graph-up me-2"></i>Estadísticas
+              </h3>
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <div class="stat-icon bg-primary">
+                    <i class="bi bi-calendar-check"></i>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value">{{ reservas.length }}</div>
+                    <div class="stat-label">Reservas totales</div>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-icon bg-success">
+                    <i class="bi bi-check-circle"></i>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value">{{ reservasCompletadas }}</div>
+                    <div class="stat-label">Completadas</div>
+                  </div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-icon bg-warning">
+                    <i class="bi bi-clock"></i>
+                  </div>
+                  <div class="stat-info">
+                    <div class="stat-value">{{ reservasActivas }}</div>
+                    <div class="stat-label">Activas</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="info-card mt-3">
+              <h3 class="info-card-title">
+                <i class="bi bi-clock-history me-2"></i>Registro
+              </h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <label>Fecha de registro:</label>
+                  <span>{{ usuario.fechaRegistro | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Último acceso:</label>
+                  <span>{{ usuario.ultimoAcceso | date: 'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Reservas -->
+      <div *ngIf="activeTab === 'reservas'" class="tab-pane-content">
+        <div class="reservas-section">
+          <div class="section-header">
+            <h3><i class="bi bi-calendar-check me-2"></i>Historial de Reservas</h3>
+          </div>
+
+          <div *ngIf="reservas.length === 0" class="empty-state">
+            <i class="bi bi-calendar-x"></i>
+            <p>No hay reservas registradas</p>
+          </div>
+
+          <div *ngIf="reservas.length > 0" class="reservas-list">
+            <div *ngFor="let reserva of reservas" class="reserva-card">
+              <div class="reserva-header">
+                <div class="reserva-title">
+                  <i class="bi bi-house-door me-2"></i>
+                  <strong>{{ reserva.recurso }}</strong>
+                </div>
+                <span class="badge" [ngClass]="getEstadoBadgeClass(reserva.estado)">
+                  {{ reserva.estado }}
+                </span>
+              </div>
+              <div class="reserva-body">
+                <div class="reserva-info">
+                  <div class="info-row">
+                    <i class="bi bi-calendar-event me-2"></i>
+                    <span>{{ reserva.fechaInicio | date: 'dd/MM/yyyy' }} - {{ reserva.fechaFin | date: 'dd/MM/yyyy' }}</span>
+                  </div>
+                  <div class="info-row">
+                    <i class="bi bi-cash me-2"></i>
+                    <span><strong>{{ formatCurrency(reserva.monto) }}</strong></span>
+                  </div>
+                </div>
+                <button class="btn btn-outline-primary btn-sm" (click)="verReserva(reserva.id)">
+                  Ver detalle
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Actividad -->
+      <div *ngIf="activeTab === 'actividad'" class="tab-pane-content">
+        <div class="actividad-section">
+          <div class="section-header">
+            <h3><i class="bi bi-activity me-2"></i>Actividad Reciente</h3>
+          </div>
+
+          <div *ngIf="actividades.length === 0" class="empty-state">
+            <i class="bi bi-clock-history"></i>
+            <p>No hay actividad registrada</p>
+          </div>
+
+          <div *ngIf="actividades.length > 0" class="timeline">
+            <div *ngFor="let actividad of actividades" class="timeline-item">
+              <div class="timeline-marker" [ngClass]="{
+                'bg-primary': actividad.tipo === 'login',
+                'bg-success': actividad.tipo === 'reserva',
+                'bg-info': actividad.tipo === 'perfil'
+              }">
+                <i class="bi" [ngClass]="{
+                  'bi-box-arrow-in-right': actividad.tipo === 'login',
+                  'bi-calendar-plus': actividad.tipo === 'reserva',
+                  'bi-person-gear': actividad.tipo === 'perfil'
+                }"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-description">{{ actividad.descripcion }}</div>
+                <div class="timeline-date">
+                  <i class="bi bi-clock me-1"></i>{{ actividad.fecha | date: 'dd/MM/yyyy HH:mm' }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="!loading && !usuario" class="error-state">
+    <i class="bi bi-exclamation-triangle"></i>
+    <h3>Usuario no encontrado</h3>
+    <button class="btn btn-primary" (click)="volver()">Volver a la lista</button>
+  </div>
+</div>
