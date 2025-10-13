@@ -7,6 +7,14 @@ import { UsuarioFormComponent } from './pages/usuarios/usuario-form/usuario-form
 import { UsuarioDetailComponent } from './pages/usuarios/usuario-detail/usuario-detail.component';
 import { ReservasListComponent } from './pages/reservas-admin/reservas-list/reservas-list.component';
 import { ReservaDetailComponent } from './pages/reservas-admin/reserva-detail/reserva-detail.component';
+import { CabanasListComponent } from './pages/cabanas/cabanas-list/cabanas-list.component';
+import { CabanaFormComponent } from './pages/cabanas/cabana-form/cabana-form.component';
+import { ServiciosListComponent } from './pages/servicios/servicios-list/servicios-list.component';
+import { ServicioFormComponent } from './pages/servicios/servicio-form/servicio-form.component';
+import { InventarioListComponent } from './pages/inventario/inventario-list/inventario-list.component';
+import { InventarioFormComponent } from './pages/inventario/inventario-form/inventario-form.component';
+import { DisponibilidadCabanasComponent } from './pages/disponibilidad/disponibilidad-cabanas/disponibilidad-cabanas.component';
+import { DisponibilidadServiciosComponent } from './pages/disponibilidad/disponibilidad-servicios/disponibilidad-servicios.component';
 
 const routes: Routes = [
   {
@@ -60,6 +68,86 @@ const routes: Routes = [
             path: ':id',
             component: ReservaDetailComponent,
             data: { title: 'Detalle de Reserva' },
+          },
+        ],
+      },
+      {
+        path: 'cabanas',
+        children: [
+          {
+            path: '',
+            component: CabanasListComponent,
+            data: { title: 'Gestión de Cabañas' },
+          },
+          {
+            path: 'nueva',
+            component: CabanaFormComponent,
+            data: { title: 'Nueva Cabaña' },
+          },
+          {
+            path: 'editar/:id',
+            component: CabanaFormComponent,
+            data: { title: 'Editar Cabaña' },
+          },
+        ],
+      },
+      {
+        path: 'servicios',
+        children: [
+          {
+            path: '',
+            component: ServiciosListComponent,
+            data: { title: 'Gestión de Servicios' },
+          },
+          {
+            path: 'nuevo',
+            component: ServicioFormComponent,
+            data: { title: 'Nuevo Servicio' },
+          },
+          {
+            path: 'editar/:id',
+            component: ServicioFormComponent,
+            data: { title: 'Editar Servicio' },
+          },
+        ],
+      },
+      {
+        path: 'inventario',
+        children: [
+          {
+            path: '',
+            component: InventarioListComponent,
+            data: { title: 'Gestión de Inventario' },
+          },
+          {
+            path: 'nuevo',
+            component: InventarioFormComponent,
+            data: { title: 'Nuevo Item de Inventario' },
+          },
+          {
+            path: 'editar/:id',
+            component: InventarioFormComponent,
+            data: { title: 'Editar Item de Inventario' },
+          },
+        ],
+      },
+      {
+        path: 'disponibilidad',
+        children: [
+          {
+            path: '',
+            redirectTo: 'cabanas',
+            pathMatch: 'full',
+          },
+          {
+            path: 'cabanas',
+            component: DisponibilidadCabanasComponent,
+            data: { title: 'Disponibilidad de Cabañas' },
+          },
+          {
+            path: 'servicios',
+            component: DisponibilidadServiciosComponent,
+            data: { title: 'Bloques Horarios de Servicios' },
           },
         ],
       },

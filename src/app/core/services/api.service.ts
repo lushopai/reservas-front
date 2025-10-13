@@ -26,6 +26,11 @@ export class ApiService {
     return this.http.put<T>(url, body);
   }
 
+  patch<T>(endpoint: string, body: any): Observable<T> {
+    const url = `${API_CONFIG.baseUrl}${endpoint}`;
+    return this.http.patch<T>(url, body);
+  }
+
   delete<T>(endpoint: string): Observable<T> {
     const url = `${API_CONFIG.baseUrl}${endpoint}`;
     return this.http.delete<T>(url);

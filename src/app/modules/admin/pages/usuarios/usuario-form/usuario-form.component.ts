@@ -146,6 +146,18 @@ export class UsuarioFormComponent implements OnInit {
       next: (response) => {
         this.submitting = false;
 
+        // Verificar si la respuesta fue exitosa
+        if (response.success === false) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error de validación',
+            text: response.message || 'No se pudo crear el usuario',
+            confirmButtonColor: '#dc3545'
+          });
+          return;
+        }
+
+        // Si fue exitoso
         Swal.fire({
           icon: 'success',
           title: '¡Usuario creado!',
@@ -164,6 +176,8 @@ export class UsuarioFormComponent implements OnInit {
           errorMessage = error.error.message;
         } else if (error.status === 409) {
           errorMessage = 'El email ya está registrado';
+        } else if (error.status === 400) {
+          errorMessage = 'Datos inválidos. Verifica el formulario';
         }
 
         Swal.fire({

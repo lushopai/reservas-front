@@ -1,0 +1,128 @@
+// Steps indicator
+.steps-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #e9ecef;
+      color: #6c757d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      transition: all 0.3s ease;
+    }
+
+    .step-label {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #6c757d;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    &.active {
+      .step-number {
+        background-color: #0d6efd;
+        color: white;
+      }
+
+      .step-label {
+        color: #0d6efd;
+        font-weight: 600;
+      }
+    }
+
+    &.completed {
+      .step-number {
+        background-color: #198754;
+        color: white;
+      }
+
+      .step-label {
+        color: #198754;
+      }
+    }
+  }
+
+  .step-line {
+    width: 80px;
+    height: 2px;
+    background-color: #e9ecef;
+    margin: 0 10px;
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+
+    &.completed {
+      background-color: #198754;
+    }
+  }
+}
+
+// Tipo card (Cabaña/Servicio selection)
+.tipo-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+    border-color: #0d6efd;
+  }
+
+  .card-body {
+    padding: 30px;
+
+    i {
+      display: block;
+    }
+  }
+}
+
+// Paso content animation
+.paso-content {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .steps-indicator {
+    .step-label {
+      font-size: 10px;
+    }
+
+    .step-line {
+      width: 40px;
+    }
+  }
+
+  .tipo-card {
+    .card-body {
+      padding: 20px;
+    }
+  }
+}

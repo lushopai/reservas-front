@@ -21,6 +21,12 @@ const routes: Routes = [
     canActivate: [AdminGuard],
   },
   {
+    path: 'cliente',
+    loadChildren: () =>
+      import('./modules/cliente/cliente.module').then((m) => m.ClienteModule),
+    canActivate: [AuthGuard],
+  },
+  {
     path: '**',
     redirectTo: 'auth',
   },

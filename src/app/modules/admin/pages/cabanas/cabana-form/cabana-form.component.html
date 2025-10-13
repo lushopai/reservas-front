@@ -1,0 +1,225 @@
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h2 class="mb-0">{{ isEditMode ? 'Editar Cabaña' : 'Nueva Cabaña' }}</h2>
+          <p class="text-muted">Complete el formulario con la información de la cabaña</p>
+        </div>
+        <button class="btn btn-outline-secondary" (click)="volver()">
+          <i class="fas fa-arrow-left me-2"></i>Volver
+        </button>
+      </div>
+
+      <!-- Loading spinner -->
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <form *ngIf="!loading" [formGroup]="cabanaForm" (ngSubmit)="onSubmit()">
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Información General</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <!-- Nombre -->
+              <div class="col-md-6">
+                <label class="form-label">Nombre <span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  formControlName="nombre"
+                  [class.is-invalid]="cabanaForm.get('nombre')?.invalid && cabanaForm.get('nombre')?.touched"
+                  placeholder="Ej: Cabaña El Roble"
+                />
+                <div class="invalid-feedback">El nombre es obligatorio</div>
+              </div>
+
+              <!-- Tipo -->
+              <div class="col-md-6">
+                <label class="form-label">Tipo <span class="text-danger">*</span></label>
+                <select
+                  class="form-select"
+                  formControlName="tipoCabana"
+                  [class.is-invalid]="cabanaForm.get('tipoCabana')?.invalid && cabanaForm.get('tipoCabana')?.touched"
+                >
+                  <option *ngFor="let tipo of tiposCabana" [value]="tipo">
+                    {{ getTipoCabanaLabel(tipo) }}
+                  </option>
+                </select>
+                <div class="invalid-feedback">El tipo es obligatorio</div>
+              </div>
+
+              <!-- Descripción -->
+              <div class="col-12">
+                <label class="form-label">Descripción <span class="text-danger">*</span></label>
+                <textarea
+                  class="form-control"
+                  formControlName="descripcion"
+                  rows="3"
+                  [class.is-invalid]="cabanaForm.get('descripcion')?.invalid && cabanaForm.get('descripcion')?.touched"
+                  placeholder="Describe las características principales de la cabaña..."
+                ></textarea>
+                <div class="invalid-feedback">La descripción es obligatoria</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Características</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <!-- Capacidad -->
+              <div class="col-md-3">
+                <label class="form-label">Capacidad <span class="text-danger">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="capacidadPersonas"
+                  [class.is-invalid]="cabanaForm.get('capacidadPersonas')?.invalid && cabanaForm.get('capacidadPersonas')?.touched"
+                  placeholder="6"
+                  min="1"
+                />
+                <small class="text-muted">Personas</small>
+                <div class="invalid-feedback">Ingrese la capacidad</div>
+              </div>
+
+              <!-- Habitaciones -->
+              <div class="col-md-3">
+                <label class="form-label">Habitaciones <span class="text-danger">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="numeroHabitaciones"
+                  [class.is-invalid]="cabanaForm.get('numeroHabitaciones')?.invalid && cabanaForm.get('numeroHabitaciones')?.touched"
+                  placeholder="3"
+                  min="1"
+                />
+                <div class="invalid-feedback">Ingrese cantidad</div>
+              </div>
+
+              <!-- Baños -->
+              <div class="col-md-3">
+                <label class="form-label">Baños <span class="text-danger">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="numeroBanos"
+                  [class.is-invalid]="cabanaForm.get('numeroBanos')?.invalid && cabanaForm.get('numeroBanos')?.touched"
+                  placeholder="2"
+                  min="1"
+                />
+                <div class="invalid-feedback">Ingrese cantidad</div>
+              </div>
+
+              <!-- Metros cuadrados -->
+              <div class="col-md-3">
+                <label class="form-label">Metros² <span class="text-danger">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  formControlName="metrosCuadrados"
+                  [class.is-invalid]="cabanaForm.get('metrosCuadrados')?.invalid && cabanaForm.get('metrosCuadrados')?.touched"
+                  placeholder="80.5"
+                  step="0.1"
+                  min="1"
+                />
+                <div class="invalid-feedback">Ingrese los m²</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Precio y Estado</h5>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <!-- Precio -->
+              <div class="col-md-6">
+                <label class="form-label">Precio por Día <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    formControlName="precioPorUnidad"
+                    [class.is-invalid]="cabanaForm.get('precioPorUnidad')?.invalid && cabanaForm.get('precioPorUnidad')?.touched"
+                    placeholder="50000"
+                    min="1"
+                  />
+                  <div class="invalid-feedback">El precio es obligatorio</div>
+                </div>
+              </div>
+
+              <!-- Estado -->
+              <div class="col-md-6">
+                <label class="form-label">Estado <span class="text-danger">*</span></label>
+                <select
+                  class="form-select"
+                  formControlName="estado"
+                  [class.is-invalid]="cabanaForm.get('estado')?.invalid && cabanaForm.get('estado')?.touched"
+                >
+                  <option *ngFor="let estado of estados" [value]="estado">
+                    {{ estado }}
+                  </option>
+                </select>
+                <div class="invalid-feedback">El estado es obligatorio</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">Servicios Incluidos</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12">
+                <label class="form-label">Servicios y Amenidades</label>
+                <textarea
+                  class="form-control"
+                  formControlName="serviciosIncluidos"
+                  rows="4"
+                  placeholder="Ej: WiFi, TV Cable, Cocina equipada, Calefacción, Parrilla, Estacionamiento..."
+                ></textarea>
+                <small class="text-muted">Opcional: Describe los servicios incluidos separados por comas</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-end gap-2 mb-4">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="volver()"
+            [disabled]="submitting"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="submitting"
+          >
+            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <i *ngIf="!submitting" class="fas fa-save me-2"></i>
+            {{ isEditMode ? 'Actualizar' : 'Crear' }} Cabaña
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

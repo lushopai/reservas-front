@@ -85,8 +85,8 @@ export class LoginComponent implements OnInit {
             console.log('se va por admin');
             this.router.navigate(['/admin/dashboard']);
           } else {
-            console.log('se va por otro');
-            this.router.navigate(['/dashboard']);
+            console.log('se va por cliente');
+            this.router.navigate(['/cliente/mis-reservas']);
           }
         });
       },

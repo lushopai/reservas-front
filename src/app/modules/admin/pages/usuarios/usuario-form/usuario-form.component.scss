@@ -115,7 +115,8 @@
       }
     }
 
-    .form-control {
+    .form-control,
+    .form-select {
       border: 2px solid #e9ecef;
       border-left: none;
       border-radius: 0 12px 12px 0;
@@ -145,6 +146,10 @@
         color: #9ca3af;
         font-weight: 400;
       }
+    }
+
+    .form-select {
+      background-position: right 1rem center;
     }
 
     .btn {

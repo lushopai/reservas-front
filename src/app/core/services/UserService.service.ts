@@ -71,4 +71,19 @@ export class UserService {
       user
     );
   }
+
+  // Cambiar estado de usuario (activar/desactivar)
+  toggleUserStatus(id: number): Observable<ApiResponse<UserResponse>> {
+    return this.api.patch<ApiResponse<UserResponse>>(
+      `${API_CONFIG.endpoints.users.byId(id)}/toggle-status`,
+      {}
+    );
+  }
+
+  // Eliminar usuario
+  deleteUser(id: number): Observable<ApiResponse<string>> {
+    return this.api.delete<ApiResponse<string>>(
+      API_CONFIG.endpoints.users.byId(id)
+    );
+  }
 }

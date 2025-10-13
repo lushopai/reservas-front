@@ -121,12 +121,43 @@ export class UsuarioDetailComponent implements OnInit {
 
 
   cambiarEstado(): void {
-    // TODO: Implementar cambio de estado
+    if (!this.usuario) return;
+
+    const accion = this.usuario.enabled ? 'desactivar' : 'activar';
+
     Swal.fire({
-      icon: 'info',
-      title: 'Funcionalidad en desarrollo',
-      text: 'Esta funcionalidad estará disponible próximamente',
-      confirmButtonColor: '#667eea'
+      title: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} usuario?`,
+      text: `¿Estás seguro de ${accion} este usuario?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: this.usuario.enabled ? '#dc3545' : '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: `Sí, ${accion}`,
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed && this.usuario) {
+        this.userService.toggleUserStatus(this.userId).subscribe({
+          next: () => {
+            this.loadUsuario();
+
+            Swal.fire({
+              icon: 'success',
+              title: '¡Actualizado!',
+              text: `Usuario ${accion === 'activar' ? 'activado' : 'desactivado'} correctamente`,
+              confirmButtonColor: '#667eea'
+            });
+          },
+          error: (error) => {
+            console.error('Error al cambiar estado:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo cambiar el estado del usuario',
+              confirmButtonColor: '#dc3545'
+            });
+          }
+        });
+      }
     });
   }
 
@@ -142,14 +173,26 @@ export class UsuarioDetailComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: Implementar eliminación
-        Swal.fire({
-          icon: 'success',
-          title: '¡Eliminado!',
-          text: 'Usuario eliminado correctamente',
-          confirmButtonColor: '#667eea'
-        }).then(() => {
-          this.router.navigate(['/admin/usuarios']);
+        this.userService.deleteUser(this.userId).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Eliminado!',
+              text: 'Usuario eliminado correctamente',
+              confirmButtonColor: '#667eea'
+            }).then(() => {
+              this.router.navigate(['/admin/usuarios']);
+            });
+          },
+          error: (error) => {
+            console.error('Error al eliminar usuario:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo eliminar el usuario',
+              confirmButtonColor: '#dc3545'
+            });
+          }
         });
       }
     });

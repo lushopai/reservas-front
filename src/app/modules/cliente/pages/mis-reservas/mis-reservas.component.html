@@ -1,0 +1,102 @@
+<div class="container-fluid py-4">
+  <div class="card shadow">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">
+        <i class="bi bi-calendar-check"></i> Mis Reservas
+      </h5>
+      <button class="btn btn-primary" (click)="nuevaReserva()">
+        <i class="bi bi-plus-circle"></i> Nueva Reserva
+      </button>
+    </div>
+
+    <div class="card-body">
+      <!-- Filtros -->
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <label class="form-label">Filtrar por Estado:</label>
+          <select
+            class="form-select"
+            [(ngModel)]="filtroEstado"
+            (ngModelChange)="aplicarFiltros()"
+          >
+            <option value="">Todos</option>
+            <option *ngFor="let estado of estadosReserva" [value]="estado">
+              {{ estado }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Spinner -->
+      <div *ngIf="cargando" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+
+      <!-- Lista de Reservas -->
+      <div *ngIf="!cargando" class="row">
+        <div class="col-12" *ngIf="reservasFiltradas.length === 0">
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            No tienes reservas{{ filtroEstado ? ' en este estado' : '' }}.
+            <a href="javascript:void(0)" (click)="nuevaReserva()" class="alert-link">¡Crea tu primera reserva aquí!</a>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-3" *ngFor="let reserva of reservasFiltradas">
+          <div class="card h-100 reserva-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <span class="fw-bold">#{{ reserva.id }}</span>
+              <span [class]="'badge ' + getBadgeClass(reserva.estado)">
+                {{ reserva.estado }}
+              </span>
+            </div>
+            <div class="card-body">
+              <h6 class="card-title">{{ reserva.nombreRecurso }}</h6>
+              <p class="card-text text-muted small">
+                <i class="bi bi-tag"></i> {{ formatearTipo(reserva.tipoReserva) }}
+              </p>
+              <p class="card-text">
+                <i class="bi bi-calendar3"></i>
+                <strong>Inicio:</strong><br>
+                {{ formatearFecha(reserva.fechaInicio) }}
+              </p>
+              <p class="card-text">
+                <i class="bi bi-calendar-x"></i>
+                <strong>Fin:</strong><br>
+                {{ formatearFecha(reserva.fechaFin) }}
+              </p>
+              <hr>
+              <p class="card-text">
+                <strong class="text-success">Total: {{ formatearPrecio(reserva.precioTotal) }}</strong>
+              </p>
+            </div>
+            <div class="card-footer">
+              <button
+                class="btn btn-sm btn-outline-primary me-2"
+                (click)="verDetalle(reserva)"
+              >
+                <i class="bi bi-eye"></i> Ver Detalle
+              </button>
+              <button
+                class="btn btn-sm btn-outline-danger"
+                (click)="cancelarReserva(reserva)"
+                *ngIf="reserva.estado === 'PENDIENTE' || reserva.estado === 'CONFIRMADA'"
+              >
+                <i class="bi bi-x-circle"></i> Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen -->
+      <div *ngIf="!cargando && reservasFiltradas.length > 0" class="mt-3">
+        <p class="text-muted">
+          Mostrando {{ reservasFiltradas.length }} de {{ reservas.length }} reservas
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

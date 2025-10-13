@@ -48,28 +48,32 @@ export class AuthService {
         this.storage.saveToken(response.token);
 
         // Decodificar token para obtener info del usuario
-        const decodedToken: any = jwtDecode(response.token);
+        const decodedToken: JwtPayload = jwtDecode(response.token);
 
+        console.log('Decoded token:', decodedToken);
+
+        // Parsear roles del token
         let roles: Role[] = [];
 
-        try {
-          const authorities = JSON.parse(decodedToken.authorities || '[]');
-          roles = authorities
-            .map((auth: any) => auth.authority || '')
-            .filter(Boolean);
-        } catch (error) {
-          console.error('Error parsing authorities:', error);
-          roles = [];
+        if (decodedToken.roles && Array.isArray(decodedToken.roles)) {
+          // Si los roles vienen como array de strings ["ROLE_USER", "ROLE_ADMIN"]
+          roles = decodedToken.roles.map((roleName, index) => ({
+            id: index + 1,
+            name: roleName
+          }));
         }
 
         // Crear objeto user que coincida con la interfaz User
-        const user: any = {
-          id: decodedToken.userId, // AGREGAR ESTO,
-          username: response.username,
-          email: response.username, // el email viene como username en la respuesta
+        const user: User = {
+          id: decodedToken.userId,
+          username: decodedToken.sub,
+          email: decodedToken.email || decodedToken.sub,
           roles: roles,
           enabled: true,
         };
+
+        console.log('User object created:', user);
+
         // Guardar usuario
         this.storage.saveUser(user);
         this.currentUserSubject.next(user);
@@ -110,7 +114,12 @@ export class AuthService {
   }
 
   private redirectByRole(user: User): void {
-    const isAdmin = user.roles?.some((role) => role.name === 'ROLE_ADMIN');
+    const isAdmin = user.roles?.some((role) => {
+      if (typeof role === 'string') {
+        return role === 'ROLE_ADMIN';
+      }
+      return role.name === 'ROLE_ADMIN';
+    });
 
     if (isAdmin) {
       this.router
@@ -119,8 +128,8 @@ export class AuthService {
         .catch((err) => console.error('Error en navegación:', err));
     } else {
       this.router
-        .navigate(['/auth/login'])
-        .then(() => console.log('Navegación exitosa a login'))
+        .navigate(['/cliente/mis-reservas'])
+        .then(() => console.log('Navegación exitosa a cliente'))
         .catch((err) => console.error('Error en navegación:', err));
     }
   }
@@ -171,6 +180,14 @@ export class AuthService {
    */
   hasRole(roleName: string): boolean {
     const user = this.getCurrentUser();
-    return user?.roles?.some((role) => role.name === roleName) || false;
+    if (!user?.roles) return false;
+
+    return user.roles.some((role) => {
+      // Manejar tanto objetos Role como strings
+      if (typeof role === 'string') {
+        return role === roleName;
+      }
+      return role.name === roleName;
+    });
   }
 }

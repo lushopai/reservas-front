@@ -1,0 +1,146 @@
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-0">Gestión de Cabañas</h2>
+      <p class="text-muted">Administra todas las cabañas del sistema</p>
+    </div>
+    <button class="btn btn-primary" (click)="nuevaCabana()">
+      <i class="fas fa-plus me-2"></i>Nueva Cabaña
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">Buscar</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Buscar por nombre o descripción..."
+            [(ngModel)]="busquedaTexto"
+            (input)="aplicarFiltros()"
+          />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Estado</label>
+          <select
+            class="form-select"
+            [(ngModel)]="estadoFiltro"
+            (change)="aplicarFiltros()"
+          >
+            <option value="">Todos</option>
+            <option *ngFor="let estado of estados" [value]="estado">
+              {{ estado }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100" (click)="limpiarFiltros()">
+            <i class="fas fa-redo me-2"></i>Limpiar
+          </button>
+        </div>
+        <div class="col-md-3 d-flex align-items-end justify-content-end">
+          <span class="text-muted">
+            Mostrando {{ cabanasFiltradas.length }} de {{ cabanas.length }} cabañas
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Tabla de cabañas -->
+  <div *ngIf="!loading" class="card">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Capacidad</th>
+              <th>Habitaciones</th>
+              <th>Precio/Día</th>
+              <th>Estado</th>
+              <th>Reservas</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="cabanasFiltradas.length === 0">
+              <td colspan="9" class="text-center py-4 text-muted">
+                <i class="fas fa-search fa-2x mb-2"></i>
+                <p class="mb-0">No se encontraron cabañas</p>
+              </td>
+            </tr>
+            <tr *ngFor="let cabana of cabanasFiltradas">
+              <td>{{ cabana.id }}</td>
+              <td>
+                <strong>{{ cabana.nombre }}</strong>
+                <br>
+                <small class="text-muted">{{ cabana.metrosCuadrados }} m²</small>
+              </td>
+              <td>
+                <span class="badge bg-info">{{ getTipoCabanaLabel(cabana.tipoCabana) }}</span>
+              </td>
+              <td>
+                <i class="fas fa-users me-1"></i>{{ cabana.capacidadPersonas }}
+              </td>
+              <td>
+                <i class="fas fa-bed me-1"></i>{{ cabana.numeroHabitaciones }} /
+                <i class="fas fa-bath ms-2 me-1"></i>{{ cabana.numeroBanos }}
+              </td>
+              <td>
+                <strong>${{ cabana.precioPorUnidad | number:'1.0-0' }}</strong>
+              </td>
+              <td>
+                <span [class]="getEstadoBadgeClass(cabana.estado)">
+                  {{ cabana.estado }}
+                </span>
+              </td>
+              <td>
+                <span class="badge bg-secondary">{{ cabana.totalReservas || 0 }}</span>
+              </td>
+              <td class="text-end">
+                <div class="btn-group" role="group">
+                  <button
+                    class="btn btn-sm btn-outline-primary"
+                    (click)="editarCabana(cabana.id!)"
+                    title="Editar"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-warning"
+                    (click)="cambiarEstado(cabana)"
+                    title="Cambiar estado"
+                  >
+                    <i class="fas fa-toggle-on"></i>
+                  </button>
+                  <button
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="eliminarCabana(cabana)"
+                    title="Eliminar"
+                    [disabled]="cabana.estado !== 'FUERA_SERVICIO'"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

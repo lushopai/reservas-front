@@ -102,19 +102,19 @@
 
              <!-- Correo -->
             <div class="col-md-6 mb-4">
-              <label for="nombre" class="form-label">
+              <label for="email" class="form-label">
                 Email <span class="text-danger">*</span>
               </label>
               <div class="input-group">
                 <span class="input-group-text">
-                  <i class="bi bi-person"></i>
+                  <i class="bi bi-envelope"></i>
                 </span>
                 <input
-                  type="text"
+                  type="email"
                   class="form-control"
                   id="email"
                   formControlName="email"
-                  placeholder="Ingresa el email"
+                  placeholder="ejemplo@correo.com"
                   [class.is-invalid]="isFieldInvalid('email')"
                 />
               </div>
@@ -154,20 +154,26 @@
 
             <!-- Tipo documento -->
             <div class="col-md-6 mb-4">
-              <label for="email" class="form-label">
+              <label for="tipoDocumento" class="form-label">
                 Tipo documento <span class="text-danger">*</span>
               </label>
               <div class="input-group">
                 <span class="input-group-text">
-                  <i class="bi bi-envelope"></i>
+                  <i class="bi bi-card-text"></i>
                 </span>
-                <input
-                  type="text"
-                  class="form-control"
+                <select
+                  class="form-select"
                   id="tipoDocumento"
                   formControlName="tipoDocumento"
                   [class.is-invalid]="isFieldInvalid('tipoDocumento')"
-                />
+                >
+                  <option value="" disabled selected>Selecciona un tipo</option>
+                  <option value="RUT">RUT (Chile)</option>
+                  <option value="DNI">DNI</option>
+                  <option value="PASAPORTE">Pasaporte</option>
+                  <option value="CEDULA">Cédula</option>
+                  <option value="OTRO">Otro</option>
+                </select>
               </div>
               <div
                 *ngIf="isFieldInvalid('tipoDocumento')"

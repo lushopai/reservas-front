@@ -143,14 +143,29 @@ export class UsuariosListComponent implements OnInit {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: Implementar servicio para cambiar estado
-        Swal.fire({
-          icon: 'success',
-          title: '¡Actualizado!',
-          text: `Usuario ${
-            accion === 'activar' ? 'activado' : 'desactivado'
-          } correctamente`,
-          confirmButtonColor: '#667eea',
+        this.userService.toggleUserStatus(usuario.id).subscribe({
+          next: () => {
+            usuario.enabled = !usuario.enabled;
+            this.calcularEstadisticas();
+
+            Swal.fire({
+              icon: 'success',
+              title: '¡Actualizado!',
+              text: `Usuario ${
+                accion === 'activar' ? 'activado' : 'desactivado'
+              } correctamente`,
+              confirmButtonColor: '#667eea',
+            });
+          },
+          error: (error) => {
+            console.error('Error al cambiar estado:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo cambiar el estado del usuario',
+              confirmButtonColor: '#dc3545',
+            });
+          }
         });
       }
     });
@@ -168,12 +183,27 @@ export class UsuariosListComponent implements OnInit {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        // TODO: Implementar servicio para eliminar
-        Swal.fire({
-          icon: 'success',
-          title: '¡Eliminado!',
-          text: 'Usuario eliminado correctamente',
-          confirmButtonColor: '#667eea',
+        this.userService.deleteUser(usuario.id).subscribe({
+          next: () => {
+            // Remover el usuario de la lista o recargar
+            this.loadUsuarios();
+
+            Swal.fire({
+              icon: 'success',
+              title: '¡Eliminado!',
+              text: 'Usuario eliminado correctamente',
+              confirmButtonColor: '#667eea',
+            });
+          },
+          error: (error) => {
+            console.error('Error al eliminar usuario:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo eliminar el usuario',
+              confirmButtonColor: '#dc3545',
+            });
+          }
         });
       }
     });
