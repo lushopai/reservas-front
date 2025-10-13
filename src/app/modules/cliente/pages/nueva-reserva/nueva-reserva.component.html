@@ -294,6 +294,111 @@
               </div>
             </div>
 
+            <!-- Sección de Items Adicionales -->
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <h6 class="mb-0">
+                  <i class="fas fa-box me-2"></i>
+                  Items Adicionales (Opcional)
+                </h6>
+              </div>
+              <div class="card-body">
+                <!-- Loading items -->
+                <div *ngIf="cargandoItems" class="text-center py-3">
+                  <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                  <span>Cargando items disponibles...</span>
+                </div>
+
+                <!-- Sin items disponibles -->
+                <div *ngIf="!cargandoItems && itemsDisponibles.length === 0" class="text-muted text-center py-3">
+                  <i class="fas fa-info-circle me-2"></i>
+                  No hay items adicionales disponibles para este recurso
+                </div>
+
+                <!-- Lista de items disponibles -->
+                <div *ngIf="!cargandoItems && itemsDisponibles.length > 0">
+                  <p class="text-muted small mb-3">
+                    Selecciona los items que desees agregar a tu reserva
+                  </p>
+
+                  <div class="row">
+                    <div
+                      *ngFor="let item of itemsDisponibles"
+                      class="col-md-6 col-lg-4 mb-3">
+                      <div
+                        class="card item-card h-100"
+                        [class.selected]="isItemSeleccionado(item.id)"
+                        (click)="toggleItem(item)">
+                        <div class="card-body">
+                          <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                              <h6 class="card-title mb-1">
+                                <i class="fas {{ getIconoCategoria(item.categoria) }} me-2 text-primary"></i>
+                                {{ item.nombre }}
+                              </h6>
+                              <small class="badge bg-secondary">{{ item.categoria }}</small>
+                            </div>
+                            <div class="form-check">
+                              <input
+                                class="form-check-input"
+                                type="checkbox"
+                                [checked]="isItemSeleccionado(item.id)"
+                                (click)="$event.stopPropagation()">
+                            </div>
+                          </div>
+
+                          <p class="card-text small text-muted mb-2">
+                            Disponibles: {{ item.cantidadTotal }}
+                          </p>
+
+                          <div class="d-flex justify-content-between align-items-center">
+                            <strong class="text-success">{{ formatearPrecio(item.precioReserva) }}</strong>
+
+                            <!-- Selector de cantidad -->
+                            <div *ngIf="isItemSeleccionado(item.id)" class="input-group input-group-sm" style="width: 100px;">
+                              <button
+                                class="btn btn-outline-secondary"
+                                type="button"
+                                (click)="actualizarCantidadItem(item.id, getCantidadItem(item.id) - 1); $event.stopPropagation()">
+                                <i class="fas fa-minus"></i>
+                              </button>
+                              <input
+                                type="number"
+                                class="form-control text-center"
+                                [value]="getCantidadItem(item.id)"
+                                [max]="item.cantidadTotal"
+                                min="1"
+                                (click)="$event.stopPropagation()"
+                                (change)="actualizarCantidadItem(item.id, $any($event.target).value)">
+                              <button
+                                class="btn btn-outline-secondary"
+                                type="button"
+                                (click)="actualizarCantidadItem(item.id, getCantidadItem(item.id) + 1); $event.stopPropagation()">
+                                <i class="fas fa-plus"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Resumen de items seleccionados -->
+                  <div *ngIf="itemsSeleccionados.size > 0" class="alert alert-success mt-3">
+                    <h6 class="alert-heading">
+                      <i class="fas fa-check-circle me-2"></i>
+                      Items Seleccionados: {{ itemsSeleccionados.size }}
+                    </h6>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span><strong>Total Items:</strong></span>
+                      <strong class="fs-5">{{ formatearPrecio(precioTotalItems) }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div class="alert alert-info">
               <i class="bi bi-info-circle me-2"></i>
               <strong>Nota:</strong> Al confirmar la reserva, se creará con estado PENDIENTE.

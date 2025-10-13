@@ -7,8 +7,10 @@ import { ServicioEntretencionService } from '../../../../core/services/servicio-
 import { ReservaService } from '../../../../core/services/reserva.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DisponibilidadService } from '../../../../core/services/disponibilidad.service';
+import { InventarioService } from '../../../../core/services/inventario.service';
 import { Cabana } from '../../../../core/models/cabana.model';
 import { ServicioEntretencion } from '../../../../core/models/servicio.model';
+import { ItemInventario } from '../../../../core/models/inventario.model';
 
 @Component({
   selector: 'app-nueva-reserva',
@@ -22,14 +24,19 @@ export class NuevaReservaComponent implements OnInit {
   // Datos
   cabanas: Cabana[] = [];
   servicios: ServicioEntretencion[] = [];
+  itemsDisponibles: ItemInventario[] = [];
 
   // Formularios
   formCabana!: FormGroup;
   formServicio!: FormGroup;
 
+  // Items seleccionados
+  itemsSeleccionados: Map<number, { item: ItemInventario, cantidad: number }> = new Map();
+
   cargando = false;
   verificandoDisponibilidad = false;
   disponible = false;
+  cargandoItems = false;
 
   // Fecha mínima (hoy)
   get fechaMinima(): string {
@@ -42,6 +49,7 @@ export class NuevaReservaComponent implements OnInit {
     private servicioService: ServicioEntretencionService,
     private reservaService: ReservaService,
     private disponibilidadService: DisponibilidadService,
+    private inventarioService: InventarioService,
     private authService: AuthService,
     private router: Router
   ) {}
@@ -92,6 +100,7 @@ export class NuevaReservaComponent implements OnInit {
   seleccionarTipo(tipo: 'cabana' | 'servicio'): void {
     this.tipoReserva = tipo;
     this.paso = 2;
+    this.itemsSeleccionados.clear(); // Limpiar items al cambiar tipo
 
     if (tipo === 'cabana') {
       this.cargarCabanas();
@@ -157,6 +166,11 @@ export class NuevaReservaComponent implements OnInit {
 
           if (this.disponible) {
             this.paso = 3;
+            // Cargar items del inventario para la cabaña seleccionada
+            const cabanaId = this.formCabana.get('cabanaId')?.value;
+            if (cabanaId) {
+              this.cargarItemsInventario(cabanaId);
+            }
           } else {
             Swal.fire('No disponible', 'La cabaña no está disponible en estas fechas', 'warning');
           }
@@ -171,6 +185,11 @@ export class NuevaReservaComponent implements OnInit {
       // Para servicios, simplemente avanzamos (la validación se hace en el backend)
       this.disponible = true;
       this.paso = 3;
+      // Cargar items del inventario para el servicio seleccionado
+      const servicioId = this.formServicio.get('servicioId')?.value;
+      if (servicioId) {
+        this.cargarItemsInventario(servicioId);
+      }
     }
   }
 
@@ -187,7 +206,8 @@ export class NuevaReservaComponent implements OnInit {
     if (this.tipoReserva === 'cabana') {
       const request = {
         ...this.formCabana.value,
-        clienteId: user.id
+        clienteId: user.id,
+        itemsAdicionales: this.getItemsParaReserva()
       };
 
       this.reservaService.reservarCabana(request).subscribe({
@@ -218,7 +238,8 @@ export class NuevaReservaComponent implements OnInit {
     } else {
       const request = {
         ...this.formServicio.value,
-        clienteId: user.id
+        clienteId: user.id,
+        equipamiento: this.getItemsParaReserva()
       };
 
       this.reservaService.reservarServicio(request).subscribe({
@@ -298,4 +319,117 @@ export class NuevaReservaComponent implements OnInit {
 
   // Variable adicional para loading de creación
   creandoReserva = false;
+
+  /**
+   * Cargar items del inventario según el recurso seleccionado
+   */
+  cargarItemsInventario(recursoId: number): void {
+    this.cargandoItems = true;
+    this.inventarioService.obtenerPorRecurso(recursoId).subscribe({
+      next: (items) => {
+        // Solo items reservables y disponibles
+        this.itemsDisponibles = items.filter(
+          item => item.esReservable && item.estadoItem === 'DISPONIBLE'
+        );
+        this.cargandoItems = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar items:', error);
+        this.cargandoItems = false;
+        // No mostrar error al usuario, simplemente no habrá items disponibles
+      }
+    });
+  }
+
+  /**
+   * Agregar o quitar item de la selección
+   */
+  toggleItem(item: ItemInventario): void {
+    if (this.itemsSeleccionados.has(item.id)) {
+      this.itemsSeleccionados.delete(item.id);
+    } else {
+      this.itemsSeleccionados.set(item.id, { item, cantidad: 1 });
+    }
+  }
+
+  /**
+   * Verificar si un item está seleccionado
+   */
+  isItemSeleccionado(itemId: number): boolean {
+    return this.itemsSeleccionados.has(itemId);
+  }
+
+  /**
+   * Actualizar cantidad de un item
+   */
+  actualizarCantidadItem(itemId: number, cantidad: number): void {
+    const seleccion = this.itemsSeleccionados.get(itemId);
+    if (seleccion && cantidad > 0 && cantidad <= seleccion.item.cantidadTotal) {
+      seleccion.cantidad = cantidad;
+    }
+  }
+
+  /**
+   * Obtener cantidad de un item seleccionado
+   */
+  getCantidadItem(itemId: number): number {
+    return this.itemsSeleccionados.get(itemId)?.cantidad || 1;
+  }
+
+  /**
+   * Calcular precio total de items seleccionados
+   */
+  get precioTotalItems(): number {
+    let total = 0;
+    this.itemsSeleccionados.forEach(seleccion => {
+      total += seleccion.item.precioReserva * seleccion.cantidad;
+    });
+    return total;
+  }
+
+  /**
+   * Obtener array de items seleccionados para enviar al backend
+   */
+  getItemsParaReserva(): any[] {
+    const items: any[] = [];
+    this.itemsSeleccionados.forEach(seleccion => {
+      items.push({
+        itemId: seleccion.item.id,
+        cantidad: seleccion.cantidad
+      });
+    });
+    return items;
+  }
+
+  /**
+   * Formatear precio
+   */
+  formatearPrecio(precio: number): string {
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP'
+    }).format(precio);
+  }
+
+  /**
+   * Obtener icono según categoría de item
+   */
+  getIconoCategoria(categoria: string): string {
+    switch (categoria) {
+      case 'ROPA_CAMA':
+        return 'fa-bed';
+      case 'EQUIPAMIENTO_DEPORTIVO':
+        return 'fa-bicycle';
+      case 'ELECTRODOMESTICOS':
+        return 'fa-plug';
+      case 'MENAJE':
+        return 'fa-utensils';
+      case 'DECORACION':
+        return 'fa-paint-brush';
+      case 'HERRAMIENTAS':
+        return 'fa-tools';
+      default:
+        return 'fa-box';
+    }
+  }
 }

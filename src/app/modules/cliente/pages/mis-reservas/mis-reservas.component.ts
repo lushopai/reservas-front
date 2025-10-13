@@ -87,6 +87,15 @@ export class MisReservasComponent implements OnInit {
     });
   }
 
+  pagarReserva(reserva: Reserva): void {
+    if (reserva.estado !== EstadoReserva.PENDIENTE) {
+      Swal.fire('No disponible', 'Solo se pueden pagar reservas pendientes', 'warning');
+      return;
+    }
+
+    this.router.navigate(['/cliente/confirmar-pago', reserva.id]);
+  }
+
   cancelarReserva(reserva: Reserva): void {
     if (reserva.estado !== EstadoReserva.PENDIENTE && reserva.estado !== EstadoReserva.CONFIRMADA) {
       Swal.fire('No permitido', 'Solo se pueden cancelar reservas pendientes o confirmadas', 'warning');

@@ -74,10 +74,10 @@
               </div>
             </div>
 
-            <!-- Apellido -->
+            <!-- Apellidos -->
             <div class="col-md-6 mb-4">
-              <label for="apellido" class="form-label">
-                Apellido <span class="text-danger">*</span>
+              <label for="apellidos" class="form-label">
+                Apellidos <span class="text-danger">*</span>
               </label>
               <div class="input-group">
                 <span class="input-group-text">
@@ -86,17 +86,17 @@
                 <input
                   type="text"
                   class="form-control"
-                  id="apellido"
-                  formControlName="apellido"
-                  placeholder="Ingresa el apellido"
-                  [class.is-invalid]="isFieldInvalid('apellido')"
+                  id="apellidos"
+                  formControlName="apellidos"
+                  placeholder="Ingresa los apellidos"
+                  [class.is-invalid]="isFieldInvalid('apellidos')"
                 />
               </div>
               <div
-                *ngIf="isFieldInvalid('apellido')"
+                *ngIf="isFieldInvalid('apellidos')"
                 class="invalid-feedback d-block"
               >
-                {{ getErrorMessage("apellido") }}
+                {{ getErrorMessage("apellidos") }}
               </div>
             </div>
 

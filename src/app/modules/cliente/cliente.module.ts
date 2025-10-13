@@ -6,13 +6,17 @@ import { ClienteRoutingModule } from './cliente-routing.module';
 import { ClienteComponent } from './cliente.component';
 import { MisReservasComponent } from './pages/mis-reservas/mis-reservas.component';
 import { NuevaReservaComponent } from './pages/nueva-reserva/nueva-reserva.component';
+import { ConfirmarPagoComponent } from './pages/confirmar-pago/confirmar-pago.component';
+import { NuevaReservaPaqueteComponent } from './pages/nueva-reserva-paquete/nueva-reserva-paquete.component';
 
 
 @NgModule({
   declarations: [
     ClienteComponent,
     MisReservasComponent,
-    NuevaReservaComponent
+    NuevaReservaComponent,
+    ConfirmarPagoComponent,
+    NuevaReservaPaqueteComponent
   ],
   imports: [
     CommonModule,

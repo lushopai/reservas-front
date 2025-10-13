@@ -1,0 +1,59 @@
+.confirmar-pago-container {
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+
+  .card-header {
+    border-radius: 10px 10px 0 0;
+    padding: 1rem 1.5rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+.btn-check:checked + label {
+  background-color: var(--bs-primary);
+  color: white;
+  border-color: var(--bs-primary);
+}
+
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+}
+
+// Animaciones
+.form-control, .form-select {
+  transition: all 0.3s ease;
+
+  &:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.btn {
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Estilos para los botones de método de pago
+.btn-outline-primary {
+  i {
+    font-size: 1.5rem;
+  }
+
+  small {
+    font-size: 0.7rem;
+  }
+}

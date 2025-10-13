@@ -1,4 +1,7 @@
-// Steps indicator
+.bg-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
 .steps-indicator {
   display: flex;
   align-items: center;
@@ -9,7 +12,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
 
     .step-number {
       width: 40px;
@@ -21,7 +23,6 @@
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 18px;
       transition: all 0.3s ease;
     }
 
@@ -35,12 +36,12 @@
 
     &.active {
       .step-number {
-        background-color: #0d6efd;
+        background-color: #667eea;
         color: white;
       }
 
       .step-label {
-        color: #0d6efd;
+        color: #667eea;
         font-weight: 600;
       }
     }
@@ -50,15 +51,11 @@
         background-color: #198754;
         color: white;
       }
-
-      .step-label {
-        color: #198754;
-      }
     }
   }
 
   .step-line {
-    width: 80px;
+    width: 100px;
     height: 2px;
     background-color: #e9ecef;
     margin: 0 10px;
@@ -71,28 +68,23 @@
   }
 }
 
-// Tipo card (Caba�a/Servicio selection)
-.tipo-card {
+.item-card {
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 2px solid transparent;
+  border: 2px solid #dee2e6;
 
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
-    border-color: #0d6efd;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
   }
 
-  .card-body {
-    padding: 30px;
-
-    i {
-      display: block;
-    }
+  &.selected {
+    border-color: #198754;
+    background-color: #f8f9fa;
   }
 }
 
-// Paso content animation
 .paso-content {
   animation: fadeIn 0.3s ease-in;
 }
@@ -108,49 +100,13 @@
   }
 }
 
-// Item cards
-.item-card {
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 2px solid #dee2e6;
-
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    border-color: #0d6efd;
-  }
-
-  &.selected {
-    border-color: #198754;
+.table {
+  th {
     background-color: #f8f9fa;
-
-    .card-title {
-      color: #198754;
-    }
-  }
-
-  .card-body {
-    padding: 15px;
-  }
-
-  .form-check-input {
-    cursor: pointer;
-  }
-
-  .input-group-sm {
-    .btn {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-    }
-
-    input {
-      padding: 0.25rem 0.5rem;
-      font-size: 0.75rem;
-    }
+    border-bottom: 2px solid #dee2e6;
   }
 }
 
-// Responsive
 @media (max-width: 768px) {
   .steps-indicator {
     .step-label {
@@ -158,19 +114,7 @@
     }
 
     .step-line {
-      width: 40px;
-    }
-  }
-
-  .tipo-card {
-    .card-body {
-      padding: 20px;
-    }
-  }
-
-  .item-card {
-    .card-body {
-      padding: 12px;
+      width: 50px;
     }
   }
 }

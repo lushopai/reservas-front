@@ -1,0 +1,386 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-gradient text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-gift me-2"></i>
+            Nueva Reserva de Paquete
+          </h4>
+          <small>Cabaña + Servicios con descuento</small>
+        </div>
+        <div class="card-body">
+          <!-- Indicador de pasos -->
+          <div class="steps-indicator mb-4">
+            <div class="step" [class.active]="paso === 1" [class.completed]="paso > 1">
+              <div class="step-number">1</div>
+              <div class="step-label">Configurar Paquete</div>
+            </div>
+            <div class="step-line" [class.completed]="paso > 1"></div>
+            <div class="step" [class.active]="paso === 2">
+              <div class="step-number">2</div>
+              <div class="step-label">Resumen y Confirmar</div>
+            </div>
+          </div>
+
+          <!-- PASO 1: Configurar Paquete -->
+          <div *ngIf="paso === 1" class="paso-content">
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i>
+              <strong>¡Ahorra con nuestros paquetes!</strong> Reserva una cabaña + servicios y obtén descuentos automáticos.
+            </div>
+
+            <form [formGroup]="formPaquete">
+              <div class="row">
+                <!-- Nombre del paquete -->
+                <div class="col-12 mb-3">
+                  <label for="nombrePaquete" class="form-label fw-bold">
+                    <i class="fas fa-tag me-2"></i>
+                    Nombre del Paquete
+                  </label>
+                  <input
+                    type="text"
+                    id="nombrePaquete"
+                    class="form-control"
+                    formControlName="nombrePaquete"
+                    placeholder="Ej: Vacaciones familiares">
+                </div>
+
+                <!-- Selección de cabaña -->
+                <div class="col-md-6 mb-3">
+                  <label for="cabanaId" class="form-label fw-bold">
+                    <i class="fas fa-home me-2"></i>
+                    Cabaña *
+                  </label>
+                  <select
+                    id="cabanaId"
+                    class="form-select"
+                    formControlName="cabanaId"
+                    (change)="onCabanaSeleccionada()"
+                    [class.is-invalid]="formPaquete.get('cabanaId')?.invalid && formPaquete.get('cabanaId')?.touched">
+                    <option value="">-- Seleccione una cabaña --</option>
+                    <option *ngFor="let cabana of cabanas" [value]="cabana.id">
+                      {{ cabana.nombre }} - {{ cabana.capacidadPersonas }} personas - {{ formatearPrecio(cabana.precioPorUnidad) }}/noche
+                    </option>
+                  </select>
+                  <div class="invalid-feedback">Seleccione una cabaña</div>
+                </div>
+
+                <!-- Fechas -->
+                <div class="col-md-3 mb-3">
+                  <label for="fechaInicio" class="form-label fw-bold">Fecha Inicio *</label>
+                  <input
+                    type="date"
+                    id="fechaInicio"
+                    class="form-control"
+                    formControlName="fechaInicio"
+                    [min]="fechaMinima"
+                    [class.is-invalid]="formPaquete.get('fechaInicio')?.invalid && formPaquete.get('fechaInicio')?.touched">
+                  <div class="invalid-feedback">Requerido</div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                  <label for="fechaFin" class="form-label fw-bold">Fecha Fin *</label>
+                  <input
+                    type="date"
+                    id="fechaFin"
+                    class="form-control"
+                    formControlName="fechaFin"
+                    [min]="fechaMinima"
+                    [class.is-invalid]="formPaquete.get('fechaFin')?.invalid && formPaquete.get('fechaFin')?.touched">
+                  <div class="invalid-feedback">Requerido</div>
+                </div>
+              </div>
+
+              <!-- Items adicionales de cabaña -->
+              <div *ngIf="formPaquete.get('cabanaId')?.value" class="card mb-3">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0">
+                    <i class="fas fa-box me-2"></i>
+                    Items Adicionales para Cabaña (Opcional)
+                  </h6>
+                </div>
+                <div class="card-body">
+                  <div *ngIf="cargandoItems" class="text-center py-3">
+                    <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                    <span>Cargando items...</span>
+                  </div>
+
+                  <div *ngIf="!cargandoItems && itemsDisponibles.length === 0" class="text-muted text-center py-3">
+                    No hay items adicionales disponibles
+                  </div>
+
+                  <div *ngIf="!cargandoItems && itemsDisponibles.length > 0" class="row">
+                    <div *ngFor="let item of itemsDisponibles" class="col-md-4 col-lg-3 mb-3">
+                      <div
+                        class="card item-card h-100"
+                        [class.selected]="isItemCabanaSeleccionado(item.id)"
+                        (click)="toggleItemCabana(item)">
+                        <div class="card-body p-2">
+                          <div class="d-flex justify-content-between align-items-start mb-1">
+                            <small class="fw-bold">{{ item.nombre }}</small>
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              [checked]="isItemCabanaSeleccionado(item.id)"
+                              (click)="$event.stopPropagation()">
+                          </div>
+                          <small class="text-success d-block">{{ formatearPrecio(item.precioReserva) }}</small>
+                          <div *ngIf="isItemCabanaSeleccionado(item.id)" class="mt-2">
+                            <div class="input-group input-group-sm">
+                              <button
+                                class="btn btn-outline-secondary btn-sm"
+                                type="button"
+                                (click)="actualizarCantidadItemCabana(item.id, getCantidadItemCabana(item.id) - 1); $event.stopPropagation()">
+                                -
+                              </button>
+                              <input
+                                type="number"
+                                class="form-control text-center"
+                                [value]="getCantidadItemCabana(item.id)"
+                                (click)="$event.stopPropagation()"
+                                readonly>
+                              <button
+                                class="btn btn-outline-secondary btn-sm"
+                                type="button"
+                                (click)="actualizarCantidadItemCabana(item.id, getCantidadItemCabana(item.id) + 1); $event.stopPropagation()">
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div *ngIf="itemsCabanaSeleccionados.size > 0" class="col-12">
+                      <div class="alert alert-success">
+                        <strong>Total items:</strong> {{ formatearPrecio(precioTotalItemsCabana) }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Servicios -->
+              <div class="card mb-3">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                  <h6 class="mb-0">
+                    <i class="fas fa-concierge-bell me-2"></i>
+                    Servicios (mínimo 1)
+                  </h6>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-light"
+                    (click)="agregarServicio()">
+                    <i class="fas fa-plus me-1"></i>
+                    Agregar Servicio
+                  </button>
+                </div>
+                <div class="card-body">
+                  <div *ngIf="serviciosSeleccionados.length === 0" class="text-center text-muted py-4">
+                    <i class="fas fa-info-circle fa-2x mb-2"></i>
+                    <p>No has agregado servicios aún</p>
+                    <p class="small">Haz clic en "Agregar Servicio" para comenzar</p>
+                  </div>
+
+                  <div *ngIf="serviciosSeleccionados.length > 0">
+                    <div class="alert alert-success">
+                      <i class="fas fa-percentage me-2"></i>
+                      <strong>¡Descuento aplicado!</strong>
+                      {{ serviciosSeleccionados.length }} servicio(s) =
+                      <strong>{{ paqueteService.calcularDescuentoSugerido(serviciosSeleccionados.length) }}% OFF</strong>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Servicio</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Bloques</th>
+                            <th width="80">Acciones</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let servicio of serviciosSeleccionados; let i = index">
+                            <td>
+                              <i class="fas fa-calendar-check text-primary me-2"></i>
+                              {{ getNombreServicio(servicio.servicioId) }}
+                            </td>
+                            <td>{{ servicio.fecha | date:'dd/MM/yyyy' }}</td>
+                            <td>{{ servicio.horaInicio }}</td>
+                            <td>{{ servicio.duracionBloques }}</td>
+                            <td>
+                              <button
+                                type="button"
+                                class="btn btn-sm btn-outline-danger"
+                                (click)="eliminarServicio(i)">
+                                <i class="fas fa-trash"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notas especiales -->
+              <div class="mb-3">
+                <label for="notasEspeciales" class="form-label">
+                  <i class="fas fa-sticky-note me-2"></i>
+                  Notas Especiales (Opcional)
+                </label>
+                <textarea
+                  id="notasEspeciales"
+                  class="form-control"
+                  formControlName="notasEspeciales"
+                  rows="3"
+                  placeholder="Alguna petición especial o comentario..."></textarea>
+              </div>
+
+              <!-- Botones -->
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-secondary" (click)="volver()">
+                  <i class="fas fa-arrow-left me-2"></i>
+                  Cancelar
+                </button>
+                <button type="button" class="btn btn-primary btn-lg" (click)="irAResumen()">
+                  Ver Resumen
+                  <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- PASO 2: Resumen -->
+          <div *ngIf="paso === 2" class="paso-content">
+            <h5 class="mb-4 text-primary">
+              <i class="fas fa-clipboard-check me-2"></i>
+              Resumen del Paquete
+            </h5>
+
+            <div class="row">
+              <div class="col-lg-8">
+                <!-- Datos del paquete -->
+                <div class="card mb-3">
+                  <div class="card-header bg-light">
+                    <h6 class="mb-0">{{ formPaquete.get('nombrePaquete')?.value }}</h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <p><strong>Cabaña:</strong> {{ getCabanaSeleccionada()?.nombre }}</p>
+                        <p><strong>Capacidad:</strong> {{ getCabanaSeleccionada()?.capacidadPersonas }} personas</p>
+                      </div>
+                      <div class="col-md-6">
+                        <p><strong>Check-in:</strong> {{ formPaquete.get('fechaInicio')?.value | date:'dd/MM/yyyy' }}</p>
+                        <p><strong>Check-out:</strong> {{ formPaquete.get('fechaFin')?.value | date:'dd/MM/yyyy' }}</p>
+                      </div>
+                    </div>
+
+                    <div *ngIf="itemsCabanaSeleccionados.size > 0">
+                      <hr>
+                      <h6 class="text-primary">Items adicionales:</h6>
+                      <ul class="list-unstyled">
+                        <li *ngFor="let entry of itemsCabanaSeleccionados | keyvalue">
+                          {{ entry.value.item.nombre }} x{{ entry.value.cantidad }}
+                          - {{ formatearPrecio(entry.value.item.precioReserva * entry.value.cantidad) }}
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Servicios incluidos -->
+                <div class="card mb-3">
+                  <div class="card-header bg-primary text-white">
+                    <h6 class="mb-0">
+                      <i class="fas fa-list me-2"></i>
+                      Servicios Incluidos ({{ serviciosSeleccionados.length }})
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                      <li *ngFor="let servicio of serviciosSeleccionados" class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <strong>{{ getNombreServicio(servicio.servicioId) }}</strong>
+                        <br>
+                        <small class="text-muted">
+                          {{ servicio.fecha | date:'dd/MM/yyyy' }} a las {{ servicio.horaInicio }} - {{ servicio.duracionBloques }} bloque(s)
+                        </small>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div *ngIf="formPaquete.get('notasEspeciales')?.value" class="alert alert-info">
+                  <strong>Notas:</strong> {{ formPaquete.get('notasEspeciales')?.value }}
+                </div>
+              </div>
+
+              <!-- Resumen de precio -->
+              <div class="col-lg-4">
+                <div class="card border-success">
+                  <div class="card-header bg-success text-white">
+                    <h6 class="mb-0">
+                      <i class="fas fa-tags me-2"></i>
+                      Descuentos
+                    </h6>
+                  </div>
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <p class="mb-1"><strong>Servicios:</strong> {{ serviciosSeleccionados.length }}</p>
+                      <p class="mb-1"><strong>Descuento aplicado:</strong></p>
+                      <h4 class="text-success">
+                        {{ paqueteService.calcularDescuentoSugerido(serviciosSeleccionados.length) }}% OFF
+                      </h4>
+                    </div>
+
+                    <hr>
+
+                    <div class="alert alert-warning">
+                      <small>
+                        <i class="fas fa-info-circle me-1"></i>
+                        El precio final se calculará al confirmar el paquete
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-info mt-3">
+              <i class="fas fa-info-circle me-2"></i>
+              Al confirmar, el paquete quedará en estado <strong>PENDIENTE</strong>. Podrás pagar desde "Mis Reservas".
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" class="btn btn-secondary" (click)="paso = 1">
+                <i class="fas fa-arrow-left me-2"></i>
+                Volver a Editar
+              </button>
+              <button
+                type="button"
+                class="btn btn-success btn-lg"
+                (click)="confirmarPaquete()"
+                [disabled]="cargando">
+                <span *ngIf="!cargando">
+                  <i class="fas fa-check me-2"></i>
+                  Confirmar Paquete
+                </span>
+                <span *ngIf="cargando">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Procesando...
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { ClienteComponent } from './cliente.component';
 import { MisReservasComponent } from './pages/mis-reservas/mis-reservas.component';
 import { NuevaReservaComponent } from './pages/nueva-reserva/nueva-reserva.component';
+import { ConfirmarPagoComponent } from './pages/confirmar-pago/confirmar-pago.component';
+import { NuevaReservaPaqueteComponent } from './pages/nueva-reserva-paquete/nueva-reserva-paquete.component';
 
 const routes: Routes = [
   {
@@ -23,6 +25,16 @@ const routes: Routes = [
         path: 'nueva-reserva',
         component: NuevaReservaComponent,
         data: { title: 'Nueva Reserva' },
+      },
+      {
+        path: 'nueva-reserva-paquete',
+        component: NuevaReservaPaqueteComponent,
+        data: { title: 'Nueva Reserva - Paquete' },
+      },
+      {
+        path: 'confirmar-pago/:id',
+        component: ConfirmarPagoComponent,
+        data: { title: 'Confirmar Pago' },
       },
     ],
   },

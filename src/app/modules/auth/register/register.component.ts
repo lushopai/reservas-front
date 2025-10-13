@@ -115,7 +115,7 @@ export class RegisterComponent implements OnInit {
     // Preparar datos (sin confirmPassword ni aceptaTerminos)
     const registerData: RegisterRequest = {
       nombre: this.registerForm.value.nombres,
-      apellidos: this.registerForm.value.apellidos,
+      apellidos: this.registerForm.value.apellidos,  // Mantener apellidos (plural)
       email: this.registerForm.value.email,
       password: this.registerForm.value.password,
       telefono: this.registerForm.value.telefono,

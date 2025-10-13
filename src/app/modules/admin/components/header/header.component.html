@@ -1,1 +1,95 @@
-<p>header works!</p>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+  <div class="container-fluid">
+    <!-- Logo / Brand -->
+    <a class="navbar-brand d-flex align-items-center" routerLink="/admin/dashboard">
+      <i class="fas fa-cog me-2"></i>
+      <span class="fw-bold">Panel Administrador</span>
+    </a>
+
+    <!-- Mobile Toggle Button -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="isMenuOpen">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Content -->
+    <div class="collapse navbar-collapse" [class.show]="isMenuOpen">
+
+      <!-- Links principales -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active" (click)="closeMenus()">
+            <i class="fas fa-chart-line me-1"></i>
+            Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/reservas" routerLinkActive="active" (click)="closeMenus()">
+            <i class="fas fa-calendar-check me-1"></i>
+            Reservas
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/cabanas" routerLinkActive="active" (click)="closeMenus()">
+            <i class="fas fa-home me-1"></i>
+            Cabañas
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/servicios" routerLinkActive="active" (click)="closeMenus()">
+            <i class="fas fa-concierge-bell me-1"></i>
+            Servicios
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/admin/usuarios" routerLinkActive="active" (click)="closeMenus()">
+            <i class="fas fa-users me-1"></i>
+            Usuarios
+          </a>
+        </li>
+      </ul>
+
+      <!-- User Menu (derecha) -->
+      <ul class="navbar-nav ms-auto">
+        <!-- Ver sitio como cliente -->
+        <li class="nav-item">
+          <a class="nav-link text-info" routerLink="/cliente/mis-reservas" (click)="closeMenus()">
+            <i class="fas fa-eye me-1"></i>
+            Ver como Cliente
+          </a>
+        </li>
+
+        <!-- Usuario -->
+        <li class="nav-item dropdown" [class.show]="isUserMenuOpen">
+          <a
+            class="nav-link dropdown-toggle d-flex align-items-center"
+            href="javascript:void(0)"
+            (click)="toggleUserMenu()"
+            role="button">
+            <i class="fas fa-user-circle fa-lg me-2"></i>
+            <span class="d-none d-lg-inline">{{ displayName }}</span>
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end" [class.show]="isUserMenuOpen">
+            <li>
+              <a class="dropdown-item" href="javascript:void(0)" (click)="goToProfile()">
+                <i class="fas fa-user me-2"></i>
+                Mi Perfil
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-danger" href="javascript:void(0)" (click)="logout()">
+                <i class="fas fa-sign-out-alt me-2"></i>
+                Cerrar Sesión
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -33,7 +33,7 @@ export class UsuarioFormComponent implements OnInit {
   initForm(): void {
     this.usuarioForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2)]],
-      apellido: ['', [Validators.required, Validators.minLength(2)]],
+      apellidos: ['', [Validators.required, Validators.minLength(2)]], // Cambiar a plural
       email: ['', [Validators.required, Validators.email]],
       telefono: ['', [Validators.pattern(/^[0-9]{9,15}$/)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -86,7 +86,7 @@ export class UsuarioFormComponent implements OnInit {
         console.log('info user: ',usuario);
         this.usuarioForm.patchValue({
           nombre: usuario.nombre,
-          apellido: usuario.apellido,
+          apellidos: usuario.apellidos, // Cambiar a plural
           email: usuario.email,
           telefono: usuario.telefono,
           documento: usuario.documento,

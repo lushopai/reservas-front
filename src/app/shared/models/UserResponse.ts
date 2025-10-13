@@ -2,7 +2,7 @@ export interface UserResponse {
   id: number;
   username?: string;
   nombre: string;
-  apellido: string;
+  apellidos: string; // Cambiar a plural para coincidir con backend
   documento: string;
   tipoDocumento: string;
   email: string;
