@@ -203,8 +203,8 @@ export class ConfirmarPagoComponent implements OnInit {
       datosPagoAdicionales: this.construirDatosAdicionales()
     };
 
-    this.pagoService.confirmarReservaConPago(this.reserva.id!, pagoRequest).subscribe({
-      next: (response) => {
+    this.pagoService.procesarPagoReserva(this.reserva.id!, pagoRequest).subscribe({
+      next: (response: any) => {
         if (response.success) {
           Swal.fire({
             title: '¡Pago exitoso!',
@@ -220,7 +220,7 @@ export class ConfirmarPagoComponent implements OnInit {
           });
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error al procesar pago:', error);
         const mensaje = error.error?.message || 'No se pudo procesar el pago';
         Swal.fire('Error', mensaje, 'error');

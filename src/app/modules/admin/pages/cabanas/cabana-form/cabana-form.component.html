@@ -199,6 +199,11 @@
           </div>
         </div>
 
+        <!-- Galería de Imágenes (solo en modo edición) -->
+        <div *ngIf="isEditMode && cabanaId">
+          <app-recurso-image-gallery [recursoId]="cabanaId"></app-recurso-image-gallery>
+        </div>
+
         <!-- Botones -->
         <div class="d-flex justify-content-end gap-2 mb-4">
           <button

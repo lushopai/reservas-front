@@ -1,0 +1,276 @@
+.calendario-container {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+
+  .mes-titulo {
+    margin: 0;
+    font-weight: 600;
+    color: #333;
+    font-size: 1.25rem;
+  }
+
+  button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+
+    &:hover:not(:disabled) {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.seleccion-info {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #495057;
+
+  i {
+    color: #667eea;
+    font-size: 1.1rem;
+  }
+
+  span {
+    font-weight: 500;
+  }
+
+  .btn-link {
+    padding: 0;
+    font-size: 0.85rem;
+  }
+}
+
+.calendario-grid {
+  .dias-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+
+    .dia-semana-header {
+      text-align: center;
+      font-weight: 600;
+      color: #6c757d;
+      font-size: 0.85rem;
+      padding: 0.5rem 0;
+    }
+  }
+
+  .dias-mes {
+    .semana-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+  }
+}
+
+.dia-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f8f9fa;
+  border: 2px solid transparent;
+  min-height: 60px;
+
+  .dia-numero {
+    font-weight: 500;
+    font-size: 1rem;
+    color: #495057;
+  }
+
+  .dia-precio {
+    font-size: 0.7rem;
+    color: #28a745;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .no-disponible-icon {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 0.7rem;
+    color: #dc3545;
+  }
+
+  &.vacio {
+    background: transparent;
+    cursor: default;
+  }
+
+  &.pasado {
+    background: #f8f9fa;
+    color: #ced4da;
+    cursor: not-allowed;
+
+    .dia-numero {
+      color: #ced4da;
+    }
+  }
+
+  &.disponible {
+    background: white;
+    border-color: #e0e0e0;
+
+    &:hover {
+      border-color: #667eea;
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+    }
+
+    .dia-numero {
+      color: #333;
+    }
+  }
+
+  &.no-disponible {
+    background: #ffebee;
+    cursor: not-allowed;
+    border-color: #ffcdd2;
+
+    .dia-numero {
+      color: #c62828;
+      text-decoration: line-through;
+    }
+  }
+
+  &.hoy {
+    border-color: #ffc107;
+    border-width: 3px;
+    font-weight: 700;
+
+    .dia-numero {
+      color: #ffc107;
+    }
+  }
+
+  &.seleccionado {
+    background: #667eea;
+    border-color: #667eea;
+
+    .dia-numero {
+      color: white;
+      font-weight: 700;
+    }
+
+    .dia-precio {
+      color: white;
+    }
+  }
+
+  &.inicio {
+    background: #667eea;
+    border-radius: 8px 0 0 8px;
+  }
+
+  &.fin {
+    background: #667eea;
+    border-radius: 0 8px 8px 0;
+  }
+
+  &.en-rango {
+    background: #e8eaf6;
+    border-color: #c5cae9;
+
+    .dia-numero {
+      color: #5c6bc0;
+      font-weight: 600;
+    }
+  }
+}
+
+.calendario-leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+
+  .leyenda-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+
+    .leyenda-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid #dee2e6;
+
+      &.disponible {
+        background: white;
+        border-color: #e0e0e0;
+      }
+
+      &.no-disponible {
+        background: #ffebee;
+        border-color: #ffcdd2;
+      }
+
+      &.seleccionado {
+        background: #667eea;
+        border-color: #667eea;
+      }
+
+      &.hoy {
+        background: white;
+        border: 3px solid #ffc107;
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .calendario-container {
+    padding: 1rem;
+  }
+
+  .dia-cell {
+    min-height: 50px;
+    font-size: 0.9rem;
+
+    .dia-precio {
+      font-size: 0.65rem;
+    }
+  }
+
+  .calendario-leyenda {
+    gap: 0.75rem;
+
+    .leyenda-item {
+      font-size: 0.8rem;
+    }
+  }
+}

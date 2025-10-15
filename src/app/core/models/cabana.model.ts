@@ -1,3 +1,5 @@
+import { RecursoImagen } from './recurso-imagen.model';
+
 export interface Cabana {
   id?: number;
   nombre: string;
@@ -13,6 +15,8 @@ export interface Cabana {
   totalReservas?: number;
   disponibleHoy?: boolean;
   itemsInventario?: number;
+  imagenes?: RecursoImagen[];
+  imagenPrincipalUrl?: string;
 }
 
 export enum EstadoCabana {

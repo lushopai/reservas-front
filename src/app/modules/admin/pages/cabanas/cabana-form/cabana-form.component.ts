@@ -120,14 +120,26 @@ export class CabanaFormComponent implements OnInit {
     this.cabanaService.crearCabana(data).subscribe({
       next: (response) => {
         this.submitting = false;
-        if (response.success) {
+        if (response.success && response.data) {
           Swal.fire({
             icon: 'success',
             title: '¡Cabaña creada!',
-            text: response.message,
-            confirmButtonColor: '#667eea'
-          }).then(() => {
-            this.router.navigate(['/admin/cabanas']);
+            html: `
+              <p>${response.message}</p>
+              <p class="text-muted small">Ahora puedes agregar imágenes a la cabaña</p>
+            `,
+            confirmButtonText: 'Agregar imágenes',
+            showCancelButton: true,
+            cancelButtonText: 'Volver a la lista',
+            confirmButtonColor: '#667eea',
+            cancelButtonColor: '#6c757d'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Redirigir al modo edición con el ID de la cabaña creada
+              this.router.navigate(['/admin/cabanas/editar', response.data.id]);
+            } else {
+              this.router.navigate(['/admin/cabanas']);
+            }
           });
         } else {
           Swal.fire({

@@ -1,3 +1,5 @@
+import { RecursoImagen } from './recurso-imagen.model';
+
 export interface ServicioEntretencion {
   id?: number;
   nombre: string;
@@ -12,6 +14,8 @@ export interface ServicioEntretencion {
   disponibleHoy?: boolean;
   bloquesDisponibles?: number;
   itemsInventario?: number;
+  imagenes?: RecursoImagen[];
+  imagenPrincipalUrl?: string;
 }
 
 export enum EstadoServicio {

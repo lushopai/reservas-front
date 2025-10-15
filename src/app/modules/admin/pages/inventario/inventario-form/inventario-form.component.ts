@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { forkJoin } from 'rxjs';
 import { InventarioService } from '../../../../../core/services/inventario.service';
 import { CabanaService } from '../../../../../core/services/cabana.service';
 import { ServicioEntretencionService } from '../../../../../core/services/servicio-entretencion.service';
@@ -33,15 +34,15 @@ export class InventarioFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.inicializarFormulario();
-    this.cargarRecursos();
 
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
         this.modoEdicion = true;
         this.itemId = Number(id);
-        this.cargarItem(this.itemId);
       }
+      // Cargar recursos primero, y luego el item si estamos en modo edición
+      this.cargarRecursos();
     });
   }
 
@@ -58,9 +59,15 @@ export class InventarioFormComponent implements OnInit {
   }
 
   cargarRecursos(): void {
-    // Cargar cabañas
-    this.cabanaService.obtenerTodas().subscribe({
-      next: (cabanas) => {
+    this.cargando = true;
+
+    // Usar forkJoin para esperar a que ambas llamadas completen
+    forkJoin({
+      cabanas: this.cabanaService.obtenerTodas(),
+      servicios: this.servicioService.obtenerTodos()
+    }).subscribe({
+      next: ({ cabanas, servicios }) => {
+        // Mapear cabañas
         const recursoCabanas = cabanas
           .filter(c => c.id !== undefined)
           .map(c => ({
@@ -68,16 +75,8 @@ export class InventarioFormComponent implements OnInit {
             nombre: `${c.nombre} (Cabaña)`,
             tipo: 'CABANA'
           }));
-        this.recursos = [...this.recursos, ...recursoCabanas];
-      },
-      error: (error) => {
-        console.error('Error al cargar cabañas:', error);
-      }
-    });
 
-    // Cargar servicios
-    this.servicioService.obtenerTodos().subscribe({
-      next: (servicios) => {
+        // Mapear servicios
         const recursoServicios = servicios
           .filter(s => s.id !== undefined)
           .map(s => ({
@@ -85,10 +84,20 @@ export class InventarioFormComponent implements OnInit {
             nombre: `${s.nombre} (Servicio)`,
             tipo: 'SERVICIO'
           }));
-        this.recursos = [...this.recursos, ...recursoServicios];
+
+        // Combinar ambos
+        this.recursos = [...recursoCabanas, ...recursoServicios];
+        this.cargando = false;
+
+        // Si estamos en modo edición, cargar el item DESPUÉS de tener los recursos
+        if (this.modoEdicion && this.itemId) {
+          this.cargarItem(this.itemId);
+        }
       },
       error: (error) => {
-        console.error('Error al cargar servicios:', error);
+        console.error('Error al cargar recursos:', error);
+        Swal.fire('Error', 'No se pudieron cargar los recursos', 'error');
+        this.cargando = false;
       }
     });
   }

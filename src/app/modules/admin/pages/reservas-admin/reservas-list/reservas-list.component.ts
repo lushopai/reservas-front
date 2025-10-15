@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { ReservaService } from '../../../../../core/services/reserva.service';
 import { Reserva, EstadoReserva } from '../../../../../core/models/reserva.model';
@@ -17,7 +18,10 @@ export class ReservasListComponent implements OnInit {
 
   estadosReserva = Object.values(EstadoReserva);
 
-  constructor(private reservaService: ReservaService) {}
+  constructor(
+    private reservaService: ReservaService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.cargarReservas();
@@ -58,26 +62,8 @@ export class ReservasListComponent implements OnInit {
   }
 
   verDetalle(reserva: Reserva): void {
-    Swal.fire({
-      title: `Reserva #${reserva.id}`,
-      html: `
-        <div class="text-start">
-          <p><strong>Usuario:</strong> ${reserva.nombreUsuario || 'N/A'}</p>
-          <p><strong>Email:</strong> ${reserva.emailUsuario || 'N/A'}</p>
-          <p><strong>Recurso:</strong> ${reserva.nombreRecurso}</p>
-          <p><strong>Tipo:</strong> ${reserva.tipoReserva}</p>
-          <p><strong>Inicio:</strong> ${this.formatearFecha(reserva.fechaInicio)}</p>
-          <p><strong>Fin:</strong> ${this.formatearFecha(reserva.fechaFin)}</p>
-          <p><strong>Precio Base:</strong> ${this.formatearPrecio(reserva.precioBase)}</p>
-          <p><strong>Precio Items:</strong> ${this.formatearPrecio(reserva.precioItems)}</p>
-          <p><strong>Total:</strong> <span class="text-success fw-bold">${this.formatearPrecio(reserva.precioTotal)}</span></p>
-          <p><strong>Estado:</strong> <span class="badge ${this.getBadgeClass(reserva.estado)}">${reserva.estado}</span></p>
-          ${reserva.observaciones ? `<p><strong>Observaciones:</strong> ${reserva.observaciones}</p>` : ''}
-        </div>
-      `,
-      width: '600px',
-      confirmButtonText: 'Cerrar'
-    });
+    // Navegar a la página de detalle con gestión de estados
+    this.router.navigate(['/admin/reservas', reserva.id]);
   }
 
   getBadgeClass(estado: string): string {

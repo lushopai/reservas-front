@@ -115,14 +115,26 @@ export class ServicioFormComponent implements OnInit {
     this.servicioService.crearServicio(data).subscribe({
       next: (response) => {
         this.submitting = false;
-        if (response.success) {
+        if (response.success && response.data) {
           Swal.fire({
             icon: 'success',
             title: '¡Servicio creado!',
-            text: response.message,
-            confirmButtonColor: '#667eea'
-          }).then(() => {
-            this.router.navigate(['/admin/servicios']);
+            html: `
+              <p>${response.message}</p>
+              <p class="text-muted small">Ahora puedes agregar imágenes al servicio</p>
+            `,
+            confirmButtonText: 'Agregar imágenes',
+            showCancelButton: true,
+            cancelButtonText: 'Volver a la lista',
+            confirmButtonColor: '#667eea',
+            cancelButtonColor: '#6c757d'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Redirigir al modo edición con el ID del servicio creado
+              this.router.navigate(['/admin/servicios/editar', response.data.id]);
+            } else {
+              this.router.navigate(['/admin/servicios']);
+            }
           });
         } else {
           Swal.fire({

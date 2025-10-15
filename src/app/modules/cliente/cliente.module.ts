@@ -8,6 +8,7 @@ import { MisReservasComponent } from './pages/mis-reservas/mis-reservas.componen
 import { NuevaReservaComponent } from './pages/nueva-reserva/nueva-reserva.component';
 import { ConfirmarPagoComponent } from './pages/confirmar-pago/confirmar-pago.component';
 import { NuevaReservaPaqueteComponent } from './pages/nueva-reserva-paquete/nueva-reserva-paquete.component';
+import { SharedModule } from '../../shared/shared.module';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { NuevaReservaPaqueteComponent } from './pages/nueva-reserva-paquete/nuev
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    ClienteRoutingModule
+    ClienteRoutingModule,
+    SharedModule
   ]
 })
 export class ClienteModule { }

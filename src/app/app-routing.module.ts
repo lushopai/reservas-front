@@ -2,11 +2,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { AdminGuard } from './core/guards/admin.guard';
+import { RedirectComponent } from './shared/components/redirect/redirect.component';
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'auth',
+    component: RedirectComponent,
     pathMatch: 'full',
   },
   {

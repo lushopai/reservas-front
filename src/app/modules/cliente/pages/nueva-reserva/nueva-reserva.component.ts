@@ -236,10 +236,15 @@ export class NuevaReservaComponent implements OnInit {
         }
       });
     } else {
+      const formValues = this.formServicio.value;
       const request = {
-        ...this.formServicio.value,
+        servicioId: formValues.servicioId,
         clienteId: user.id,
-        equipamiento: this.getItemsParaReserva()
+        fecha: formValues.fecha,
+        horaInicio: formValues.horaInicio,
+        duracionBloques: formValues.cantidadBloques, // Mapear cantidadBloques a duracionBloques
+        equipamiento: this.getItemsParaReserva(),
+        observaciones: formValues.observaciones
       };
 
       this.reservaService.reservarServicio(request).subscribe({
@@ -304,6 +309,35 @@ export class NuevaReservaComponent implements OnInit {
 
   volverPaso2(): void {
     this.paso = 2;
+  }
+
+  /**
+   * Callback del calendario cuando se selecciona un rango de fechas
+   */
+  onRangoSeleccionado(rango: { inicio: Date, fin: Date }): void {
+    // Formatear las fechas a YYYY-MM-DD para el formulario
+    const fechaInicioStr = this.formatearFechaParaFormulario(rango.inicio);
+    const fechaFinStr = this.formatearFechaParaFormulario(rango.fin);
+
+    // Actualizar el formulario
+    this.formCabana.patchValue({
+      fechaInicio: fechaInicioStr,
+      fechaFin: fechaFinStr
+    });
+
+    // Marcar como touched para que se valide
+    this.formCabana.get('fechaInicio')?.markAsTouched();
+    this.formCabana.get('fechaFin')?.markAsTouched();
+  }
+
+  /**
+   * Formatear fecha a string YYYY-MM-DD
+   */
+  private formatearFechaParaFormulario(fecha: Date): string {
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   // Métodos para obtener objetos completos (usados en el resumen)

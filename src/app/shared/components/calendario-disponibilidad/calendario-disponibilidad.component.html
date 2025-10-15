@@ -1,0 +1,110 @@
+<div class="calendario-container">
+  <!-- Header con navegación -->
+  <div class="calendario-header">
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-primary"
+      (click)="mesAnterior()"
+      [disabled]="cargando">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <h4 class="mes-titulo">{{ tituloMes }}</h4>
+    <button
+      type="button"
+      class="btn btn-sm btn-outline-primary"
+      (click)="mesSiguiente()"
+      [disabled]="cargando">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- Texto de selección -->
+  <div class="seleccion-info">
+    <i class="bi bi-calendar-check me-2"></i>
+    <span>{{ textoSeleccion }}</span>
+    <button
+      *ngIf="fechaInicioSeleccionada"
+      type="button"
+      class="btn btn-sm btn-link text-danger ms-2"
+      (click)="limpiarSeleccion()">
+      <i class="bi bi-x-circle"></i> Limpiar
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="cargando" class="text-center py-4">
+    <div class="spinner-border spinner-border-sm text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="text-muted small mt-2">Cargando disponibilidad...</p>
+  </div>
+
+  <!-- Calendario -->
+  <div *ngIf="!cargando" class="calendario-grid">
+    <!-- Días de la semana -->
+    <div class="dias-semana">
+      <div
+        *ngFor="let dia of diasSemana"
+        class="dia-semana-header">
+        {{ dia }}
+      </div>
+    </div>
+
+    <!-- Días del mes -->
+    <div class="dias-mes">
+      <div
+        *ngFor="let semana of diasCalendario"
+        class="semana-row">
+        <div
+          *ngFor="let dia of semana"
+          class="dia-cell"
+          [class.disponible]="dia.disponible"
+          [class.no-disponible]="!dia.disponible && !dia.esPasado && dia.fecha.getTime() > 0"
+          [class.pasado]="dia.esPasado && dia.fecha.getTime() > 0"
+          [class.vacio]="dia.fecha.getTime() === 0"
+          [class.hoy]="dia.esHoy"
+          [class.seleccionado]="dia.seleccionado"
+          [class.inicio]="dia.esInicio"
+          [class.fin]="dia.esFin"
+          [class.en-rango]="dia.enRango"
+          [attr.title]="dia.motivoNoDisponible || ''"
+          (click)="seleccionarDia(dia)">
+
+          <span class="dia-numero" *ngIf="dia.fecha.getTime() > 0">
+            {{ dia.fecha.getDate() }}
+          </span>
+
+          <span class="dia-precio" *ngIf="dia.precio">
+            ${{ dia.precio }}
+          </span>
+
+          <i
+            *ngIf="!dia.disponible && !dia.esPasado && dia.fecha.getTime() > 0"
+            class="bi bi-x-circle-fill no-disponible-icon"
+            [title]="dia.motivoNoDisponible">
+          </i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leyenda -->
+  <div class="calendario-leyenda">
+    <div class="leyenda-item">
+      <span class="leyenda-color disponible"></span>
+      <span>Disponible</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-color no-disponible"></span>
+      <span>No disponible</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-color seleccionado"></span>
+      <span>Seleccionado</span>
+    </div>
+    <div class="leyenda-item">
+      <span class="leyenda-color hoy"></span>
+      <span>Hoy</span>
+    </div>
+  </div>
+</div>

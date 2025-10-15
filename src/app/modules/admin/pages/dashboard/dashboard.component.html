@@ -43,12 +43,12 @@
             <i class="fas fa-users"></i>
           </div>
           <div class="stat-content">
-            <h3 class="stat-number">{{ stats.totalUsuarios }}</h3>
+            <h3 class="stat-number">{{ stats?.totalUsuarios || 0 }}</h3>
             <p class="stat-label">Total Usuarios</p>
             <div class="stat-detail">
               <small>
                 <i class="fas fa-arrow-up me-1"></i>
-                +{{ stats.usuariosNuevos }} este mes
+                +{{ stats?.usuariosNuevos || 0 }} este mes
               </small>
             </div>
           </div>
@@ -64,10 +64,10 @@
             <i class="fas fa-calendar-check"></i>
           </div>
           <div class="stat-content">
-            <h3 class="stat-number">{{ stats.totalReservas }}</h3>
+            <h3 class="stat-number">{{ stats?.totalReservas || 0 }}</h3>
             <p class="stat-label">Total Reservas</p>
             <div class="stat-detail">
-              <small>{{ stats.reservasPendientes }} pendientes</small>
+              <small>{{ stats?.reservasPendientes || 0 }} pendientes</small>
             </div>
           </div>
         </div>
@@ -80,10 +80,10 @@
             <i class="fas fa-dollar-sign"></i>
           </div>
           <div class="stat-content">
-            <h3 class="stat-number">{{ formatCurrency(stats.ingresosMes) }}</h3>
+            <h3 class="stat-number">{{ formatCurrency(stats?.ingresosMes || 0) }}</h3>
             <p class="stat-label">Ingresos del Mes</p>
             <div class="stat-detail">
-              <small>{{ formatCurrency(stats.ingresosHoy) }} hoy</small>
+              <small>{{ formatCurrency(stats?.ingresosHoy || 0) }} hoy</small>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <p class="mb-1 text-muted small">Confirmadas</p>
-              <h4 class="mb-0">{{ stats.reservasConfirmadas }}</h4>
+              <h4 class="mb-0">{{ stats?.reservasConfirmadas || 0 }}</h4>
             </div>
             <div class="mini-icon bg-success">
               <i class="fas fa-check"></i>
@@ -112,7 +112,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <p class="mb-1 text-muted small">Pendientes</p>
-              <h4 class="mb-0">{{ stats.reservasPendientes }}</h4>
+              <h4 class="mb-0">{{ stats?.reservasPendientes || 0 }}</h4>
             </div>
             <div class="mini-icon bg-warning">
               <i class="fas fa-clock"></i>
@@ -126,7 +126,7 @@
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <p class="mb-1 text-muted small">Canceladas</p>
-              <h4 class="mb-0">{{ stats.reservasCanceladas }}</h4>
+              <h4 class="mb-0">{{ stats?.reservasCanceladas || 0 }}</h4>
             </div>
             <div class="mini-icon bg-danger">
               <i class="fas fa-times"></i>
@@ -201,7 +201,7 @@
                   <i class="fas fa-calendar text-success me-2"></i>
                   Ver Reservas
                 </span>
-                <span class="badge bg-warning text-dark">{{ stats.reservasPendientes }}</span>
+                <span class="badge bg-warning text-dark">{{ stats?.reservasPendientes || 0 }}</span>
               </a>
               <a
                 routerLink="/admin/cabanas"
@@ -284,14 +284,14 @@
                 <tbody>
                   <tr *ngFor="let reserva of reservasRecientes" class="cursor-pointer">
                     <td><strong>#{{ reserva.id }}</strong></td>
-                    <td>{{ reserva.usuario }}</td>
-                    <td>{{ reserva.recurso }}</td>
+                    <td>{{ reserva.nombreUsuario }}</td>
+                    <td>{{ reserva.nombreRecurso }}</td>
                     <td>
                       <span class="badge" [ngClass]="getEstadoBadgeClass(reserva.estado)">
                         {{ reserva.estado }}
                       </span>
                     </td>
-                    <td>{{ formatCurrency(reserva.monto) }}</td>
+                    <td>{{ formatCurrency(reserva.precioTotal) }}</td>
                     <td>
                       <button
                         class="btn btn-sm btn-outline-primary"

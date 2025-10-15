@@ -1,9 +1,11 @@
 // Estados de Reserva
 export enum EstadoReserva {
+  BORRADOR = 'BORRADOR',
   PENDIENTE = 'PENDIENTE',
   CONFIRMADA = 'CONFIRMADA',
-  CANCELADA = 'CANCELADA',
-  COMPLETADA = 'COMPLETADA'
+  EN_CURSO = 'EN_CURSO',
+  COMPLETADA = 'COMPLETADA',
+  CANCELADA = 'CANCELADA'
 }
 
 // Tipos de Reserva
@@ -41,6 +43,9 @@ export interface Reserva {
   precioTotal: number;
   itemsReservados?: ItemReservado[];
   observaciones?: string;
+  // Package information
+  paqueteId?: number;
+  nombrePaquete?: string;
 }
 
 // Request para Reservar Cabaña

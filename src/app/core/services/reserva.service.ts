@@ -94,4 +94,20 @@ export class ReservaService {
 
     return this.http.get<Reserva[]>(this.apiUrl, { params });
   }
+
+  /**
+   * Cambiar estado de una reserva (admin)
+   */
+  cambiarEstadoReserva(
+    reservaId: number,
+    nuevoEstado: string,
+    motivo?: string,
+    observaciones?: string
+  ): Observable<SuccessResponse<Reserva>> {
+    return this.http.put<SuccessResponse<Reserva>>(`${this.apiUrl}/${reservaId}/estado`, {
+      nuevoEstado,
+      motivo,
+      observaciones
+    });
+  }
 }

@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_CONFIG } from '../config/api.config';
+import { SuccessResponse } from './reserva.service';
 
 export interface PagoRequest {
   monto: number;
-  metodoPago: 'EFECTIVO' | 'TARJETA_CREDITO' | 'TARJETA_DEBITO' | 'TRANSFERENCIA';
-  numeroReferencia?: string;
+  metodoPago: 'EFECTIVO' | 'TARJETA' | 'TRANSFERENCIA' | 'WEBPAY';
+  transaccionId?: string;
   datosPagoAdicionales?: {
     numeroTarjeta?: string;
     nombreTitular?: string;
@@ -19,34 +20,65 @@ export interface PagoRequest {
 
 export interface PagoResponse {
   id: number;
-  reservaId: number;
+  reservaId?: number;
+  paqueteId?: number;
   monto: number;
   metodoPago: string;
   estado: string;
+  transaccionId?: string;
   fechaPago: string;
-  numeroReferencia?: string;
+  nombreRecurso?: string;
+  tipoReserva?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class PagoService {
-  private apiUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.reservas}`;
+  private apiUrl = `${API_CONFIG.baseUrl}/api/pagos`;
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Confirmar y pagar una reserva
+   * Procesar pago de una reserva individual
    */
-  confirmarReservaConPago(reservaId: number, pagoRequest: PagoRequest): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${reservaId}/confirmar`, pagoRequest);
+  procesarPagoReserva(reservaId: number, pagoRequest: PagoRequest): Observable<SuccessResponse<PagoResponse>> {
+    return this.http.post<SuccessResponse<PagoResponse>>(`${this.apiUrl}/reserva/${reservaId}`, pagoRequest);
   }
 
   /**
-   * Obtener información de pago de una reserva
+   * Procesar pago de un paquete
    */
-  obtenerPagoPorReserva(reservaId: number): Observable<PagoResponse> {
-    return this.http.get<PagoResponse>(`${this.apiUrl}/${reservaId}/pago`);
+  procesarPagoPaquete(paqueteId: number, pagoRequest: PagoRequest): Observable<SuccessResponse<PagoResponse>> {
+    return this.http.post<SuccessResponse<PagoResponse>>(`${this.apiUrl}/paquete/${paqueteId}`, pagoRequest);
+  }
+
+  /**
+   * Obtener todos los pagos (solo ADMIN)
+   */
+  obtenerTodos(): Observable<PagoResponse[]> {
+    return this.http.get<PagoResponse[]>(this.apiUrl);
+  }
+
+  /**
+   * Obtener pagos de una reserva
+   */
+  obtenerPagosReserva(reservaId: number): Observable<SuccessResponse<PagoResponse[]>> {
+    return this.http.get<SuccessResponse<PagoResponse[]>>(`${this.apiUrl}/reserva/${reservaId}`);
+  }
+
+  /**
+   * Obtener pagos de un paquete
+   */
+  obtenerPagosPaquete(paqueteId: number): Observable<SuccessResponse<PagoResponse[]>> {
+    return this.http.get<SuccessResponse<PagoResponse[]>>(`${this.apiUrl}/paquete/${paqueteId}`);
+  }
+
+  /**
+   * Obtener un pago por ID
+   */
+  obtenerPago(pagoId: number): Observable<SuccessResponse<PagoResponse>> {
+    return this.http.get<SuccessResponse<PagoResponse>>(`${this.apiUrl}/${pagoId}`);
   }
 
   /**
@@ -109,19 +141,20 @@ export class PagoService {
   }
 
   /**
-   * Obtener icono de Font Awesome según método de pago
+   * Obtener icono de Bootstrap Icons según método de pago
    */
   getIconoMetodoPago(metodo: string): string {
     switch (metodo) {
       case 'EFECTIVO':
-        return 'fa-money-bill-wave';
-      case 'TARJETA_CREDITO':
-      case 'TARJETA_DEBITO':
-        return 'fa-credit-card';
+        return 'bi-cash-coin';
+      case 'TARJETA':
+        return 'bi-credit-card';
       case 'TRANSFERENCIA':
-        return 'fa-exchange-alt';
+        return 'bi-bank';
+      case 'WEBPAY':
+        return 'bi-wallet2';
       default:
-        return 'fa-dollar-sign';
+        return 'bi-currency-dollar';
     }
   }
 }

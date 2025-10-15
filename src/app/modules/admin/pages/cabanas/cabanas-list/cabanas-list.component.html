@@ -66,6 +66,7 @@
           <thead>
             <tr>
               <th>ID</th>
+              <th>Imagen</th>
               <th>Nombre</th>
               <th>Tipo</th>
               <th>Capacidad</th>
@@ -78,13 +79,26 @@
           </thead>
           <tbody>
             <tr *ngIf="cabanasFiltradas.length === 0">
-              <td colspan="9" class="text-center py-4 text-muted">
+              <td colspan="10" class="text-center py-4 text-muted">
                 <i class="fas fa-search fa-2x mb-2"></i>
                 <p class="mb-0">No se encontraron cabañas</p>
               </td>
             </tr>
             <tr *ngFor="let cabana of cabanasFiltradas">
               <td>{{ cabana.id }}</td>
+              <td>
+                <div class="thumbnail-container">
+                  <img
+                    *ngIf="cabana.imagenPrincipalUrl"
+                    [src]="cabana.imagenPrincipalUrl"
+                    [alt]="cabana.nombre"
+                    class="table-thumbnail"
+                  />
+                  <div *ngIf="!cabana.imagenPrincipalUrl" class="no-image-placeholder">
+                    <i class="bi bi-image"></i>
+                  </div>
+                </div>
+              </td>
               <td>
                 <strong>{{ cabana.nombre }}</strong>
                 <br>

@@ -200,8 +200,9 @@ export class CalendarioDisponibilidadComponent implements OnInit {
 
   esFechaSeleccionada(fecha: Date): boolean {
     if (!this.fechaInicioSeleccionada) return false;
-    return fecha.getTime() === this.fechaInicioSeleccionada.getTime() ||
-           (this.fechaFinSeleccionada && fecha.getTime() === this.fechaFinSeleccionada.getTime());
+    const esInicio = fecha.getTime() === this.fechaInicioSeleccionada.getTime();
+    const esFin = this.fechaFinSeleccionada ? fecha.getTime() === this.fechaFinSeleccionada.getTime() : false;
+    return esInicio || esFin;
   }
 
   esFechaInicio(fecha: Date): boolean {

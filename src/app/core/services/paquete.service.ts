@@ -18,12 +18,12 @@ export interface ItemReservaDTO {
 
 export interface PaqueteReservaRequest {
   clienteId: number;
-  nombrePaquete: string;
+  nombre: string; // Backend espera 'nombre', no 'nombrePaquete'
   fechaInicio: string;
   fechaFin: string;
   cabanaId?: number;
-  itemsAdicionales?: ItemReservaDTO[];
-  servicios: ServicioReservaDTO[];
+  itemsCabana?: ItemReservaDTO[]; // Backend espera 'itemsCabana', no 'itemsAdicionales'
+  servicios?: ServicioReservaDTO[];
   notasEspeciales?: string;
 }
 

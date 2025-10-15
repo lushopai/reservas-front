@@ -92,6 +92,31 @@ export class NuevaReservaPaqueteComponent implements OnInit {
     }
   }
 
+  /**
+   * Manejar selección de fechas desde el calendario
+   */
+  onRangoFechasSeleccionado(rango: { inicio: Date, fin: Date }): void {
+    const fechaInicio = this.formatearFechaISO(rango.inicio);
+    const fechaFin = this.formatearFechaISO(rango.fin);
+
+    this.formPaquete.patchValue({
+      fechaInicio,
+      fechaFin
+    });
+
+    console.log('Fechas seleccionadas:', { fechaInicio, fechaFin });
+  }
+
+  /**
+   * Formatear fecha a formato ISO (YYYY-MM-DD)
+   */
+  formatearFechaISO(fecha: Date): string {
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   cargarItemsCabana(recursoId: number): void {
     this.cargandoItems = true;
     this.inventarioService.obtenerPorRecurso(recursoId).subscribe({
@@ -276,11 +301,11 @@ export class NuevaReservaPaqueteComponent implements OnInit {
 
     const request = {
       clienteId: user.id,
-      nombrePaquete: this.formPaquete.get('nombrePaquete')?.value,
+      nombre: this.formPaquete.get('nombrePaquete')?.value, // El backend espera 'nombre', no 'nombrePaquete'
       fechaInicio: this.formPaquete.get('fechaInicio')?.value,
       fechaFin: this.formPaquete.get('fechaFin')?.value,
       cabanaId: this.formPaquete.get('cabanaId')?.value,
-      itemsAdicionales: itemsArray,
+      itemsCabana: itemsArray, // Cambiar a itemsCabana para coincidir con el backend
       servicios: this.serviciosSeleccionados,
       notasEspeciales: this.formPaquete.get('notasEspeciales')?.value
     };

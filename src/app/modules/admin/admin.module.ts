@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin.component';
+import { SharedModule } from '../../shared/shared.module';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { HeaderComponent } from './components/header/header.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
@@ -20,6 +21,7 @@ import { InventarioListComponent } from './pages/inventario/inventario-list/inve
 import { InventarioFormComponent } from './pages/inventario/inventario-form/inventario-form.component';
 import { DisponibilidadCabanasComponent } from './pages/disponibilidad/disponibilidad-cabanas/disponibilidad-cabanas.component';
 import { DisponibilidadServiciosComponent } from './pages/disponibilidad/disponibilidad-servicios/disponibilidad-servicios.component';
+import { PagosListComponent } from './pages/pagos/pagos-list/pagos-list.component';
 
 
 @NgModule({
@@ -40,13 +42,15 @@ import { DisponibilidadServiciosComponent } from './pages/disponibilidad/disponi
     InventarioListComponent,
     InventarioFormComponent,
     DisponibilidadCabanasComponent,
-    DisponibilidadServiciosComponent
+    DisponibilidadServiciosComponent,
+    PagosListComponent
   ],
   imports: [
     CommonModule,
     AdminRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SharedModule
   ]
 })
 export class AdminModule { }

@@ -66,31 +66,29 @@
                   <div class="invalid-feedback">Seleccione una cabaña</div>
                 </div>
 
-                <!-- Fechas -->
-                <div class="col-md-3 mb-3">
-                  <label for="fechaInicio" class="form-label fw-bold">Fecha Inicio *</label>
-                  <input
-                    type="date"
-                    id="fechaInicio"
-                    class="form-control"
-                    formControlName="fechaInicio"
-                    [min]="fechaMinima"
-                    [class.is-invalid]="formPaquete.get('fechaInicio')?.invalid && formPaquete.get('fechaInicio')?.touched">
-                  <div class="invalid-feedback">Requerido</div>
-                </div>
+              </div>
 
-                <div class="col-md-3 mb-3">
-                  <label for="fechaFin" class="form-label fw-bold">Fecha Fin *</label>
-                  <input
-                    type="date"
-                    id="fechaFin"
-                    class="form-control"
-                    formControlName="fechaFin"
-                    [min]="fechaMinima"
-                    [class.is-invalid]="formPaquete.get('fechaFin')?.invalid && formPaquete.get('fechaFin')?.touched">
-                  <div class="invalid-feedback">Requerido</div>
+              <!-- Calendario de disponibilidad -->
+              <div *ngIf="formPaquete.get('cabanaId')?.value" class="row mb-3">
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-header bg-light">
+                      <h6 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        Selecciona tus fechas de reserva
+                      </h6>
+                      <small class="text-muted">Los días bloqueados no están disponibles</small>
+                    </div>
+                    <div class="card-body">
+                      <app-calendario-disponibilidad
+                        [cabanaId]="formPaquete.get('cabanaId')?.value"
+                        (rangoSeleccionado)="onRangoFechasSeleccionado($event)">
+                      </app-calendario-disponibilidad>
+                    </div>
+                  </div>
                 </div>
               </div>
+
 
               <!-- Items adicionales de cabaña -->
               <div *ngIf="formPaquete.get('cabanaId')?.value" class="card mb-3">

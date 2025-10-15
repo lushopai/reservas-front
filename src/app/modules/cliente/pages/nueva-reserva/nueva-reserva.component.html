@@ -75,38 +75,21 @@
                   </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                  <label for="fechaInicio" class="form-label">Fecha de Inicio *</label>
-                  <input
-                    type="date"
-                    id="fechaInicio"
-                    class="form-control"
-                    formControlName="fechaInicio"
-                    [min]="fechaMinima"
-                    [class.is-invalid]="formCabana.get('fechaInicio')?.invalid && formCabana.get('fechaInicio')?.touched">
-                  <div class="invalid-feedback">
-                    La fecha de inicio es requerida y debe ser hoy o posterior
+                <!-- Calendario Visual para seleccionar fechas -->
+                <div class="col-md-12 mb-3" *ngIf="formCabana.get('cabanaId')?.value">
+                  <label class="form-label">Seleccionar Fechas *</label>
+                  <app-calendario-disponibilidad
+                    [cabanaId]="formCabana.get('cabanaId')?.value"
+                    (rangoSeleccionado)="onRangoSeleccionado($event)">
+                  </app-calendario-disponibilidad>
+                  <div class="text-danger small mt-1" *ngIf="formCabana.get('fechaInicio')?.invalid && formCabana.get('fechaInicio')?.touched">
+                    Debe seleccionar un rango de fechas válido
                   </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                  <label for="fechaFin" class="form-label">Fecha de Fin *</label>
-                  <input
-                    type="date"
-                    id="fechaFin"
-                    class="form-control"
-                    formControlName="fechaFin"
-                    [min]="fechaMinima"
-                    [class.is-invalid]="(formCabana.get('fechaFin')?.invalid && formCabana.get('fechaFin')?.touched) || formCabana.hasError('fechaFinInvalida')">
-                  <div class="invalid-feedback">
-                    <span *ngIf="formCabana.hasError('fechaFinInvalida')">
-                      La fecha de fin debe ser posterior a la fecha de inicio
-                    </span>
-                    <span *ngIf="!formCabana.hasError('fechaFinInvalida')">
-                      La fecha de fin es requerida
-                    </span>
-                  </div>
-                </div>
+                <!-- Inputs ocultos para mantener los valores en el formulario -->
+                <input type="hidden" formControlName="fechaInicio">
+                <input type="hidden" formControlName="fechaFin">
 
                 <div class="col-md-12 mb-3">
                   <label for="observaciones" class="form-label">Observaciones</label>
