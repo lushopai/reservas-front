@@ -7,8 +7,8 @@ import { RedirectComponent } from './shared/components/redirect/redirect.compone
 const routes: Routes = [
   {
     path: '',
-    component: RedirectComponent,
-    pathMatch: 'full',
+    loadChildren: () =>
+      import('./modules/public/public.module').then((m) => m.PublicModule),
   },
   {
     path: 'auth',
@@ -29,7 +29,7 @@ const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'auth',
+    redirectTo: '',
   },
 ];
 

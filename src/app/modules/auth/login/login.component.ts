@@ -81,12 +81,20 @@ export class LoginComponent implements OnInit {
         }).then(() => {
           this.loading = false; //Detener el loading despues del msg
           // Redirigir después del modal
-          if (isAdmin) {
-            console.log('se va por admin');
-            this.router.navigate(['/admin/dashboard']);
+
+          // Si hay returnUrl, usarlo (para flujo de reservas)
+          if (this.returnUrl && this.returnUrl !== '/dashboard') {
+            console.log('Redirigiendo a returnUrl:', this.returnUrl);
+            this.router.navigate([this.returnUrl]);
           } else {
-            console.log('se va por cliente');
-            this.router.navigate(['/cliente/mis-reservas']);
+            // Caso por defecto: redirigir según rol
+            if (isAdmin) {
+              console.log('se va por admin');
+              this.router.navigate(['/admin/dashboard']);
+            } else {
+              console.log('se va por cliente');
+              this.router.navigate(['/cliente/mis-reservas']);
+            }
           }
         });
       },

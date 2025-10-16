@@ -5,6 +5,7 @@ import { MisReservasComponent } from './pages/mis-reservas/mis-reservas.componen
 import { NuevaReservaComponent } from './pages/nueva-reserva/nueva-reserva.component';
 import { ConfirmarPagoComponent } from './pages/confirmar-pago/confirmar-pago.component';
 import { NuevaReservaPaqueteComponent } from './pages/nueva-reserva-paquete/nueva-reserva-paquete.component';
+import { ConfirmarReservaComponent } from './pages/confirmar-reserva/confirmar-reserva.component';
 
 const routes: Routes = [
   {
@@ -35,6 +36,11 @@ const routes: Routes = [
         path: 'confirmar-pago/:id',
         component: ConfirmarPagoComponent,
         data: { title: 'Confirmar Pago' },
+      },
+      {
+        path: 'confirmar-reserva',
+        component: ConfirmarReservaComponent,
+        data: { title: 'Confirmar Reserva' },
       },
     ],
   },

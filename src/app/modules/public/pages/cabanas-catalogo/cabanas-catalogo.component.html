@@ -1,0 +1,187 @@
+<app-public-navbar></app-public-navbar>
+
+<div class="container py-5">
+  <!-- Header -->
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold mb-3">Nuestras Cabañas</h1>
+    <p class="lead text-muted">Encuentra el lugar perfecto para tu estadía</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label fw-bold">
+            <i class="bi bi-search me-2"></i>Buscar
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="filtroBusqueda"
+            (ngModelChange)="aplicarFiltros()"
+            placeholder="Nombre o descripción..."
+          />
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold">
+            <i class="bi bi-people me-2"></i>Capacidad mínima
+          </label>
+          <select
+            class="form-select"
+            [(ngModel)]="filtroCapacidad"
+            (ngModelChange)="aplicarFiltros()"
+          >
+            <option [value]="0">Todas</option>
+            <option *ngFor="let cap of capacidadesDisponibles" [value]="cap">
+              {{ cap }}+ personas
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-bold">
+            <i class="bi bi-sort-down me-2"></i>Ordenar por
+          </label>
+          <select
+            class="form-select"
+            [(ngModel)]="ordenarPor"
+            (ngModelChange)="aplicarFiltros()"
+          >
+            <option value="nombre">Nombre</option>
+            <option value="precio-asc">Precio: Menor a Mayor</option>
+            <option value="precio-desc">Precio: Mayor a Menor</option>
+            <option value="capacidad">Capacidad</option>
+          </select>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100" (click)="limpiarFiltros()">
+            <i class="bi bi-x-circle me-2"></i>Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resultados -->
+  <div class="mb-3">
+    <p class="text-muted">
+      <strong>{{ cabanasFiltradas.length }}</strong> cabaña(s) encontrada(s)
+    </p>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="cargando" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-3 text-muted">Cargando cabañas...</p>
+  </div>
+
+  <!-- No hay resultados -->
+  <div *ngIf="!cargando && cabanasFiltradas.length === 0" class="text-center py-5">
+    <i class="bi bi-inbox fs-1 text-muted"></i>
+    <p class="mt-3 text-muted">No se encontraron cabañas con los filtros seleccionados</p>
+    <button class="btn btn-primary mt-3" (click)="limpiarFiltros()">
+      Ver todas las cabañas
+    </button>
+  </div>
+
+  <!-- Grid de cabañas -->
+  <div class="row g-4 mb-4" *ngIf="!cargando && cabanasFiltradas.length > 0">
+    <div class="col-md-6 col-lg-4" *ngFor="let cabana of cabanasPaginadas">
+      <div class="card h-100 border-0 shadow-sm hover-lift">
+        <!-- Imagen -->
+        <div *ngIf="obtenerImagenPrincipal(cabana)"
+             class="card-img-top bg-light d-flex align-items-center justify-content-center"
+             style="height: 250px; overflow: hidden;">
+          <img [src]="obtenerImagenPrincipal(cabana)"
+               [alt]="cabana.nombre"
+               class="w-100 h-100"
+               style="object-fit: contain; object-position: center;">
+        </div>
+        <!-- Placeholder si no hay imagen -->
+        <div *ngIf="!obtenerImagenPrincipal(cabana)"
+             class="card-img-top bg-light d-flex align-items-center justify-content-center"
+             style="height: 250px;">
+          <i class="bi bi-house-door fs-1 text-muted"></i>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <h5 class="card-title fw-bold mb-0">{{ cabana.nombre }}</h5>
+            <span class="badge bg-success">Disponible</span>
+          </div>
+          <p class="text-muted small mb-3">
+            {{ cabana.descripcion || 'Cabaña confortable y equipada para tu estadía' }}
+          </p>
+
+          <div class="mb-3">
+            <div class="d-flex align-items-center text-muted small mb-2">
+              <i class="bi bi-people me-2"></i>
+              <span>{{ cabana.capacidadPersonas }} personas</span>
+            </div>
+            <div class="d-flex align-items-center text-muted small mb-2" *ngIf="cabana.numeroHabitaciones">
+              <i class="bi bi-door-closed me-2"></i>
+              <span>{{ cabana.numeroHabitaciones }} habitaciones</span>
+            </div>
+            <div class="d-flex align-items-center text-muted small" *ngIf="cabana.numeroBanos">
+              <i class="bi bi-droplet me-2"></i>
+              <span>{{ cabana.numeroBanos }} baños</span>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="text-primary fw-bold fs-5">
+              ${{ formatearPrecio(cabana.precioPorUnidad || 0) }}
+              <small class="text-muted fs-6">/noche</small>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white border-0 pt-0">
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-primary" (click)="verDetalle(cabana)">
+              <i class="bi bi-eye me-2"></i>Ver Detalles
+            </button>
+            <button class="btn btn-primary" (click)="reservar(cabana)">
+              <i class="bi bi-calendar-check me-2"></i>Reservar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginación -->
+  <nav *ngIf="totalPaginas > 1" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="paginaActual === 1">
+        <a class="page-link" (click)="cambiarPagina(paginaActual - 1)" href="javascript:void(0)">
+          <i class="bi bi-chevron-left"></i>
+        </a>
+      </li>
+      <li
+        class="page-item"
+        *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+        [class.active]="paginaActual === i + 1"
+      >
+        <a class="page-link" (click)="cambiarPagina(i + 1)" href="javascript:void(0)">
+          {{ i + 1 }}
+        </a>
+      </li>
+      <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+        <a class="page-link" (click)="cambiarPagina(paginaActual + 1)" href="javascript:void(0)">
+          <i class="bi bi-chevron-right"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<!-- Footer -->
+<footer class="py-4 bg-dark text-white-50 mt-5">
+  <div class="container text-center">
+    <p class="mb-0">© 2025 Cabañas & Servicios. Todos los derechos reservados.</p>
+  </div>
+</footer>

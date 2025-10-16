@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { RegisterRequest } from 'src/app/shared/models/RegisterRequest';
 import { UserService } from 'src/app/core/services/UserService.service';
@@ -15,6 +15,7 @@ export class RegisterComponent implements OnInit {
   loading = false;
   showPassword = false;
   showConfirmPassword = false;
+  returnUrl: string = '';
 
   tiposDocumento = [
     { value: 'RUT', label: 'RUT' },
@@ -26,11 +27,14 @@ export class RegisterComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private userService: UserService, // CAMBIADO: ClienteService -> UserService
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.initForm();
+    // Obtener URL de retorno si existe
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '';
   }
 
   initForm(): void {
@@ -145,7 +149,14 @@ export class RegisterComponent implements OnInit {
             confirmButtonColor: '#667eea',
           }).then((result) => {
             if (result.isConfirmed) {
-              this.router.navigate(['/auth/login']);
+              // Redirigir al login preservando el returnUrl si existe
+              if (this.returnUrl) {
+                this.router.navigate(['/auth/login'], {
+                  queryParams: { returnUrl: this.returnUrl }
+                });
+              } else {
+                this.router.navigate(['/auth/login']);
+              }
             }
           });
         } else {

@@ -27,7 +27,7 @@ export class PagosListComponent implements OnInit {
   paginaActual = 1;
   itemsPorPagina = 10;
 
-  constructor(private pagoService: PagoService) {}
+  constructor(public pagoService: PagoService) {}
 
   ngOnInit(): void {
     this.cargarPagos();
@@ -174,6 +174,14 @@ export class PagosListComponent implements OnInit {
     return this.pagosFiltrados
       .filter(p => p.estado === 'COMPLETADO')
       .reduce((total, pago) => total + pago.monto, 0);
+  }
+
+  contarPorEstado(estado: string): number {
+    return this.pagos.filter(p => p.estado === estado).length;
+  }
+
+  get Math() {
+    return Math;
   }
 
   exportarCSV(): void {

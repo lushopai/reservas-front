@@ -1,1 +1,261 @@
-<p>pagos-list works!</p>
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="mb-1">
+        <i class="bi bi-credit-card-2-front"></i> Gestión de Pagos
+      </h2>
+      <p class="text-muted mb-0">Administra todos los pagos del sistema</p>
+    </div>
+    <button class="btn btn-success" (click)="exportarCSV()" *ngIf="pagosFiltrados.length > 0">
+      <i class="bi bi-file-earmark-spreadsheet"></i> Exportar CSV
+    </button>
+  </div>
+
+  <!-- Tarjetas de resumen -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <div class="bg-primary bg-opacity-10 p-3 rounded">
+                <i class="bi bi-cash-stack fs-3 text-primary"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h6 class="text-muted mb-1">Total Pagos</h6>
+              <h4 class="mb-0">{{ pagos.length }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <div class="bg-success bg-opacity-10 p-3 rounded">
+                <i class="bi bi-check-circle fs-3 text-success"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h6 class="text-muted mb-1">Completados</h6>
+              <h4 class="mb-0">{{ contarPorEstado('COMPLETADO') }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <div class="bg-warning bg-opacity-10 p-3 rounded">
+                <i class="bi bi-clock-history fs-3 text-warning"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h6 class="text-muted mb-1">Pendientes</h6>
+              <h4 class="mb-0">{{ contarPorEstado('PENDIENTE') }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <div class="bg-info bg-opacity-10 p-3 rounded">
+                <i class="bi bi-currency-dollar fs-3 text-info"></i>
+              </div>
+            </div>
+            <div class="flex-grow-1 ms-3">
+              <h6 class="text-muted mb-1">Monto Total</h6>
+              <h4 class="mb-0">${{ formatearMonto(calcularTotalMonto()) }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+      <h6 class="card-title mb-3">
+        <i class="bi bi-funnel"></i> Filtros
+      </h6>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Buscar</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="filtroBusqueda"
+            (ngModelChange)="aplicarFiltros()"
+            placeholder="ID, recurso, transacción..."
+          />
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Estado</label>
+          <select
+            class="form-select"
+            [(ngModel)]="filtroEstado"
+            (ngModelChange)="aplicarFiltros()"
+          >
+            <option value="">Todos</option>
+            <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Método de Pago</label>
+          <select
+            class="form-select"
+            [(ngModel)]="filtroMetodoPago"
+            (ngModelChange)="aplicarFiltros()"
+          >
+            <option value="">Todos</option>
+            <option *ngFor="let metodo of metodosPago" [value]="metodo">{{ metodo }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Tipo</label>
+          <select
+            class="form-select"
+            [(ngModel)]="filtroTipo"
+            (ngModelChange)="aplicarFiltros()"
+          >
+            <option value="">Todos</option>
+            <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button class="btn btn-outline-secondary w-100" (click)="limpiarFiltros()">
+            <i class="bi bi-x-circle"></i> Limpiar Filtros
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de pagos -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-body">
+      <!-- Loading -->
+      <div *ngIf="cargando" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-3 text-muted">Cargando pagos...</p>
+      </div>
+
+      <!-- No hay pagos -->
+      <div *ngIf="!cargando && pagosFiltrados.length === 0" class="text-center py-5">
+        <i class="bi bi-inbox fs-1 text-muted"></i>
+        <p class="mt-3 text-muted">No se encontraron pagos</p>
+      </div>
+
+      <!-- Tabla -->
+      <div *ngIf="!cargando && pagosFiltrados.length > 0" class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Tipo</th>
+              <th>Recurso</th>
+              <th>Monto</th>
+              <th>Método de Pago</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pago of pagosPaginados">
+              <td>
+                <span class="badge bg-secondary">#{{ pago.id }}</span>
+                <br>
+                <small class="text-muted" *ngIf="pago.reservaId">
+                  Reserva #{{ pago.reservaId }}
+                </small>
+                <small class="text-muted" *ngIf="pago.paqueteId">
+                  Paquete #{{ pago.paqueteId }}
+                </small>
+              </td>
+              <td>
+                <span class="badge bg-info">{{ pago.tipoReserva || 'N/A' }}</span>
+              </td>
+              <td>{{ pago.nombreRecurso || 'N/A' }}</td>
+              <td class="fw-bold text-success">${{ formatearMonto(pago.monto) }}</td>
+              <td>
+                <i class="{{ pagoService.getIconoMetodoPago(pago.metodoPago) }} me-1"></i>
+                {{ pago.metodoPago }}
+              </td>
+              <td>
+                <span class="badge {{ getBadgeClase(pago.estado) }}">
+                  {{ pago.estado }}
+                </span>
+              </td>
+              <td>
+                <small>{{ formatearFecha(pago.fechaPago) }}</small>
+              </td>
+              <td class="text-center">
+                <button
+                  class="btn btn-sm btn-outline-primary"
+                  (click)="verDetalle(pago)"
+                  title="Ver detalle"
+                >
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Paginación -->
+        <nav *ngIf="totalPaginas > 1" class="mt-3">
+          <ul class="pagination justify-content-center mb-0">
+            <li class="page-item" [class.disabled]="paginaActual === 1">
+              <a class="page-link" (click)="cambiarPagina(paginaActual - 1)" href="javascript:void(0)">
+                <i class="bi bi-chevron-left"></i>
+              </a>
+            </li>
+            <li
+              class="page-item"
+              *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
+              [class.active]="paginaActual === i + 1"
+            >
+              <a class="page-link" (click)="cambiarPagina(i + 1)" href="javascript:void(0)">
+                {{ i + 1 }}
+              </a>
+            </li>
+            <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
+              <a class="page-link" (click)="cambiarPagina(paginaActual + 1)" href="javascript:void(0)">
+                <i class="bi bi-chevron-right"></i>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Info de paginación -->
+        <p class="text-center text-muted small mt-3 mb-0">
+          Mostrando {{ (paginaActual - 1) * itemsPorPagina + 1 }} a
+          {{ Math.min(paginaActual * itemsPorPagina, pagosFiltrados.length) }} de
+          {{ pagosFiltrados.length }} pagos
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

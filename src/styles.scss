@@ -3,6 +3,9 @@
 @import "~bootstrap/dist/css/bootstrap.min.css";
 @import "~@fortawesome/fontawesome-free/css/all.min.css";
 
+/* Importar Angular Material */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
 /* Variables personalizadas */
 :root {
   --primary-color: #667eea;

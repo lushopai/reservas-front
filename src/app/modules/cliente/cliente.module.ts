@@ -9,6 +9,7 @@ import { NuevaReservaComponent } from './pages/nueva-reserva/nueva-reserva.compo
 import { ConfirmarPagoComponent } from './pages/confirmar-pago/confirmar-pago.component';
 import { NuevaReservaPaqueteComponent } from './pages/nueva-reserva-paquete/nueva-reserva-paquete.component';
 import { SharedModule } from '../../shared/shared.module';
+import { ConfirmarReservaComponent } from './pages/confirmar-reserva/confirmar-reserva.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { SharedModule } from '../../shared/shared.module';
     MisReservasComponent,
     NuevaReservaComponent,
     ConfirmarPagoComponent,
-    NuevaReservaPaqueteComponent
+    NuevaReservaPaqueteComponent,
+    ConfirmarReservaComponent
   ],
   imports: [
     CommonModule,

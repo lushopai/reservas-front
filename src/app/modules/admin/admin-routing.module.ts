@@ -15,6 +15,7 @@ import { InventarioListComponent } from './pages/inventario/inventario-list/inve
 import { InventarioFormComponent } from './pages/inventario/inventario-form/inventario-form.component';
 import { DisponibilidadCabanasComponent } from './pages/disponibilidad/disponibilidad-cabanas/disponibilidad-cabanas.component';
 import { DisponibilidadServiciosComponent } from './pages/disponibilidad/disponibilidad-servicios/disponibilidad-servicios.component';
+import { PagosListComponent } from './pages/pagos/pagos-list/pagos-list.component';
 
 const routes: Routes = [
   {
@@ -150,6 +151,11 @@ const routes: Routes = [
             data: { title: 'Bloques Horarios de Servicios' },
           },
         ],
+      },
+      {
+        path: 'pagos',
+        component: PagosListComponent,
+        data: { title: 'Gestión de Pagos' },
       },
     ],
   },

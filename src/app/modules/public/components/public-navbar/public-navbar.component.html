@@ -1,0 +1,78 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
+  <div class="container">
+    <!-- Logo / Brand -->
+    <a class="navbar-brand d-flex align-items-center" routerLink="/">
+      <i class="bi bi-house-heart-fill me-2 fs-4"></i>
+      <span class="fw-bold">Cabañas & Servicios</span>
+    </a>
+
+    <!-- Mobile Toggle Button -->
+    <button
+      class="navbar-toggler"
+      type="button"
+      (click)="toggleMenu()"
+      [attr.aria-expanded]="isMenuOpen">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Content -->
+    <div class="collapse navbar-collapse" [class.show]="isMenuOpen">
+      <!-- Links principales -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">
+            <i class="bi bi-house me-1"></i>
+            Inicio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/cabanas" routerLinkActive="active" (click)="closeMenu()">
+            <i class="bi bi-building me-1"></i>
+            Cabañas
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/servicios" routerLinkActive="active" (click)="closeMenu()">
+            <i class="bi bi-star me-1"></i>
+            Servicios
+          </a>
+        </li>
+      </ul>
+
+      <!-- User Menu (derecha) -->
+      <ul class="navbar-nav ms-auto">
+        <!-- Si NO está logueado -->
+        <ng-container *ngIf="!isLoggedIn">
+          <li class="nav-item">
+            <button class="btn btn-outline-light me-2" (click)="goToLogin()">
+              <i class="bi bi-box-arrow-in-right me-1"></i>
+              Iniciar Sesión
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-light" (click)="goToRegister()">
+              <i class="bi bi-person-plus me-1"></i>
+              Registrarse
+            </button>
+          </li>
+        </ng-container>
+
+        <!-- Si SÍ está logueado -->
+        <ng-container *ngIf="isLoggedIn">
+          <li class="nav-item me-2">
+            <button class="btn btn-outline-light" (click)="goToDashboard()">
+              <i class="bi bi-speedometer2 me-1"></i>
+              {{ userRole === 'ADMIN' ? 'Panel Admin' : 'Mis Reservas' }}
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-light" (click)="logout()">
+              <i class="bi bi-box-arrow-right me-1"></i>
+              Salir
+            </button>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+  </div>
+</nav>
