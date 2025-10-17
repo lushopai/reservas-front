@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Cabana, CabanaRequest, ApiResponse } from '../models/cabana.model';
+import { ItemInventario } from '../models/inventario.model';
 import { environment } from '../../../../enviroments/environment';
 
 @Injectable({
@@ -71,6 +72,13 @@ export class CabanaService {
    */
   eliminarCabana(id: number): Observable<ApiResponse<string>> {
     return this.http.delete<ApiResponse<string>>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Obtener items adicionales reservables de una cabaña
+   */
+  obtenerItemsAdicionales(id: number): Observable<ItemInventario[]> {
+    return this.http.get<ItemInventario[]>(`${this.apiUrl}/${id}/items-adicionales`);
   }
 
 }

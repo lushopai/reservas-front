@@ -1,174 +1,241 @@
-<div class="container-fluid py-4">
+<div class="servicios-list-container">
   <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="mb-0">Gestión de Servicios de Entretención</h2>
-      <p class="text-muted">Administra todos los servicios del sistema</p>
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>sports_tennis</mat-icon>
+        Gestión de Servicios
+      </h1>
+      <p class="page-subtitle">Administra los servicios de entretenimiento disponibles</p>
     </div>
-    <button class="btn btn-primary" (click)="nuevoServicio()">
-      <i class="fas fa-plus me-2"></i>Nuevo Servicio
-    </button>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="nuevoServicio()">
+        <mat-icon>add</mat-icon>
+        Nuevo Servicio
+      </button>
+    </div>
   </div>
 
-  <!-- Filtros -->
-  <div class="card mb-4">
-    <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label">Buscar</label>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Buscar por nombre..."
-            [(ngModel)]="busquedaTexto"
-            (input)="aplicarFiltros()"
-          />
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <mat-card class="kpi-card blue-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>apps</mat-icon>
         </div>
-        <div class="col-md-3">
-          <label class="form-label">Tipo de Servicio</label>
-          <select
-            class="form-select"
-            [(ngModel)]="tipoFiltro"
-            (change)="aplicarFiltros()"
-          >
-            <option value="">Todos</option>
-            <option *ngFor="let tipo of tipos" [value]="tipo">
-              {{ getTipoServicioLabel(tipo) }}
-            </option>
-          </select>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.total }}</div>
+          <div class="kpi-label">Total Servicios</div>
         </div>
-        <div class="col-md-2">
-          <label class="form-label">Estado</label>
-          <select
-            class="form-select"
-            [(ngModel)]="estadoFiltro"
-            (change)="aplicarFiltros()"
-          >
-            <option value="">Todos</option>
-            <option *ngFor="let estado of estados" [value]="estado">
-              {{ estado }}
-            </option>
-          </select>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card green-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>check_circle</mat-icon>
         </div>
-        <div class="col-md-2 d-flex align-items-end">
-          <button class="btn btn-outline-secondary w-100" (click)="limpiarFiltros()">
-            <i class="fas fa-redo me-2"></i>Limpiar
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.disponibles }}</div>
+          <div class="kpi-label">Disponibles</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card orange-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>build</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.enMantenimiento }}</div>
+          <div class="kpi-label">En Mantenimiento</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card red-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>cancel</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.fueraServicio }}</div>
+          <div class="kpi-label">Fuera de Servicio</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filters Card -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar servicios</mat-label>
+          <input matInput [(ngModel)]="busquedaTexto" (keyup)="aplicarFiltros()" placeholder="Nombre o descripción...">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="estadoFiltro" (selectionChange)="aplicarFiltros()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let estado of estados" [value]="estado.value">
+              {{ estado.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>filter_list</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo</mat-label>
+          <mat-select [(ngModel)]="tipoFiltro" (selectionChange)="aplicarFiltros()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let tipo of tipos" [value]="tipo.value">
+              {{ tipo.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+        </mat-form-field>
+
+        <button mat-raised-button color="accent" (click)="exportarCSV()" class="export-button">
+          <mat-icon>download</mat-icon>
+          Exportar CSV
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table Card -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="60"></mat-spinner>
+        <p class="loading-text">Cargando servicios...</p>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!loading" class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="servicios-table">
+
+          <!-- Imagen Column -->
+          <ng-container matColumnDef="imagen">
+            <th mat-header-cell *matHeaderCellDef>Imagen</th>
+            <td mat-cell *matCellDef="let servicio">
+              <div class="imagen-cell">
+                <img [src]="servicio.imagenUrl || 'assets/images/default-service.jpg'"
+                     [alt]="servicio.nombre"
+                     class="servicio-img">
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Nombre Column -->
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+            <td mat-cell *matCellDef="let servicio">
+              <div class="nombre-cell">
+                <span class="servicio-nombre">{{ servicio.nombre }}</span>
+                <span class="servicio-descripcion">{{ servicio.descripcion }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Tipo Column -->
+          <ng-container matColumnDef="tipo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+            <td mat-cell *matCellDef="let servicio">
+              <mat-chip [class]="getTipoChipClass(servicio.tipoServicio)">
+                {{ getTipoServicioLabel(servicio.tipoServicio) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Duración Column -->
+          <ng-container matColumnDef="duracion">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Duración</th>
+            <td mat-cell *matCellDef="let servicio">
+              <div class="duracion-cell">
+                <mat-icon class="inline-icon">schedule</mat-icon>
+                <span>{{ getDuracionLabel(servicio.duracionBloqueMinutos) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Precio Column -->
+          <ng-container matColumnDef="precio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio</th>
+            <td mat-cell *matCellDef="let servicio">
+              <span class="precio-value">{{ formatearPrecio(servicio.precioPorUnidad) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Capacidad Column -->
+          <ng-container matColumnDef="capacidad">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Capacidad</th>
+            <td mat-cell *matCellDef="let servicio">
+              <div class="capacidad-cell">
+                <mat-icon class="inline-icon">people</mat-icon>
+                <span>{{ servicio.capacidadMaxima }} personas</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Estado Column -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+            <td mat-cell *matCellDef="let servicio">
+              <mat-chip [class]="getEstadoChipClass(servicio.estado)">
+                {{ servicio.estado }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Acciones Column -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef class="acciones-header">Acciones</th>
+            <td mat-cell *matCellDef="let servicio" class="acciones-cell">
+              <button mat-icon-button color="primary"
+                      (click)="editarServicio(servicio.id!)"
+                      matTooltip="Editar servicio">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="accent"
+                      (click)="cambiarEstado(servicio)"
+                      matTooltip="Cambiar estado">
+                <mat-icon>sync</mat-icon>
+              </button>
+              <button mat-icon-button color="warn"
+                      (click)="eliminarServicio(servicio)"
+                      matTooltip="Eliminar servicio">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <!-- Empty State -->
+        <div *ngIf="dataSource.filteredData.length === 0" class="empty-state">
+          <mat-icon>sports</mat-icon>
+          <h3>No se encontraron servicios</h3>
+          <p>No hay servicios que coincidan con los filtros aplicados</p>
+          <button mat-raised-button color="primary" (click)="limpiarFiltros()">
+            <mat-icon>clear</mat-icon>
+            Limpiar Filtros
           </button>
         </div>
-        <div class="col-md-2 d-flex align-items-end justify-content-end">
-          <span class="text-muted">
-            {{ serviciosFiltrados.length }} de {{ servicios.length }}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Loading spinner -->
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
-    </div>
-  </div>
-
-  <!-- Tabla de servicios -->
-  <div *ngIf="!loading" class="card">
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Imagen</th>
-              <th>Nombre</th>
-              <th>Tipo</th>
-              <th>Capacidad</th>
-              <th>Duración Bloque</th>
-              <th>Precio</th>
-              <th>Estado</th>
-              <th>Reservas</th>
-              <th class="text-end">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngIf="serviciosFiltrados.length === 0">
-              <td colspan="10" class="text-center py-4 text-muted">
-                <i class="fas fa-search fa-2x mb-2"></i>
-                <p class="mb-0">No se encontraron servicios</p>
-              </td>
-            </tr>
-            <tr *ngFor="let servicio of serviciosFiltrados">
-              <td>{{ servicio.id }}</td>
-              <td>
-                <div class="thumbnail-container">
-                  <img
-                    *ngIf="servicio.imagenPrincipalUrl"
-                    [src]="servicio.imagenPrincipalUrl"
-                    [alt]="servicio.nombre"
-                    class="table-thumbnail"
-                  />
-                  <div *ngIf="!servicio.imagenPrincipalUrl" class="no-image-placeholder">
-                    <i class="bi bi-image"></i>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <strong>{{ servicio.nombre }}</strong>
-                <br>
-                <small class="text-muted" *ngIf="servicio.requiereSupervision">
-                  <i class="fas fa-user-shield me-1"></i>Requiere supervisión
-                </small>
-              </td>
-              <td>
-                <span class="badge bg-info">{{ getTipoServicioLabel(servicio.tipoServicio) }}</span>
-              </td>
-              <td>
-                <i class="fas fa-users me-1"></i>{{ servicio.capacidadMaxima }}
-              </td>
-              <td>
-                <i class="fas fa-clock me-1"></i>{{ getDuracionLabel(servicio.duracionBloqueMinutos) }}
-              </td>
-              <td>
-                <strong>${{ servicio.precioPorUnidad | number:'1.0-0' }}</strong>
-              </td>
-              <td>
-                <span [class]="getEstadoBadgeClass(servicio.estado)">
-                  {{ servicio.estado }}
-                </span>
-              </td>
-              <td>
-                <span class="badge bg-secondary">{{ servicio.totalReservas || 0 }}</span>
-              </td>
-              <td class="text-end">
-                <div class="btn-group" role="group">
-                  <button
-                    class="btn btn-sm btn-outline-primary"
-                    (click)="editarServicio(servicio.id!)"
-                    title="Editar"
-                  >
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline-warning"
-                    (click)="cambiarEstado(servicio)"
-                    title="Cambiar estado"
-                  >
-                    <i class="fas fa-toggle-on"></i>
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline-danger"
-                    (click)="eliminarServicio(servicio)"
-                    title="Eliminar"
-                    [disabled]="servicio.estado !== 'FUERA_SERVICIO'"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Paginator -->
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                       showFirstLastButtons
+                       aria-label="Selecciona página de servicios">
+        </mat-paginator>
       </div>
-    </div>
-  </div>
+    </mat-card-content>
+  </mat-card>
 </div>

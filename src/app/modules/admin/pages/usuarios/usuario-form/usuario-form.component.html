@@ -1,380 +1,252 @@
 <div class="usuario-form-container">
   <!-- Loading Spinner -->
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
-    </div>
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="60" color="primary"></mat-spinner>
+    <p class="loading-text">Cargando información...</p>
   </div>
 
   <!-- Formulario -->
   <div *ngIf="!loading" class="form-wrapper">
     <!-- Header -->
-    <div class="form-header">
-      <div>
-        <h1 class="form-title">
-          <i
-            class="bi"
-            [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-person-plus'"
-          ></i>
-          {{ isEditMode ? "Editar Usuario" : "Nuevo Usuario" }}
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">
+          <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+          {{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}
         </h1>
-        <p class="text-muted mb-0">
-          {{
-            isEditMode
-              ? "Modifica la información del usuario"
-              : "Completa los datos para crear un nuevo usuario"
-          }}
+        <p class="page-subtitle">
+          {{ isEditMode ? 'Modifica la información del usuario' : 'Completa los datos para crear un nuevo usuario' }}
         </p>
       </div>
-      <button
-        type="button"
-        class="btn btn-outline-secondary"
-        (click)="volver()"
-      >
-        <i class="bi bi-arrow-left me-2"></i>Volver
-      </button>
+      <div class="header-actions">
+        <button mat-stroked-button (click)="volver()">
+          <mat-icon>arrow_back</mat-icon>
+          Volver
+        </button>
+      </div>
     </div>
 
     <!-- Formulario Card -->
-    <div class="card form-card">
-      <div class="card-body">
+    <mat-card class="form-card">
+      <mat-card-content>
         <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()">
-          <div class="row">
-            <!-- Información Personal -->
-            <div class="col-12">
-              <h5 class="section-title">
-                <i class="bi bi-person-badge me-2"></i>Información Personal
-              </h5>
-              <hr class="section-divider" />
-            </div>
 
-            <!-- Nombre -->
-            <div class="col-md-6 mb-4">
-              <label for="nombre" class="form-label">
-                Nombre <span class="text-danger">*</span>
-              </label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-person"></i>
-                </span>
+          <!-- Información Personal -->
+          <div class="form-section">
+            <div class="section-header">
+              <mat-icon class="section-icon">badge</mat-icon>
+              <h2 class="section-title">Información Personal</h2>
+            </div>
+            <mat-divider class="section-divider"></mat-divider>
+
+            <div class="form-grid">
+              <!-- Nombre -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Nombre</mat-label>
                 <input
-                  type="text"
-                  class="form-control"
-                  id="nombre"
+                  matInput
                   formControlName="nombre"
                   placeholder="Ingresa el nombre"
-                  [class.is-invalid]="isFieldInvalid('nombre')"
-                />
-              </div>
-              <div
-                *ngIf="isFieldInvalid('nombre')"
-                class="invalid-feedback d-block"
-              >
-                {{ getErrorMessage("nombre") }}
-              </div>
-            </div>
+                  required>
+                <mat-icon matPrefix>person</mat-icon>
+                <mat-error *ngIf="isFieldInvalid('nombre')">
+                  {{ getErrorMessage('nombre') }}
+                </mat-error>
+              </mat-form-field>
 
-            <!-- Apellidos -->
-            <div class="col-md-6 mb-4">
-              <label for="apellidos" class="form-label">
-                Apellidos <span class="text-danger">*</span>
-              </label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-person"></i>
-                </span>
+              <!-- Apellidos -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Apellidos</mat-label>
                 <input
-                  type="text"
-                  class="form-control"
-                  id="apellidos"
+                  matInput
                   formControlName="apellidos"
                   placeholder="Ingresa los apellidos"
-                  [class.is-invalid]="isFieldInvalid('apellidos')"
-                />
-              </div>
-              <div
-                *ngIf="isFieldInvalid('apellidos')"
-                class="invalid-feedback d-block"
-              >
-                {{ getErrorMessage("apellidos") }}
-              </div>
-            </div>
+                  required>
+                <mat-icon matPrefix>person</mat-icon>
+                <mat-error *ngIf="isFieldInvalid('apellidos')">
+                  {{ getErrorMessage('apellidos') }}
+                </mat-error>
+              </mat-form-field>
 
-             <!-- Correo -->
-            <div class="col-md-6 mb-4">
-              <label for="email" class="form-label">
-                Email <span class="text-danger">*</span>
-              </label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-envelope"></i>
-                </span>
+              <!-- Email -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Email</mat-label>
                 <input
+                  matInput
                   type="email"
-                  class="form-control"
-                  id="email"
                   formControlName="email"
                   placeholder="ejemplo@correo.com"
-                  [class.is-invalid]="isFieldInvalid('email')"
-                />
-              </div>
-              <div
-                *ngIf="isFieldInvalid('email')"
-                class="invalid-feedback d-block"
-              >
-                {{ getErrorMessage("email") }}
-              </div>
-            </div>
+                  required>
+                <mat-icon matPrefix>email</mat-icon>
+                <mat-error *ngIf="isFieldInvalid('email')">
+                  {{ getErrorMessage('email') }}
+                </mat-error>
+              </mat-form-field>
 
-            <!-- Documento -->
-            <div class="col-md-6 mb-4">
-              <label for="apellido" class="form-label">
-                Documento <span class="text-danger">*</span>
-              </label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-person"></i>
-                </span>
+              <!-- Teléfono -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Teléfono</mat-label>
                 <input
-                  type="text"
-                  class="form-control"
-                  id="documento"
+                  matInput
+                  type="tel"
+                  formControlName="telefono"
+                  placeholder="912345678">
+                <mat-icon matPrefix>phone</mat-icon>
+                <mat-hint>9-15 dígitos sin espacios</mat-hint>
+                <mat-error *ngIf="isFieldInvalid('telefono')">
+                  {{ getErrorMessage('telefono') }}
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Tipo Documento -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Tipo de Documento</mat-label>
+                <mat-select formControlName="tipoDocumento" required>
+                  <mat-option value="">Selecciona un tipo</mat-option>
+                  <mat-option *ngFor="let tipo of tiposDocumento" [value]="tipo.value">
+                    {{ tipo.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>description</mat-icon>
+                <mat-error *ngIf="isFieldInvalid('tipoDocumento')">
+                  {{ getErrorMessage('tipoDocumento') }}
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Documento -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Número de Documento</mat-label>
+                <input
+                  matInput
                   formControlName="documento"
                   placeholder="Ingresa el documento"
-                  [class.is-invalid]="isFieldInvalid('documento')"
-                />
-              </div>
-              <div
-                *ngIf="isFieldInvalid('documento')"
-                class="invalid-feedback d-block"
-              >
-                {{ getErrorMessage("documento") }}
-              </div>
+                  required>
+                <mat-icon matPrefix>credit_card</mat-icon>
+                <mat-error *ngIf="isFieldInvalid('documento')">
+                  {{ getErrorMessage('documento') }}
+                </mat-error>
+              </mat-form-field>
             </div>
+          </div>
 
-            <!-- Tipo documento -->
-            <div class="col-md-6 mb-4">
-              <label for="tipoDocumento" class="form-label">
-                Tipo documento <span class="text-danger">*</span>
-              </label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-card-text"></i>
-                </span>
-                <select
-                  class="form-select"
-                  id="tipoDocumento"
-                  formControlName="tipoDocumento"
-                  [class.is-invalid]="isFieldInvalid('tipoDocumento')"
-                >
-                  <option value="" disabled selected>Selecciona un tipo</option>
-                  <option value="RUT">RUT (Chile)</option>
-                  <option value="DNI">DNI</option>
-                  <option value="PASAPORTE">Pasaporte</option>
-                  <option value="CEDULA">Cédula</option>
-                  <option value="OTRO">Otro</option>
-                </select>
-              </div>
-              <div
-                *ngIf="isFieldInvalid('tipoDocumento')"
-                class="invalid-feedback d-block"
-              >
-                {{ getErrorMessage("tipoDocumento") }}
-              </div>
+          <!-- Seguridad -->
+          <div class="form-section">
+            <div class="section-header">
+              <mat-icon class="section-icon">lock</mat-icon>
+              <h2 class="section-title">Seguridad</h2>
             </div>
+            <mat-divider class="section-divider"></mat-divider>
 
-            <!-- Teléfono -->
-            <div class="col-md-6 mb-4">
-              <label for="telefono" class="form-label"> Teléfono </label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-telephone"></i>
-                </span>
+            <div class="form-grid">
+              <!-- Contraseña -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Contraseña</mat-label>
                 <input
-                  type="tel"
-                  class="form-control"
-                  id="telefono"
-                  formControlName="telefono"
-                  placeholder="912345678"
-                  [class.is-invalid]="isFieldInvalid('telefono')"
-                />
-              </div>
-              <div
-                *ngIf="isFieldInvalid('telefono')"
-                class="invalid-feedback d-block"
-              >
-                {{ getErrorMessage("telefono") }}
-              </div>
-              <small class="form-text text-muted"
-                >9-15 dígitos sin espacios</small
-              >
-            </div>
-
-            <!-- Seguridad -->
-            <div class="col-12 mt-3">
-              <h5 class="section-title">
-                <i class="bi bi-shield-lock me-2"></i>Seguridad
-              </h5>
-              <hr class="section-divider" />
-            </div>
-
-            <!-- Contraseña -->
-            <div class="col-md-6 mb-4">
-              <label for="password" class="form-label">
-                Contraseña
-                <span class="text-danger" *ngIf="!isEditMode">*</span>
-              </label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-lock"></i>
-                </span>
-                <input
+                  matInput
                   [type]="showPassword ? 'text' : 'password'"
-                  class="form-control"
-                  id="password"
                   formControlName="password"
-                  [placeholder]="
-                    isEditMode
-                      ? 'Dejar vacío para no cambiar'
-                      : 'Mínimo 6 caracteres'
-                  "
-                  [class.is-invalid]="isFieldInvalid('password')"
-                />
+                  [placeholder]="isEditMode ? 'Dejar vacío para no cambiar' : 'Mínimo 6 caracteres'"
+                  [required]="!isEditMode">
+                <mat-icon matPrefix>lock</mat-icon>
                 <button
-                  class="btn btn-outline-secondary"
+                  mat-icon-button
+                  matSuffix
                   type="button"
                   (click)="togglePasswordVisibility()"
-                >
-                  <i
-                    class="bi"
-                    [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"
-                  ></i>
+                  [attr.aria-label]="'Toggle password visibility'">
+                  <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
-              </div>
-              <div
-                *ngIf="isFieldInvalid('password')"
-                class="invalid-feedback d-block"
-              >
-                {{ getErrorMessage("password") }}
-              </div>
-            </div>
+                <mat-hint *ngIf="isEditMode">Dejar vacío para mantener la contraseña actual</mat-hint>
+                <mat-error *ngIf="isFieldInvalid('password')">
+                  {{ getErrorMessage('password') }}
+                </mat-error>
+              </mat-form-field>
 
-            <!-- Confirmar Contraseña -->
-            <div class="col-md-6 mb-4">
-              <label for="confirmPassword" class="form-label">
-                Confirmar Contraseña
-                <span class="text-danger" *ngIf="!isEditMode">*</span>
-              </label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="bi bi-lock-fill"></i>
-                </span>
+              <!-- Confirmar Contraseña -->
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Confirmar Contraseña</mat-label>
                 <input
+                  matInput
                   [type]="showConfirmPassword ? 'text' : 'password'"
-                  class="form-control"
-                  id="confirmPassword"
                   formControlName="confirmPassword"
-                  [placeholder]="
-                    isEditMode
-                      ? 'Dejar vacío para no cambiar'
-                      : 'Repite la contraseña'
-                  "
-                  [class.is-invalid]="isFieldInvalid('confirmPassword')"
-                />
+                  [placeholder]="isEditMode ? 'Dejar vacío para no cambiar' : 'Repite la contraseña'"
+                  [required]="!isEditMode">
+                <mat-icon matPrefix>lock</mat-icon>
                 <button
-                  class="btn btn-outline-secondary"
+                  mat-icon-button
+                  matSuffix
                   type="button"
                   (click)="toggleConfirmPasswordVisibility()"
-                >
-                  <i
-                    class="bi"
-                    [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"
-                  ></i>
+                  [attr.aria-label]="'Toggle password visibility'">
+                  <mat-icon>{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
                 </button>
-              </div>
-              <div
-                *ngIf="isFieldInvalid('confirmPassword')"
-                class="invalid-feedback d-block"
-              >
-                {{ getErrorMessage("confirmPassword") }}
-              </div>
+                <mat-error *ngIf="isFieldInvalid('confirmPassword')">
+                  {{ getErrorMessage('confirmPassword') }}
+                </mat-error>
+              </mat-form-field>
             </div>
+          </div>
 
-            <!-- Configuración -->
-            <div class="col-12 mt-3">
-              <h5 class="section-title">
-                <i class="bi bi-gear me-2"></i>Configuración
-              </h5>
-              <hr class="section-divider" />
+          <!-- Configuración -->
+          <div class="form-section">
+            <div class="section-header">
+              <mat-icon class="section-icon">settings</mat-icon>
+              <h2 class="section-title">Configuración</h2>
             </div>
+            <mat-divider class="section-divider"></mat-divider>
 
-            <!-- Switches -->
-            <div class="col-12 mb-4">
-              <div class="row">
-
-
-                <!-- Usuario Activo -->
-                <div class="col-md-6">
-                  <div class="custom-switch-card">
-                    <div class="switch-content">
+            <!-- Estado del Usuario -->
+            <div class="switch-container">
+              <mat-card class="switch-card" [class.switch-active]="usuarioForm.get('enabled')?.value">
+                <mat-card-content>
+                  <div class="switch-content">
+                    <div class="switch-icon-wrapper">
                       <div class="switch-icon active">
-                        <i class="bi bi-check-circle-fill"></i>
-                      </div>
-                      <div class="switch-info">
-                        <h6>Usuario Activo</h6>
-                        <p>El usuario podrá acceder al sistema</p>
+                        <mat-icon>check_circle</mat-icon>
                       </div>
                     </div>
-                    <div class="form-check form-switch">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        id="enabled"
-                        formControlName="enabled"
-                      />
-                      <label class="form-check-label" for="enabled"></label>
+                    <div class="switch-info">
+                      <h3>Usuario Activo</h3>
+                      <p>El usuario podrá acceder al sistema</p>
                     </div>
+                    <mat-slide-toggle
+                      formControlName="enabled"
+                      color="primary">
+                    </mat-slide-toggle>
                   </div>
-                </div>
-              </div>
+                </mat-card-content>
+              </mat-card>
             </div>
           </div>
 
           <!-- Botones de acción -->
           <div class="form-actions">
             <button
+              mat-stroked-button
               type="button"
-              class="btn btn-outline-secondary btn-lg"
               (click)="volver()"
               [disabled]="submitting"
-            >
-              <i class="bi bi-x-circle me-2"></i>Cancelar
+              class="btn-cancel">
+              <mat-icon>close</mat-icon>
+              Cancelar
             </button>
             <button
+              mat-raised-button
+              color="primary"
               type="submit"
-              class="btn btn-primary btn-lg"
               [disabled]="submitting"
-            >
-              <span
+              class="btn-submit">
+              <mat-spinner
                 *ngIf="submitting"
-                class="spinner-border spinner-border-sm me-2"
-              ></span>
-              <i
-                *ngIf="!submitting"
-                class="bi me-2"
-                [ngClass]="isEditMode ? 'bi-save' : 'bi-plus-circle'"
-              ></i>
-              {{
-                submitting
-                  ? "Guardando..."
-                  : isEditMode
-                  ? "Guardar Cambios"
-                  : "Crear Usuario"
-              }}
+                diameter="20"
+                class="button-spinner">
+              </mat-spinner>
+              <mat-icon *ngIf="!submitting">{{ isEditMode ? 'save' : 'add_circle' }}</mat-icon>
+              {{ submitting ? 'Guardando...' : (isEditMode ? 'Guardar Cambios' : 'Crear Usuario') }}
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>

@@ -1,131 +1,224 @@
-<div class="container-fluid py-4">
-  <div class="card shadow">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">Gestión de Inventario</h5>
-      <button class="btn btn-primary" (click)="nuevo()">
-        <i class="bi bi-plus-circle"></i> Nuevo Item
+<div class="inventario-list-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>inventory</mat-icon>
+        Gestión de Inventario
+      </h1>
+      <p class="page-subtitle">Administra el inventario de recursos y equipamiento</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="nuevo()">
+        <mat-icon>add</mat-icon>
+        Nuevo Item
       </button>
     </div>
-
-    <div class="card-body">
-      <!-- Filtros -->
-      <div class="row mb-4">
-        <div class="col-md-3">
-          <label class="form-label">Buscar</label>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Nombre o recurso..."
-            [(ngModel)]="filtroBusqueda"
-            (ngModelChange)="aplicarFiltros()"
-          />
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">Estado</label>
-          <select
-            class="form-select"
-            [(ngModel)]="filtroEstado"
-            (ngModelChange)="aplicarFiltros()"
-          >
-            <option value="">Todos</option>
-            <option *ngFor="let estado of estadosItem" [value]="estado">
-              {{ formatearEstado(estado) }}
-            </option>
-          </select>
-        </div>
-
-        <div class="col-md-3">
-          <label class="form-label">Categoría</label>
-          <select
-            class="form-select"
-            [(ngModel)]="filtroCategoria"
-            (ngModelChange)="aplicarFiltros()"
-          >
-            <option value="">Todas</option>
-            <option *ngFor="let categoria of categorias" [value]="categoria">
-              {{ formatearCategoria(categoria) }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Spinner de carga -->
-      <div *ngIf="cargando" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando...</span>
-        </div>
-      </div>
-
-      <!-- Tabla -->
-      <div *ngIf="!cargando" class="table-responsive">
-        <table class="table table-hover">
-          <thead class="table-light">
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Recurso</th>
-              <th>Categoría</th>
-              <th>Cantidad Total</th>
-              <th>Disponible</th>
-              <th>Estado</th>
-              <th>Reservable</th>
-              <th>Precio</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of itemsFiltrados">
-              <td>{{ item.id }}</td>
-              <td>{{ item.nombre }}</td>
-              <td>{{ item.nombreRecurso }}</td>
-              <td>{{ formatearCategoria(item.categoria) }}</td>
-              <td>{{ item.cantidadTotal }}</td>
-              <td>{{ item.cantidadDisponible ?? item.cantidadTotal }}</td>
-              <td>
-                <span [class]="getBadgeClass(item.estadoItem)">
-                  {{ formatearEstado(item.estadoItem) }}
-                </span>
-              </td>
-              <td>
-                <span class="badge" [ngClass]="item.esReservable ? 'bg-success' : 'bg-secondary'">
-                  {{ item.esReservable ? 'Sí' : 'No' }}
-                </span>
-              </td>
-              <td>{{ item.precioReserva | currency: 'CLP' : 'symbol-narrow' }}</td>
-              <td>
-                <button
-                  class="btn btn-sm btn-outline-primary me-1"
-                  (click)="editar(item.id)"
-                  title="Editar"
-                >
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button
-                  class="btn btn-sm btn-outline-danger"
-                  (click)="eliminar(item)"
-                  title="Eliminar"
-                >
-                  <i class="bi bi-trash"></i>
-                </button>
-              </td>
-            </tr>
-
-            <tr *ngIf="itemsFiltrados.length === 0">
-              <td colspan="10" class="text-center text-muted py-4">
-                No se encontraron items de inventario
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Resumen -->
-      <div *ngIf="!cargando && itemsFiltrados.length > 0" class="mt-3">
-        <p class="text-muted mb-0">
-          Mostrando {{ itemsFiltrados.length }} de {{ items.length }} items
-        </p>
-      </div>
-    </div>
   </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <mat-card class="kpi-card blue-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.total }}</div>
+          <div class="kpi-label">Total Items</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card green-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.disponible }}</div>
+          <div class="kpi-label">Disponibles</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card orange-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>build</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.mantenimiento }}</div>
+          <div class="kpi-label">Mantenimiento</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card red-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>cancel</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.fueraServicio }}</div>
+          <div class="kpi-label">Fuera de Servicio</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filters Card -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar items</mat-label>
+          <input matInput [(ngModel)]="filtroBusqueda" (keyup)="aplicarFiltros()" placeholder="Nombre o recurso...">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="filtroEstado" (selectionChange)="aplicarFiltros()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let estado of estadosItem" [value]="estado.value">
+              {{ estado.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>filter_list</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categoría</mat-label>
+          <mat-select [(ngModel)]="filtroCategoria" (selectionChange)="aplicarFiltros()">
+            <mat-option value="">Todas</mat-option>
+            <mat-option *ngFor="let categoria of categorias" [value]="categoria.value">
+              {{ categoria.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+        </mat-form-field>
+
+        <button mat-raised-button color="accent" (click)="exportarCSV()" class="export-button">
+          <mat-icon>download</mat-icon>
+          Exportar CSV
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table Card -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="60"></mat-spinner>
+        <p class="loading-text">Cargando inventario...</p>
+      </div>
+
+      <!-- Table -->
+      <div *ngIf="!loading" class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="inventario-table">
+
+          <!-- Nombre Column -->
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Item</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="nombre-cell">
+                <span class="item-nombre">{{ item.nombre }}</span>
+                <span class="item-descripcion" *ngIf="item.descripcion">{{ item.descripcion }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Categoría Column -->
+          <ng-container matColumnDef="categoria">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Categoría</th>
+            <td mat-cell *matCellDef="let item">
+              <mat-chip [class]="getCategoriaChipClass(item.categoria)">
+                {{ getCategoriaLabel(item.categoria) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Recurso Column -->
+          <ng-container matColumnDef="recurso">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Recurso</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="recurso-cell">
+                <mat-icon class="inline-icon">home</mat-icon>
+                <span>{{ item.nombreRecurso }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Cantidad Total Column -->
+          <ng-container matColumnDef="cantidadTotal">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad Total</th>
+            <td mat-cell *matCellDef="let item">
+              <span class="cantidad-value">{{ item.cantidadTotal }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Cantidad Disponible Column -->
+          <ng-container matColumnDef="cantidadDisponible">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Disponible</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="cantidad-cell" [class.stock-bajo]="isStockBajo(item)">
+                <mat-icon *ngIf="isStockBajo(item)" class="warning-icon">warning</mat-icon>
+                <span class="cantidad-value">{{ item.cantidadDisponible || item.cantidadTotal }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Estado Column -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+            <td mat-cell *matCellDef="let item">
+              <mat-chip [class]="getEstadoChipClass(item.estadoItem)">
+                {{ getEstadoLabel(item.estadoItem) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Acciones Column -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef class="acciones-header">Acciones</th>
+            <td mat-cell *matCellDef="let item" class="acciones-cell">
+              <button mat-icon-button color="primary"
+                      (click)="editar(item.id)"
+                      matTooltip="Editar item">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn"
+                      (click)="eliminar(item)"
+                      matTooltip="Eliminar item">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <!-- Empty State -->
+        <div *ngIf="dataSource.filteredData.length === 0" class="empty-state">
+          <mat-icon>inventory</mat-icon>
+          <h3>No se encontraron items</h3>
+          <p>No hay items de inventario que coincidan con los filtros aplicados</p>
+          <button mat-raised-button color="primary" (click)="limpiarFiltros()">
+            <mat-icon>clear</mat-icon>
+            Limpiar Filtros
+          </button>
+        </div>
+
+        <!-- Paginator -->
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                       showFirstLastButtons
+                       aria-label="Selecciona página de inventario">
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>

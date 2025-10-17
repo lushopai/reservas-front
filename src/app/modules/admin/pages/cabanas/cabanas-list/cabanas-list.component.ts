@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Cabana, EstadoCabana } from '../../../../../core/models/cabana.model';
 import { CabanaService } from '../../../../../core/services/cabana.service';
 import Swal from 'sweetalert2';
@@ -9,18 +12,35 @@ import Swal from 'sweetalert2';
   templateUrl: './cabanas-list.component.html',
   styleUrls: ['./cabanas-list.component.scss']
 })
-export class CabanasListComponent implements OnInit {
+export class CabanasListComponent implements OnInit, AfterViewInit {
 
-  cabanas: Cabana[] = [];
-  cabanasFiltradas: Cabana[] = [];
+  // MatTable configuration
+  displayedColumns: string[] = ['imagen', 'nombre', 'tipo', 'capacidad', 'habitaciones', 'precio', 'estado', 'reservas', 'acciones'];
+  dataSource = new MatTableDataSource<Cabana>([]);
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   loading = false;
 
   // Filtros
   estadoFiltro: string = '';
   busquedaTexto: string = '';
 
+  // Estadísticas
+  stats = {
+    total: 0,
+    disponibles: 0,
+    enMantenimiento: 0,
+    fueraServicio: 0
+  };
+
   // Estados disponibles
-  estados = Object.values(EstadoCabana);
+  estados = [
+    { value: 'DISPONIBLE', label: 'Disponible' },
+    { value: 'MANTENIMIENTO', label: 'Mantenimiento' },
+    { value: 'FUERA_SERVICIO', label: 'Fuera de Servicio' }
+  ];
 
   constructor(
     private cabanaService: CabanaService,
@@ -31,13 +51,41 @@ export class CabanasListComponent implements OnInit {
     this.cargarCabanas();
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
+    // Configurar filtro personalizado
+    this.dataSource.filterPredicate = (data: Cabana, filter: string) => {
+      const searchStr = filter.toLowerCase();
+      const matchesSearch =
+        data.nombre.toLowerCase().includes(searchStr) ||
+        data.descripcion.toLowerCase().includes(searchStr) ||
+        data.tipoCabana.toLowerCase().includes(searchStr);
+
+      const matchesEstado = !this.estadoFiltro || data.estado === this.estadoFiltro;
+
+      return matchesSearch && matchesEstado;
+    };
+  }
+
   cargarCabanas(): void {
     this.loading = true;
     this.cabanaService.obtenerTodas().subscribe({
       next: (cabanas) => {
-        this.cabanas = cabanas;
-        this.cabanasFiltradas = cabanas;
+        this.dataSource.data = cabanas;
+        this.calcularEstadisticas(cabanas);
         this.loading = false;
+
+        // Aplicar paginator y sort después de cargar datos
+        setTimeout(() => {
+          if (this.paginator) {
+            this.dataSource.paginator = this.paginator;
+          }
+          if (this.sort) {
+            this.dataSource.sort = this.sort;
+          }
+        }, 0);
       },
       error: (error) => {
         console.error('Error al cargar cabañas:', error);
@@ -52,21 +100,32 @@ export class CabanasListComponent implements OnInit {
     });
   }
 
-  aplicarFiltros(): void {
-    this.cabanasFiltradas = this.cabanas.filter(cabana => {
-      const coincideEstado = !this.estadoFiltro || cabana.estado === this.estadoFiltro;
-      const coincideTexto = !this.busquedaTexto ||
-        cabana.nombre.toLowerCase().includes(this.busquedaTexto.toLowerCase()) ||
-        cabana.descripcion.toLowerCase().includes(this.busquedaTexto.toLowerCase());
+  calcularEstadisticas(cabanas: Cabana[]): void {
+    this.stats = {
+      total: cabanas.length,
+      disponibles: cabanas.filter(c => c.estado === 'DISPONIBLE').length,
+      enMantenimiento: cabanas.filter(c => c.estado === 'MANTENIMIENTO').length,
+      fueraServicio: cabanas.filter(c => c.estado === 'FUERA_SERVICIO').length
+    };
+  }
 
-      return coincideEstado && coincideTexto;
-    });
+  aplicarFiltros(): void {
+    const filterValue = this.busquedaTexto.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   limpiarFiltros(): void {
     this.estadoFiltro = '';
     this.busquedaTexto = '';
-    this.cabanasFiltradas = this.cabanas;
+    this.dataSource.filter = '';
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   nuevaCabana(): void {
@@ -91,7 +150,7 @@ export class CabanasListComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Cambiar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#667eea'
+      confirmButtonColor: '#3f51b5'
     }).then((result) => {
       if (result.isConfirmed && result.value !== cabana.estado) {
         this.loading = true;
@@ -103,7 +162,7 @@ export class CabanasListComponent implements OnInit {
                 icon: 'success',
                 title: 'Estado actualizado',
                 text: response.message,
-                confirmButtonColor: '#667eea'
+                confirmButtonColor: '#3f51b5'
               });
               this.cargarCabanas();
             } else {
@@ -151,7 +210,7 @@ export class CabanasListComponent implements OnInit {
                 icon: 'success',
                 title: 'Cabaña eliminada',
                 text: response.message,
-                confirmButtonColor: '#667eea'
+                confirmButtonColor: '#3f51b5'
               });
               this.cargarCabanas();
             } else {
@@ -178,16 +237,16 @@ export class CabanasListComponent implements OnInit {
     });
   }
 
-  getEstadoBadgeClass(estado: string): string {
+  getEstadoChipClass(estado: string): string {
     switch (estado) {
       case 'DISPONIBLE':
-        return 'badge bg-success';
+        return 'chip-disponible';
       case 'MANTENIMIENTO':
-        return 'badge bg-warning text-dark';
+        return 'chip-mantenimiento';
       case 'FUERA_SERVICIO':
-        return 'badge bg-danger';
+        return 'chip-fuera-servicio';
       default:
-        return 'badge bg-secondary';
+        return '';
     }
   }
 
@@ -201,4 +260,76 @@ export class CabanasListComponent implements OnInit {
     return labels[tipo] || tipo;
   }
 
+  getTipoChipClass(tipo: string): string {
+    switch (tipo) {
+      case 'ECONOMICA':
+        return 'chip-economica';
+      case 'STANDARD':
+        return 'chip-standard';
+      case 'PREMIUM':
+        return 'chip-premium';
+      case 'DELUXE':
+        return 'chip-deluxe';
+      default:
+        return '';
+    }
+  }
+
+  exportarCSV(): void {
+    const data = this.dataSource.filteredData;
+
+    if (data.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sin datos',
+        text: 'No hay cabañas para exportar',
+        confirmButtonColor: '#3f51b5'
+      });
+      return;
+    }
+
+    const csv = this.convertToCSV(data);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `cabanas_${new Date().getTime()}.csv`);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Exportado',
+      text: `${data.length} cabañas exportadas exitosamente`,
+      timer: 2000,
+      showConfirmButton: false
+    });
+  }
+
+  private convertToCSV(data: Cabana[]): string {
+    const headers = ['ID', 'Nombre', 'Tipo', 'Capacidad', 'Habitaciones', 'Baños', 'Precio', 'Estado', 'Metros²', 'Total Reservas'];
+    const rows = data.map(cabana => [
+      cabana.id,
+      cabana.nombre,
+      this.getTipoCabanaLabel(cabana.tipoCabana),
+      cabana.capacidadPersonas,
+      cabana.numeroHabitaciones,
+      cabana.numeroBanos,
+      cabana.precioPorUnidad,
+      cabana.estado,
+      cabana.metrosCuadrados,
+      cabana.totalReservas || 0
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    return csvContent;
+  }
 }

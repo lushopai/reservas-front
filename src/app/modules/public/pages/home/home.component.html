@@ -1,213 +1,208 @@
 <!-- Navbar -->
 <app-public-navbar></app-public-navbar>
 
-<!-- Hero Section -->
-<section class="hero-section bg-primary text-white">
-  <div class="container py-5">
-    <div class="row align-items-center min-vh-50">
-      <div class="col-lg-6">
-        <h1 class="display-3 fw-bold mb-4">
+<!-- Hero Section con Material Design -->
+<section class="hero-section">
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">
           Bienvenido a Cabañas & Servicios
         </h1>
-        <p class="lead mb-4">
+        <p class="hero-subtitle">
           Descubre el lugar perfecto para tu descanso. Cabañas acogedoras y servicios premium para una experiencia inolvidable.
         </p>
-        <div class="d-flex gap-3 flex-wrap">
-          <button class="btn btn-light btn-lg" (click)="verCabanas()">
-            <i class="bi bi-building me-2"></i>
+        <div class="hero-actions">
+          <button mat-raised-button color="primary" class="hero-button-primary" (click)="verCabanas()">
+            <mat-icon>holiday_village</mat-icon>
             Ver Cabañas
           </button>
-          <button class="btn btn-outline-light btn-lg" (click)="scrollToSection('servicios')">
-            <i class="bi bi-star me-2"></i>
+          <button mat-stroked-button color="primary" class="hero-button-secondary" (click)="scrollToSection('servicios')">
+            <mat-icon>stars</mat-icon>
             Explorar Servicios
           </button>
         </div>
       </div>
-      <div class="col-lg-6 text-center mt-4 mt-lg-0">
-        <i class="bi bi-house-heart display-1"></i>
+      <div class="hero-icon">
+        <mat-icon class="hero-icon-large">cottage</mat-icon>
       </div>
     </div>
   </div>
 </section>
 
 <!-- Features Section -->
-<section class="py-5 bg-light">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2 class="fw-bold mb-3">¿Por qué elegirnos?</h2>
-      <p class="text-muted">Ofrecemos la mejor experiencia para tus vacaciones</p>
+<section class="features-section">
+  <div class="section-container">
+    <div class="section-header">
+      <h2 class="section-title">¿Por qué elegirnos?</h2>
+      <p class="section-subtitle">Ofrecemos la mejor experiencia para tus vacaciones</p>
     </div>
 
-    <div class="row g-4">
-      <div class="col-md-6 col-lg-3" *ngFor="let feature of features">
-        <div class="card h-100 border-0 shadow-sm text-center p-4">
-          <div class="card-body">
-            <div class="feature-icon bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                 style="width: 80px; height: 80px;">
-              <i class="bi {{ feature.icon }} text-primary fs-1"></i>
-            </div>
-            <h5 class="card-title fw-bold">{{ feature.title }}</h5>
-            <p class="card-text text-muted">{{ feature.description }}</p>
+    <div class="features-grid">
+      <mat-card *ngFor="let feature of features" class="feature-card" matRipple>
+        <mat-card-content class="feature-content">
+          <div class="feature-icon-container">
+            <mat-icon class="feature-icon" [color]="'primary'">{{ feature.icon }}</mat-icon>
           </div>
-        </div>
-      </div>
+          <h3 class="feature-title">{{ feature.title }}</h3>
+          <p class="feature-description">{{ feature.description }}</p>
+        </mat-card-content>
+      </mat-card>
     </div>
   </div>
 </section>
 
 <!-- Cabañas Destacadas -->
-<section class="py-5" id="cabanas">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<section class="cabanas-section" id="cabanas">
+  <div class="section-container">
+    <div class="section-header-with-action">
       <div>
-        <h2 class="fw-bold mb-2">Nuestras Cabañas</h2>
-        <p class="text-muted">Encuentra el lugar perfecto para tu estadía</p>
+        <h2 class="section-title">Nuestras Cabañas</h2>
+        <p class="section-subtitle">Encuentra el lugar perfecto para tu estadía</p>
       </div>
-      <button class="btn btn-primary" (click)="verCabanas()">
-        Ver Todas <i class="bi bi-arrow-right ms-2"></i>
+      <button mat-raised-button color="primary" (click)="verCabanas()">
+        Ver Todas
+        <mat-icon>arrow_forward</mat-icon>
       </button>
     </div>
 
-    <div *ngIf="cargando" class="text-center py-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Cargando...</span>
-      </div>
+    <!-- Loading Spinner -->
+    <div *ngIf="cargando" class="loading-container">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p class="loading-text">Cargando cabañas...</p>
     </div>
 
-    <div class="row g-4" *ngIf="!cargando">
-      <div class="col-md-6 col-lg-4" *ngFor="let cabana of cabanasDestacadas">
-        <div class="card h-100 border-0 shadow-sm hover-lift">
-          <!-- Imagen -->
-          <div *ngIf="obtenerImagenPrincipal(cabana)"
-               class="card-img-top bg-light d-flex align-items-center justify-content-center"
-               style="height: 250px; overflow: hidden;">
-            <img [src]="obtenerImagenPrincipal(cabana)"
-                 [alt]="cabana.nombre"
-                 class="w-100 h-100"
-                 style="object-fit: contain; object-position: center;">
+    <!-- Cards Grid -->
+    <div class="cards-grid" *ngIf="!cargando && cabanasDestacadas.length > 0">
+      <mat-card *ngFor="let cabana of cabanasDestacadas" class="resource-card" matRipple>
+        <!-- Imagen -->
+        <div class="card-image-container">
+          <img *ngIf="obtenerImagenPrincipal(cabana)"
+               [src]="obtenerImagenPrincipal(cabana)"
+               [alt]="cabana.nombre"
+               class="card-image">
+          <div *ngIf="!obtenerImagenPrincipal(cabana)" class="card-image-placeholder">
+            <mat-icon class="placeholder-icon">cottage</mat-icon>
           </div>
-          <!-- Placeholder si no hay imagen -->
-          <div *ngIf="!obtenerImagenPrincipal(cabana)"
-               class="card-img-top bg-light d-flex align-items-center justify-content-center"
-               style="height: 250px;">
-            <i class="bi bi-house-door fs-1 text-muted"></i>
-          </div>
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <h5 class="card-title fw-bold mb-0">{{ cabana.nombre }}</h5>
-              <span class="badge bg-success">Disponible</span>
-            </div>
-            <p class="text-muted small mb-3">{{ cabana.descripcion || 'Cabaña confortable y equipada' }}</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <i class="bi bi-people text-muted me-1"></i>
-                <span class="text-muted small">{{ cabana.capacidadPersonas }} personas</span>
-              </div>
-              <div class="text-primary fw-bold">
-                ${{ cabana.precioPorUnidad | number }} /noche
-              </div>
-            </div>
-          </div>
-          <div class="card-footer bg-white border-0">
-            <button class="btn btn-outline-primary w-100" (click)="verCabanas()">
-              Ver Detalles
-            </button>
-          </div>
+          <mat-chip class="status-badge" color="accent">Disponible</mat-chip>
         </div>
-      </div>
+
+        <mat-card-content class="card-content">
+          <div class="card-header">
+            <h3 class="card-title">{{ cabana.nombre }}</h3>
+          </div>
+          <p class="card-description">{{ cabana.descripcion || 'Cabaña confortable y equipada' }}</p>
+
+          <div class="card-info">
+            <div class="info-item">
+              <mat-icon class="info-icon">people</mat-icon>
+              <span class="info-text">{{ cabana.capacidadPersonas }} personas</span>
+            </div>
+            <div class="card-price">
+              ${{ cabana.precioPorUnidad | number }} <span class="price-unit">/noche</span>
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions class="card-actions">
+          <button mat-stroked-button color="primary" class="action-button" (click)="verCabanas()">
+            Ver Detalles
+          </button>
+        </mat-card-actions>
+      </mat-card>
     </div>
 
-    <div *ngIf="!cargando && cabanasDestacadas.length === 0" class="text-center py-5">
-      <i class="bi bi-inbox fs-1 text-muted"></i>
-      <p class="text-muted mt-3">No hay cabañas disponibles en este momento</p>
+    <!-- Empty State -->
+    <div *ngIf="!cargando && cabanasDestacadas.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">cottage</mat-icon>
+      <p class="empty-text">No hay cabañas disponibles en este momento</p>
     </div>
   </div>
 </section>
 
 <!-- Servicios Destacados -->
-<section class="py-5 bg-light" id="servicios">
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+<section class="servicios-section" id="servicios">
+  <div class="section-container">
+    <div class="section-header-with-action">
       <div>
-        <h2 class="fw-bold mb-2">Servicios Premium</h2>
-        <p class="text-muted">Complementa tu estadía con actividades increíbles</p>
+        <h2 class="section-title">Servicios Premium</h2>
+        <p class="section-subtitle">Complementa tu estadía con actividades increíbles</p>
       </div>
-      <button class="btn btn-primary" (click)="verServicios()">
-        Ver Todos <i class="bi bi-arrow-right ms-2"></i>
+      <button mat-raised-button color="primary" (click)="verServicios()">
+        Ver Todos
+        <mat-icon>arrow_forward</mat-icon>
       </button>
     </div>
 
-    <div *ngIf="cargando" class="text-center py-5">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Cargando...</span>
-      </div>
+    <!-- Loading Spinner -->
+    <div *ngIf="cargando" class="loading-container">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p class="loading-text">Cargando servicios...</p>
     </div>
 
-    <div class="row g-4" *ngIf="!cargando">
-      <div class="col-md-6 col-lg-4" *ngFor="let servicio of serviciosDestacados">
-        <div class="card h-100 border-0 shadow-sm hover-lift">
-          <!-- Imagen -->
-          <div *ngIf="obtenerImagenPrincipal(servicio)"
-               class="card-img-top bg-light d-flex align-items-center justify-content-center"
-               style="height: 250px; overflow: hidden;">
-            <img [src]="obtenerImagenPrincipal(servicio)"
-                 [alt]="servicio.nombre"
-                 class="w-100 h-100"
-                 style="object-fit: contain; object-position: center;">
+    <!-- Cards Grid -->
+    <div class="cards-grid" *ngIf="!cargando && serviciosDestacados.length > 0">
+      <mat-card *ngFor="let servicio of serviciosDestacados" class="resource-card" matRipple>
+        <!-- Imagen -->
+        <div class="card-image-container">
+          <img *ngIf="obtenerImagenPrincipal(servicio)"
+               [src]="obtenerImagenPrincipal(servicio)"
+               [alt]="servicio.nombre"
+               class="card-image">
+          <div *ngIf="!obtenerImagenPrincipal(servicio)" class="card-image-placeholder">
+            <mat-icon class="placeholder-icon service-icon">stars</mat-icon>
           </div>
-          <!-- Placeholder si no hay imagen -->
-          <div *ngIf="!obtenerImagenPrincipal(servicio)"
-               class="card-img-top bg-light d-flex align-items-center justify-content-center"
-               style="height: 250px;">
-            <i class="bi bi-star fs-1 text-warning"></i>
-          </div>
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <h5 class="card-title fw-bold mb-0">{{ servicio.nombre }}</h5>
-              <i class="bi bi-star-fill text-warning"></i>
-            </div>
-            <p class="text-muted small mb-3">{{ servicio.descripcion || 'Servicio de primera calidad' }}</p>
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <i class="bi bi-clock text-muted me-1"></i>
-                <span class="text-muted small">{{ servicio.duracion || 60 }} min</span>
-              </div>
-              <div class="text-primary fw-bold">
-                ${{ servicio.precioPorUnidad | number }}
-              </div>
-            </div>
-          </div>
-          <div class="card-footer bg-white border-0">
-            <button class="btn btn-outline-primary w-100" (click)="verServicios()">
-              Ver Detalles
-            </button>
-          </div>
+          <mat-icon class="favorite-icon" color="warn">star</mat-icon>
         </div>
-      </div>
+
+        <mat-card-content class="card-content">
+          <div class="card-header">
+            <h3 class="card-title">{{ servicio.nombre }}</h3>
+          </div>
+          <p class="card-description">{{ servicio.descripcion || 'Servicio de primera calidad' }}</p>
+
+          <div class="card-info">
+            <div class="info-item">
+              <mat-icon class="info-icon">schedule</mat-icon>
+              <span class="info-text">{{ servicio.duracionBloqueMinutos || 60 }} min</span>
+            </div>
+            <div class="card-price">
+              ${{ servicio.precioPorUnidad | number }}
+            </div>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions class="card-actions">
+          <button mat-stroked-button color="primary" class="action-button" (click)="verServicios()">
+            Ver Detalles
+          </button>
+        </mat-card-actions>
+      </mat-card>
     </div>
 
-    <div *ngIf="!cargando && serviciosDestacados.length === 0" class="text-center py-5">
-      <i class="bi bi-inbox fs-1 text-muted"></i>
-      <p class="text-muted mt-3">No hay servicios disponibles en este momento</p>
+    <!-- Empty State -->
+    <div *ngIf="!cargando && serviciosDestacados.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">stars</mat-icon>
+      <p class="empty-text">No hay servicios disponibles en este momento</p>
     </div>
   </div>
 </section>
 
 <!-- CTA Section -->
-<section class="py-5 bg-primary text-white">
-  <div class="container text-center">
-    <h2 class="fw-bold mb-3">¿Listo para tu próxima aventura?</h2>
-    <p class="lead mb-4">Regístrate ahora y comienza a explorar nuestras increíbles opciones</p>
-    <button class="btn btn-light btn-lg" routerLink="/registro">
-      <i class="bi bi-person-plus me-2"></i>
+<section class="cta-section">
+  <div class="cta-container">
+    <h2 class="cta-title">¿Listo para tu próxima aventura?</h2>
+    <p class="cta-subtitle">Regístrate ahora y comienza a explorar nuestras increíbles opciones</p>
+    <button mat-raised-button color="accent" class="cta-button" routerLink="/registro">
+      <mat-icon>person_add</mat-icon>
       Crear Cuenta Gratis
     </button>
   </div>
 </section>
 
 <!-- Footer -->
-<footer class="py-4 bg-dark text-white-50">
-  <div class="container text-center">
-    <p class="mb-0">© 2025 Cabañas & Servicios. Todos los derechos reservados.</p>
+<footer class="footer">
+  <div class="footer-container">
+    <p class="footer-text">© 2025 Cabañas & Servicios. Todos los derechos reservados.</p>
   </div>
 </footer>

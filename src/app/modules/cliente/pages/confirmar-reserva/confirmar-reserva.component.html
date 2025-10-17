@@ -9,9 +9,15 @@
 
       <!-- Contenedor principal -->
       <div *ngIf="reservaData">
-        <!-- Información de la cabaña/servicio -->
-        <div class="card border-0 shadow-sm mb-4" *ngIf="reservaData.tipo === 'cabana'">
+        <!-- Información de la cabaña (para cabana simple y paquete) -->
+        <div class="card border-0 shadow-sm mb-4" *ngIf="reservaData.tipo === 'cabana' || reservaData.tipo === 'paquete'">
           <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-3" *ngIf="reservaData.tipo === 'paquete'">
+              <h5 class="mb-0">
+                <i class="bi bi-box-seam me-2 text-primary"></i>Paquete de Reserva
+              </h5>
+              <span class="badge bg-info">Con descuento</span>
+            </div>
             <div class="row">
               <div class="col-md-4" *ngIf="reservaData.cabana?.imagenes && reservaData.cabana.imagenes.length > 0">
                 <img [src]="reservaData.cabana.imagenes[0].url"
@@ -34,6 +40,32 @@
                   <i class="bi bi-moon me-2"></i>
                   <strong>{{ reservaData.numeroNoches }}</strong> noche(s)
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Servicios incluidos en el paquete -->
+        <div class="card border-0 shadow-sm mb-4" *ngIf="reservaData.tipo === 'paquete' && reservaData.servicios && reservaData.servicios.length > 0">
+          <div class="card-body">
+            <h5 class="card-title mb-3">
+              <i class="bi bi-calendar-plus me-2"></i>Servicios Incluidos
+            </h5>
+            <div class="list-group list-group-flush">
+              <div *ngFor="let servicio of reservaData.servicios" class="list-group-item px-0">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="mb-1">{{ servicio.nombre }}</h6>
+                    <small class="text-muted d-block">
+                      <i class="bi bi-calendar3 me-1"></i>{{ servicio.fecha | date: 'dd/MM/yyyy' }}
+                      <i class="bi bi-clock ms-3 me-1"></i>{{ servicio.horaInicio }}
+                    </small>
+                    <small class="text-muted">
+                      <i class="bi bi-hourglass me-1"></i>{{ servicio.duracionBloques }} bloque(s)
+                    </small>
+                  </div>
+                  <span class="badge bg-success">Incluido</span>
+                </div>
               </div>
             </div>
           </div>
@@ -69,22 +101,100 @@
           </div>
         </div>
 
+        <!-- Items Adicionales (solo para cabañas y paquetes) -->
+        <div class="card border-0 shadow-sm mb-4" *ngIf="(reservaData.tipo === 'cabana' || reservaData.tipo === 'paquete') && itemsDisponibles.length > 0">
+          <div class="card-body">
+            <h5 class="card-title mb-3">
+              <i class="bi bi-plus-circle me-2"></i>Agregar Items Adicionales (Opcional)
+            </h5>
+
+            <!-- Loading -->
+            <div *ngIf="cargandoItems" class="text-center py-3">
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              <span class="text-muted">Cargando items...</span>
+            </div>
+
+            <!-- Lista de items -->
+            <div *ngIf="!cargandoItems" class="row g-3">
+              <div *ngFor="let item of itemsDisponibles" class="col-md-6">
+                <div class="card h-100 border" [class.border-primary]="getCantidadSeleccionada(item.id) > 0">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <h6 class="mb-0">{{ item.nombre }}</h6>
+                      <span class="badge bg-info">{{ item.categoria }}</span>
+                    </div>
+                    <p class="text-muted small mb-2">
+                      Disponibles: {{ item.cantidadDisponible }}
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="text-primary fw-bold">${{ formatearPrecio(item.precioReserva) }}</span>
+                      <div class="input-group" style="width: 120px;">
+                        <button
+                          class="btn btn-outline-secondary btn-sm"
+                          type="button"
+                          (click)="toggleItem(item.id, getCantidadSeleccionada(item.id) - 1)"
+                          [disabled]="getCantidadSeleccionada(item.id) === 0">
+                          <i class="bi bi-dash"></i>
+                        </button>
+                        <input
+                          type="number"
+                          class="form-control form-control-sm text-center"
+                          [value]="getCantidadSeleccionada(item.id)"
+                          [max]="item.cantidadDisponible"
+                          min="0"
+                          (change)="toggleItem(item.id, +$any($event.target).value)"
+                          style="max-width: 50px;">
+                        <button
+                          class="btn btn-outline-secondary btn-sm"
+                          type="button"
+                          (click)="toggleItem(item.id, getCantidadSeleccionada(item.id) + 1)"
+                          [disabled]="getCantidadSeleccionada(item.id) >= (item.cantidadDisponible || 0)">
+                          <i class="bi bi-plus"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Resumen de precio -->
         <div class="card border-0 shadow-sm mb-4">
           <div class="card-body">
             <h5 class="card-title mb-3">Resumen de Precio</h5>
+
+            <!-- Precio base cabaña -->
             <div class="d-flex justify-content-between mb-2" *ngIf="reservaData.tipo === 'cabana'">
               <span>${{ formatearPrecio(reservaData.cabana?.precioPorUnidad || 0) }} x {{ reservaData.numeroNoches }} noche(s)</span>
               <span>${{ formatearPrecio(reservaData.precioCalculado || 0) }}</span>
             </div>
+
+            <!-- Precio base servicio -->
             <div class="d-flex justify-content-between mb-2" *ngIf="reservaData.tipo === 'servicio'">
               <span>Precio del servicio</span>
               <span>${{ formatearPrecio(reservaData.precioCalculado || 0) }}</span>
             </div>
+
+            <!-- Items adicionales seleccionados -->
+            <div *ngIf="itemsSeleccionados.size > 0">
+              <small class="text-muted d-block mt-3 mb-2">Items Adicionales:</small>
+              <div *ngFor="let item of itemsDisponibles" class="d-flex justify-content-between mb-1">
+                <div *ngIf="getCantidadSeleccionada(item.id) > 0">
+                  <small>{{ item.nombre }} x{{ getCantidadSeleccionada(item.id) }}</small>
+                  <small class="text-muted ms-2">${{ formatearPrecio(item.precioReserva) }} c/u</small>
+                </div>
+                <small *ngIf="getCantidadSeleccionada(item.id) > 0">
+                  ${{ formatearPrecio(item.precioReserva * getCantidadSeleccionada(item.id)) }}
+                </small>
+              </div>
+            </div>
+
             <hr>
             <div class="d-flex justify-content-between">
               <strong>Total</strong>
-              <strong class="text-primary fs-4">${{ formatearPrecio(reservaData.precioCalculado || 0) }}</strong>
+              <strong class="text-primary fs-4">${{ formatearPrecio(calcularPrecioTotal()) }}</strong>
             </div>
           </div>
         </div>

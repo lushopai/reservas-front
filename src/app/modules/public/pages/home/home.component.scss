@@ -1,25 +1,646 @@
+// ============================================
+// Home Page - Material Design
+// ============================================
+
+// ============================================
+// Hero Section
+// ============================================
 .hero-section {
-  background: linear-gradient(135deg, var(--bs-primary) 0%, #5a67d8 100%);
-  min-height: 60vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 80px 24px;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
 }
 
-.min-vh-50 {
-  min-height: 50vh;
+.hero-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-.hover-lift {
-  transition: all 0.3s ease;
+.hero-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+}
 
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+.hero-text {
+  flex: 1;
+  max-width: 600px;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 24px 0;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.hero-subtitle {
+  font-size: 20px;
+  line-height: 1.6;
+  margin: 0 0 32px 0;
+  opacity: 0.95;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+.hero-button-primary,
+.hero-button-secondary {
+  height: 48px;
+  padding: 0 24px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 24px;
+
+  mat-icon {
+    margin-right: 8px;
   }
 }
 
-.feature-icon {
-  transition: all 0.3s ease;
+.hero-icon {
+  flex-shrink: 0;
+  animation: float 3s ease-in-out infinite;
 }
 
-.card:hover .feature-icon {
-  transform: scale(1.1);
+.hero-icon-large {
+  font-size: 200px;
+  width: 200px;
+  height: 200px;
+  opacity: 0.9;
+}
+
+// ============================================
+// Common Section Styles
+// ============================================
+.section-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 80px 24px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-title {
+  font-size: 36px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.section-subtitle {
+  font-size: 18px;
+  color: #666;
+  margin: 0;
+}
+
+.section-header-with-action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  gap: 24px;
+
+  .section-title {
+    margin-bottom: 8px;
+    text-align: left;
+  }
+
+  .section-subtitle {
+    text-align: left;
+  }
+
+  button {
+    flex-shrink: 0;
+    height: 42px;
+
+    mat-icon {
+      margin-left: 4px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+// ============================================
+// Features Section
+// ============================================
+.features-section {
+  background-color: #f5f5f5;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.feature-card {
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.feature-content {
+  text-align: center;
+  padding: 32px 24px;
+}
+
+.feature-icon-container {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background-color: rgba(63, 81, 181, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+}
+
+.feature-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 12px 0;
+}
+
+.feature-description {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
+}
+
+// ============================================
+// Cabañas Section
+// ============================================
+.cabanas-section {
+  background-color: white;
+}
+
+.servicios-section {
+  background-color: #f5f5f5;
+}
+
+// ============================================
+// Loading State
+// ============================================
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  gap: 16px;
+}
+
+.loading-text {
+  margin: 0;
+  color: #666;
+  font-size: 16px;
+}
+
+// ============================================
+// Cards Grid
+// ============================================
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.resource-card {
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.card-image-container {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  background-color: #f5f5f5;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+
+  .resource-card:hover & {
+    transform: scale(1.05);
+  }
+}
+
+.card-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.placeholder-icon {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  color: white;
+  opacity: 0.9;
+
+  &.service-icon {
+    color: #ffc107;
+  }
+}
+
+.status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  height: 28px;
+  border-radius: 14px;
+}
+
+.favorite-icon {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.card-content {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.card-description {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.card-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #999;
+}
+
+.info-text {
+  font-size: 14px;
+  color: #666;
+}
+
+.card-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: #3f51b5;
+}
+
+.price-unit {
+  font-size: 14px;
+  font-weight: 400;
+  color: #999;
+}
+
+.card-actions {
+  padding: 16px;
+  background-color: #fafafa;
+  border-top: 1px solid #eee;
+}
+
+.action-button {
+  width: 100%;
+  height: 42px;
+  font-weight: 500;
+}
+
+// ============================================
+// Empty State
+// ============================================
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  gap: 16px;
+}
+
+.empty-icon {
+  font-size: 80px;
+  width: 80px;
+  height: 80px;
+  color: #ccc;
+}
+
+.empty-text {
+  font-size: 18px;
+  color: #999;
+  margin: 0;
+}
+
+// ============================================
+// CTA Section
+// ============================================
+.cta-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 80px 24px;
+}
+
+.cta-container {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.cta-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+}
+
+.cta-subtitle {
+  font-size: 20px;
+  margin: 0 0 32px 0;
+  opacity: 0.95;
+}
+
+.cta-button {
+  height: 56px;
+  padding: 0 32px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 28px;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+// ============================================
+// Footer
+// ============================================
+.footer {
+  background-color: #212121;
+  padding: 24px;
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-text {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+}
+
+// ============================================
+// Animations
+// ============================================
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+// ============================================
+// Responsive Design
+// ============================================
+@media (max-width: 1024px) {
+  .hero-content {
+    gap: 40px;
+  }
+
+  .hero-title {
+    font-size: 42px;
+  }
+
+  .hero-icon-large {
+    font-size: 160px;
+    width: 160px;
+    height: 160px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 60px 24px;
+    min-height: 400px;
+  }
+
+  .hero-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 32px;
+  }
+
+  .hero-text {
+    max-width: 100%;
+  }
+
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .hero-subtitle {
+    font-size: 18px;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-icon-large {
+    font-size: 120px;
+    width: 120px;
+    height: 120px;
+  }
+
+  .section-container {
+    padding: 60px 16px;
+  }
+
+  .section-title {
+    font-size: 30px;
+  }
+
+  .section-subtitle {
+    font-size: 16px;
+  }
+
+  .section-header-with-action {
+    flex-direction: column;
+    align-items: flex-start;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-title {
+    font-size: 30px;
+  }
+
+  .cta-subtitle {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 28px;
+  }
+
+  .hero-subtitle {
+    font-size: 16px;
+  }
+
+  .hero-button-primary,
+  .hero-button-secondary {
+    width: 100%;
+  }
+
+  .section-title {
+    font-size: 26px;
+  }
+
+  .cta-title {
+    font-size: 26px;
+  }
+
+  .cta-subtitle {
+    font-size: 16px;
+  }
+}
+
+// ============================================
+// Material Design Overrides
+// ============================================
+::ng-deep {
+  .mat-mdc-raised-button {
+    border-radius: 24px;
+    text-transform: none;
+    font-weight: 500;
+  }
+
+  .mat-mdc-stroked-button {
+    border-radius: 24px;
+    text-transform: none;
+    font-weight: 500;
+  }
+
+  .mat-mdc-card {
+    border-radius: 16px;
+  }
+
+  .mat-mdc-chip {
+    border-radius: 14px;
+  }
 }

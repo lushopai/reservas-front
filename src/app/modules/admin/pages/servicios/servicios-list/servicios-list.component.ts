@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { ServicioEntretencion, EstadoServicio, TipoServicio } from '../../../../../core/models/servicio.model';
 import { ServicioEntretencionService } from '../../../../../core/services/servicio-entretencion.service';
 import Swal from 'sweetalert2';
@@ -9,10 +12,15 @@ import Swal from 'sweetalert2';
   templateUrl: './servicios-list.component.html',
   styleUrls: ['./servicios-list.component.scss']
 })
-export class ServiciosListComponent implements OnInit {
+export class ServiciosListComponent implements OnInit, AfterViewInit {
 
-  servicios: ServicioEntretencion[] = [];
-  serviciosFiltrados: ServicioEntretencion[] = [];
+  // MatTable configuration
+  displayedColumns: string[] = ['imagen', 'nombre', 'tipo', 'duracion', 'precio', 'capacidad', 'estado', 'acciones'];
+  dataSource = new MatTableDataSource<ServicioEntretencion>([]);
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
   loading = false;
 
   // Filtros
@@ -20,9 +28,32 @@ export class ServiciosListComponent implements OnInit {
   tipoFiltro: string = '';
   busquedaTexto: string = '';
 
-  // Enums para los filtros
-  estados = Object.values(EstadoServicio);
-  tipos = Object.values(TipoServicio);
+  // Estadísticas
+  stats = {
+    total: 0,
+    disponibles: 0,
+    enMantenimiento: 0,
+    fueraServicio: 0
+  };
+
+  // Estados disponibles
+  estados = [
+    { value: 'DISPONIBLE', label: 'Disponible' },
+    { value: 'MANTENIMIENTO', label: 'Mantenimiento' },
+    { value: 'FUERA_SERVICIO', label: 'Fuera de Servicio' }
+  ];
+
+  // Tipos de servicio
+  tipos = [
+    { value: 'CANCHA_TENIS', label: 'Cancha de Tenis' },
+    { value: 'CANCHA_FUTBOL', label: 'Cancha de Fútbol' },
+    { value: 'PISCINA', label: 'Piscina' },
+    { value: 'QUINCHO', label: 'Quincho' },
+    { value: 'SPA', label: 'Spa' },
+    { value: 'GIMNASIO', label: 'Gimnasio' },
+    { value: 'SALA_JUEGOS', label: 'Sala de Juegos' },
+    { value: 'SALON_EVENTOS', label: 'Salón de Eventos' }
+  ];
 
   constructor(
     private servicioService: ServicioEntretencionService,
@@ -33,13 +64,42 @@ export class ServiciosListComponent implements OnInit {
     this.cargarServicios();
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+
+    // Configurar filtro personalizado
+    this.dataSource.filterPredicate = (data: ServicioEntretencion, filter: string) => {
+      const searchStr = filter.toLowerCase();
+      const matchesSearch =
+        data.nombre.toLowerCase().includes(searchStr) ||
+        data.descripcion.toLowerCase().includes(searchStr) ||
+        this.getTipoServicioLabel(data.tipoServicio).toLowerCase().includes(searchStr);
+
+      const matchesEstado = !this.estadoFiltro || data.estado === this.estadoFiltro;
+      const matchesTipo = !this.tipoFiltro || data.tipoServicio === this.tipoFiltro;
+
+      return matchesSearch && matchesEstado && matchesTipo;
+    };
+  }
+
   cargarServicios(): void {
     this.loading = true;
     this.servicioService.obtenerTodos().subscribe({
       next: (servicios) => {
-        this.servicios = servicios;
-        this.serviciosFiltrados = servicios;
+        this.dataSource.data = servicios;
+        this.calcularEstadisticas(servicios);
         this.loading = false;
+
+        // Aplicar paginator y sort después de cargar datos
+        setTimeout(() => {
+          if (this.paginator) {
+            this.dataSource.paginator = this.paginator;
+          }
+          if (this.sort) {
+            this.dataSource.sort = this.sort;
+          }
+        }, 0);
       },
       error: (error) => {
         console.error('Error al cargar servicios:', error);
@@ -54,23 +114,33 @@ export class ServiciosListComponent implements OnInit {
     });
   }
 
-  aplicarFiltros(): void {
-    this.serviciosFiltrados = this.servicios.filter(servicio => {
-      const coincideEstado = !this.estadoFiltro || servicio.estado === this.estadoFiltro;
-      const coincideTipo = !this.tipoFiltro || servicio.tipoServicio === this.tipoFiltro;
-      const coincideTexto = !this.busquedaTexto ||
-        servicio.nombre.toLowerCase().includes(this.busquedaTexto.toLowerCase()) ||
-        servicio.descripcion.toLowerCase().includes(this.busquedaTexto.toLowerCase());
+  calcularEstadisticas(servicios: ServicioEntretencion[]): void {
+    this.stats = {
+      total: servicios.length,
+      disponibles: servicios.filter(s => s.estado === 'DISPONIBLE').length,
+      enMantenimiento: servicios.filter(s => s.estado === 'MANTENIMIENTO').length,
+      fueraServicio: servicios.filter(s => s.estado === 'FUERA_SERVICIO').length
+    };
+  }
 
-      return coincideEstado && coincideTipo && coincideTexto;
-    });
+  aplicarFiltros(): void {
+    const filterValue = this.busquedaTexto.trim().toLowerCase();
+    this.dataSource.filter = filterValue;
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   limpiarFiltros(): void {
     this.estadoFiltro = '';
     this.tipoFiltro = '';
     this.busquedaTexto = '';
-    this.serviciosFiltrados = this.servicios;
+    this.dataSource.filter = '';
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   nuevoServicio(): void {
@@ -95,7 +165,7 @@ export class ServiciosListComponent implements OnInit {
       showCancelButton: true,
       confirmButtonText: 'Cambiar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#667eea'
+      confirmButtonColor: '#3f51b5'
     }).then((result) => {
       if (result.isConfirmed && result.value !== servicio.estado) {
         this.loading = true;
@@ -107,7 +177,7 @@ export class ServiciosListComponent implements OnInit {
                 icon: 'success',
                 title: 'Estado actualizado',
                 text: response.message,
-                confirmButtonColor: '#667eea'
+                confirmButtonColor: '#3f51b5'
               });
               this.cargarServicios();
             } else {
@@ -155,7 +225,7 @@ export class ServiciosListComponent implements OnInit {
                 icon: 'success',
                 title: 'Servicio eliminado',
                 text: response.message,
-                confirmButtonColor: '#667eea'
+                confirmButtonColor: '#3f51b5'
               });
               this.cargarServicios();
             } else {
@@ -182,16 +252,16 @@ export class ServiciosListComponent implements OnInit {
     });
   }
 
-  getEstadoBadgeClass(estado: string): string {
+  getEstadoChipClass(estado: string): string {
     switch (estado) {
       case 'DISPONIBLE':
-        return 'badge bg-success';
+        return 'chip-disponible';
       case 'MANTENIMIENTO':
-        return 'badge bg-warning text-dark';
+        return 'chip-mantenimiento';
       case 'FUERA_SERVICIO':
-        return 'badge bg-danger';
+        return 'chip-fuera-servicio';
       default:
-        return 'badge bg-secondary';
+        return '';
     }
   }
 
@@ -209,6 +279,20 @@ export class ServiciosListComponent implements OnInit {
     return labels[tipo] || tipo;
   }
 
+  getTipoChipClass(tipo: string): string {
+    const typeMap: { [key: string]: string } = {
+      'CANCHA_TENIS': 'chip-tenis',
+      'CANCHA_FUTBOL': 'chip-futbol',
+      'PISCINA': 'chip-piscina',
+      'QUINCHO': 'chip-quincho',
+      'SPA': 'chip-spa',
+      'GIMNASIO': 'chip-gimnasio',
+      'SALA_JUEGOS': 'chip-juegos',
+      'SALON_EVENTOS': 'chip-eventos'
+    };
+    return typeMap[tipo] || '';
+  }
+
   getDuracionLabel(minutos: number): string {
     if (minutos >= 60) {
       const horas = minutos / 60;
@@ -217,4 +301,66 @@ export class ServiciosListComponent implements OnInit {
     return `${minutos} min`;
   }
 
+  formatearPrecio(precio: number): string {
+    return new Intl.NumberFormat('es-CL', {
+      style: 'currency',
+      currency: 'CLP',
+      minimumFractionDigits: 0
+    }).format(precio);
+  }
+
+  exportarCSV(): void {
+    const data = this.dataSource.filteredData;
+
+    if (data.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sin datos',
+        text: 'No hay servicios para exportar',
+        confirmButtonColor: '#3f51b5'
+      });
+      return;
+    }
+
+    const csv = this.convertToCSV(data);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `servicios_${new Date().getTime()}.csv`);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Exportado',
+      text: `${data.length} servicios exportados exitosamente`,
+      timer: 2000,
+      showConfirmButton: false
+    });
+  }
+
+  private convertToCSV(data: ServicioEntretencion[]): string {
+    const headers = ['ID', 'Nombre', 'Tipo', 'Duración (min)', 'Precio', 'Capacidad', 'Estado'];
+    const rows = data.map(servicio => [
+      servicio.id,
+      servicio.nombre,
+      this.getTipoServicioLabel(servicio.tipoServicio),
+      servicio.duracionBloqueMinutos,
+      servicio.precioPorUnidad,
+      servicio.capacidadMaxima,
+      servicio.estado
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    return csvContent;
+  }
 }

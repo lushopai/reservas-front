@@ -1,77 +1,244 @@
-<div class="container-fluid py-4">
-  <div class="card shadow">
-    <div class="card-header">
-      <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Gestión de Reservas</h5>
+<div class="reservas-list-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>event_available</mat-icon>
+        Gestión de Reservas
+      </h1>
+      <p class="page-subtitle">Administra todas las reservas del sistema</p>
     </div>
+    <div class="header-actions">
+      <button mat-stroked-button routerLink="/admin">
+        <mat-icon>arrow_back</mat-icon>
+        Volver
+      </button>
+    </div>
+  </div>
 
-    <div class="card-body">
-      <!-- Filtros -->
-      <div class="row mb-4">
-        <div class="col-md-4">
-          <label class="form-label">Buscar</label>
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <mat-card class="kpi-card blue-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>event</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.total }}</div>
+          <div class="kpi-label">Total Reservas</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card orange-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.pendientes }}</div>
+          <div class="kpi-label">Pendientes</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card green-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.confirmadas }}</div>
+          <div class="kpi-label">Confirmadas</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card purple-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>attach_money</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ formatearPrecio(stats.ingresosTotal) }}</div>
+          <div class="kpi-label">Ingresos Total</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filtros -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar reservas</mat-label>
           <input
-            type="text"
-            class="form-control"
-            placeholder="ID, recurso o usuario..."
+            matInput
             [(ngModel)]="filtroBusqueda"
-            (ngModelChange)="aplicarFiltros()"
-          />
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Estado</label>
-          <select class="form-select" [(ngModel)]="filtroEstado" (ngModelChange)="aplicarFiltros()">
-            <option value="">Todos</option>
-            <option *ngFor="let estado of estadosReserva" [value]="estado">{{ estado }}</option>
-          </select>
-        </div>
-      </div>
+            (keyup)="aplicarFiltros()"
+            placeholder="ID, usuario o recurso...">
+          <mat-icon matPrefix>search</mat-icon>
+          <button mat-icon-button matSuffix *ngIf="filtroBusqueda" (click)="limpiarFiltros()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
 
-      <!-- Spinner -->
-      <div *ngIf="cargando" class="text-center py-5">
-        <div class="spinner-border text-primary"></div>
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="filtroEstado" (selectionChange)="aplicarFiltros()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let estado of estadosReserva" [value]="estado.value">
+              {{ estado.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>filter_list</mat-icon>
+        </mat-form-field>
+
+        <button mat-raised-button color="accent" (click)="exportarCSV()" class="export-button">
+          <mat-icon>download</mat-icon>
+          Exportar CSV
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tabla de Reservas -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- Loading Spinner -->
+      <div *ngIf="cargando" class="loading-container">
+        <mat-spinner diameter="60"></mat-spinner>
+        <p class="loading-text">Cargando reservas...</p>
       </div>
 
       <!-- Tabla -->
-      <div *ngIf="!cargando" class="table-responsive">
-        <table class="table table-hover">
-          <thead class="table-light">
-            <tr>
-              <th>ID</th>
-              <th>Usuario</th>
-              <th>Recurso</th>
-              <th>Tipo</th>
-              <th>Fecha Inicio</th>
-              <th>Total</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let reserva of reservasFiltradas">
-              <td><strong>#{{ reserva.id }}</strong></td>
-              <td>{{ reserva.nombreUsuario || 'N/A' }}</td>
-              <td>{{ reserva.nombreRecurso }}</td>
-              <td>{{ reserva.tipoReserva === 'CABANA_DIA' ? 'Cabaña' : 'Servicio' }}</td>
-              <td>{{ formatearFecha(reserva.fechaInicio) }}</td>
-              <td>{{ formatearPrecio(reserva.precioTotal) }}</td>
-              <td><span [class]="getBadgeClass(reserva.estado)">{{ reserva.estado }}</span></td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary" (click)="verDetalle(reserva)">
-                  <i class="bi bi-eye"></i>
-                </button>
-              </td>
-            </tr>
-            <tr *ngIf="reservasFiltradas.length === 0">
-              <td colspan="8" class="text-center text-muted py-4">No se encontraron reservas</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <div *ngIf="!cargando" class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="reservas-table">
 
-      <!-- Resumen -->
-      <div *ngIf="!cargando && reservasFiltradas.length > 0" class="mt-3">
-        <p class="text-muted">Mostrando {{ reservasFiltradas.length }} de {{ reservas.length }} reservas</p>
+          <!-- Columna ID -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+            <td mat-cell *matCellDef="let reserva">
+              <div class="id-cell">
+                <span class="id-badge">#{{ reserva.id }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Usuario -->
+          <ng-container matColumnDef="usuario">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
+            <td mat-cell *matCellDef="let reserva">
+              <div class="usuario-cell">
+                <mat-icon class="user-icon">person</mat-icon>
+                <span class="usuario-nombre">{{ reserva.nombreUsuario || 'N/A' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Recurso -->
+          <ng-container matColumnDef="recurso">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Recurso</th>
+            <td mat-cell *matCellDef="let reserva">
+              <div class="recurso-cell">
+                <span class="recurso-nombre">{{ reserva.nombreRecurso }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Tipo -->
+          <ng-container matColumnDef="tipo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+            <td mat-cell *matCellDef="let reserva">
+              <mat-chip [class]="getTipoChipClass(reserva.tipoReserva)">
+                <mat-icon *ngIf="reserva.tipoReserva === 'CABANA_DIA'">holiday_village</mat-icon>
+                <mat-icon *ngIf="reserva.tipoReserva !== 'CABANA_DIA'">room_service</mat-icon>
+                {{ getTipoReservaLabel(reserva.tipoReserva) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Columna Fechas -->
+          <ng-container matColumnDef="fechas">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fechas</th>
+            <td mat-cell *matCellDef="let reserva">
+              <div class="fechas-cell">
+                <div class="fecha-item">
+                  <mat-icon>event</mat-icon>
+                  <span>{{ formatearFecha(reserva.fechaInicio) }}</span>
+                </div>
+                <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+                <div class="fecha-item">
+                  <mat-icon>event</mat-icon>
+                  <span>{{ formatearFecha(reserva.fechaFin) }}</span>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Total -->
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
+            <td mat-cell *matCellDef="let reserva">
+              <div class="total-cell">
+                <span class="total-price">{{ formatearPrecio(reserva.precioTotal) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Estado -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+            <td mat-cell *matCellDef="let reserva">
+              <mat-chip [class]="getEstadoChipClass(reserva.estado)">
+                <mat-icon *ngIf="reserva.estado === 'PENDIENTE'">schedule</mat-icon>
+                <mat-icon *ngIf="reserva.estado === 'CONFIRMADA'">check_circle</mat-icon>
+                <mat-icon *ngIf="reserva.estado === 'COMPLETADA'">done_all</mat-icon>
+                <mat-icon *ngIf="reserva.estado === 'CANCELADA'">cancel</mat-icon>
+                {{ reserva.estado }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Columna Acciones -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef class="acciones-header">Acciones</th>
+            <td mat-cell *matCellDef="let reserva" class="acciones-cell">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="verDetalle(reserva)"
+                matTooltip="Ver detalle y gestionar">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+        </table>
+
+        <!-- Empty State -->
+        <div *ngIf="dataSource.filteredData.length === 0" class="empty-state">
+          <mat-icon>event_busy</mat-icon>
+          <h3>No se encontraron reservas</h3>
+          <p>No hay reservas que coincidan con los filtros aplicados</p>
+          <button mat-raised-button color="primary" (click)="limpiarFiltros()">
+            <mat-icon>refresh</mat-icon>
+            Limpiar Filtros
+          </button>
+        </div>
+
+        <!-- Paginator -->
+        <mat-paginator
+          *ngIf="dataSource.filteredData.length > 0"
+          [pageSize]="10"
+          [pageSizeOptions]="[5, 10, 25, 50, 100]"
+          showFirstLastButtons
+          aria-label="Seleccionar página de reservas">
+        </mat-paginator>
       </div>
-    </div>
-  </div>
+    </mat-card-content>
+  </mat-card>
 </div>

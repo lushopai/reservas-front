@@ -1,248 +1,245 @@
 // ============================================
-// REGISTER COMPONENT - SCSS COMPLETO
-// modules/auth/register/register.component.scss
+// Register - Material Design
 // ============================================
 
 .register-container {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
-  padding: 20px 0;
-
-  .card {
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-
-    .card-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-      border: none;
-
-      i {
-        animation: bounce 2s infinite;
-      }
-    }
-
-    .card-body {
-      background: white;
-    }
-
-    .card-footer {
-      background-color: #f8f9fa;
-      border-top: 1px solid #e0e0e0;
-    }
-  }
-
-  // Inputs y Select
-  .form-control,
-  .form-select {
-    border-radius: 8px;
-    border: 2px solid #e0e0e0;
-    padding: 10px 15px;
-    font-size: 14px;
-    transition: all 0.3s ease;
-
-    &:focus {
-      border-color: #667eea;
-      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-      outline: none;
-    }
-
-    &.is-invalid {
-      border-color: #dc3545;
-      padding-right: calc(1.5em + 0.75rem);
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
-      background-repeat: no-repeat;
-      background-position: right calc(0.375em + 0.1875rem) center;
-      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-
-      &:focus {
-        border-color: #dc3545;
-        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-      }
-    }
-
-    &::placeholder {
-      color: #adb5bd;
-      font-size: 13px;
-    }
-  }
-
-  // Labels
-  .form-label {
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 8px;
-    font-size: 14px;
-
-    i {
-      color: #667eea;
-      width: 20px;
-    }
-  }
-
-  // Input Group (para password con botón)
-  .input-group {
-    .form-control {
-      border-right: none;
-
-      &:focus {
-        border-right: none;
-      }
-    }
-
-    .btn-outline-secondary {
-      border: 2px solid #e0e0e0;
-      border-left: none;
-      background: white;
-      color: #6c757d;
-      border-radius: 0 8px 8px 0;
-
-      &:hover {
-        background-color: #f8f9fa;
-        border-color: #667eea;
-        border-left: none;
-        color: #667eea;
-      }
-
-      &:focus {
-        box-shadow: none;
-        border-color: #667eea;
-      }
-
-      i {
-        font-size: 14px;
-      }
-    }
-  }
-
-  // Mensajes de error
-  .invalid-feedback {
-    display: block;
-    margin-top: 5px;
-    font-size: 12px;
-    color: #dc3545;
-
-    i {
-      margin-right: 5px;
-    }
-  }
-
-  // Texto de ayuda
-  .form-text {
-    font-size: 12px;
-    color: #6c757d;
-    margin-top: 5px;
-  }
-
-  // Checkbox de términos
-  .form-check {
-    padding-left: 1.5rem;
-
-    .form-check-input {
-      width: 18px;
-      height: 18px;
-      margin-top: 0.15rem;
-      border: 2px solid #e0e0e0;
-      cursor: pointer;
-
-      &:checked {
-        background-color: #667eea;
-        border-color: #667eea;
-      }
-
-      &:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-      }
-
-      &.is-invalid {
-        border-color: #dc3545;
-      }
-    }
-
-    .form-check-label {
-      font-size: 13px;
-      color: #495057;
-      cursor: pointer;
-      margin-left: 8px;
-      line-height: 1.5;
-    }
-  }
-
-  // Botón principal
-  .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border: none;
-    border-radius: 10px;
-    padding: 12px 20px;
-    font-weight: 600;
-    font-size: 16px;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-
-    &:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    }
-
-    &:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    &:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    i {
-      font-size: 16px;
-    }
-
-    .spinner-border-sm {
-      width: 1rem;
-      height: 1rem;
-      border-width: 0.15em;
-    }
-  }
-
-  // Links
-  a {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-
-    &:hover {
-      color: #764ba2;
-      text-decoration: underline;
-    }
-  }
-
-  // Separador HR
-  hr {
-    border: none;
-    border-top: 2px solid #e9ecef;
-    opacity: 1;
-    margin: 20px 0;
-  }
-
-  // Row spacing
-  .row {
-    .col-md-6,
-    .col-md-4,
-    .col-md-8 {
-      margin-bottom: 0;
-    }
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
 }
 
-// Animaciones
-.card {
+.register-content {
+  width: 100%;
+  max-width: 700px;
   animation: fadeInUp 0.6s ease-out;
 }
 
+// ============================================
+// Register Card
+// ============================================
+.register-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+// ============================================
+// Header
+// ============================================
+.register-header {
+  background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%);
+  padding: 32px 24px;
+  color: white;
+
+  ::ng-deep .mat-mdc-card-header-text {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: white;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: white;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+// ============================================
+// Body
+// ============================================
+.register-body {
+  padding: 32px 24px;
+}
+
+.form-subtitle {
+  text-align: center;
+  font-size: 15px;
+  color: #666;
+  margin: 0 0 24px 0;
+}
+
+// ============================================
+// Form Fields
+// ============================================
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  &:has(.small-width) {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.half-width {
+  width: 100%;
+}
+
+.small-width {
+  width: 100%;
+}
+
+.large-width {
+  width: 100%;
+}
+
+// ============================================
+// Section Divider
+// ============================================
+.section-divider {
+  margin: 24px 0;
+}
+
+// ============================================
+// Terms Section
+// ============================================
+.terms-section {
+  margin: 20px 0 24px 0;
+}
+
+.terms-text {
+  font-size: 14px;
+  color: #666;
+}
+
+.terms-link {
+  color: #3f51b5;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #5c6bc0;
+    text-decoration: underline;
+  }
+}
+
+.terms-error {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #f44336;
+}
+
+// ============================================
+// Register Button
+// ============================================
+.register-button {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .button-spinner {
+    display: inline-block;
+    margin-right: 8px;
+
+    ::ng-deep circle {
+      stroke: white;
+    }
+  }
+}
+
+// ============================================
+// Footer
+// ============================================
+.register-footer {
+  padding: 16px 24px;
+  text-align: center;
+  background-color: #fafafa;
+}
+
+.login-text {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.login-link {
+  color: #3f51b5;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 4px;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #5c6bc0;
+    text-decoration: underline;
+  }
+}
+
+// ============================================
+// Footer Info
+// ============================================
+.footer-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.security-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.security-text {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+// ============================================
+// Animations
+// ============================================
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -254,225 +251,85 @@
   }
 }
 
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-10px);
-  }
-  60% {
-    transform: translateY(-5px);
-  }
-}
-
-// Focus visible para accesibilidad
-*:focus-visible {
-  outline: 2px solid #667eea;
-  outline-offset: 2px;
-}
-
-// Estados de los inputs con animación
-.form-control,
-.form-select {
-  &:hover:not(:focus):not(.is-invalid) {
-    border-color: #b8c1ec;
-  }
-}
-
-// Mejoras de UX
-.form-control,
-.form-select,
-.btn {
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
-}
-
+// ============================================
 // Responsive Design
-@media (max-width: 992px) {
-  .register-container {
-    .card {
-      .card-body {
-        padding: 30px 20px;
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .register-container {
-    padding: 10px;
-
-    .card {
-      margin: 10px;
-
-      .card-header {
-        padding: 20px 15px;
-
-        i {
-          font-size: 2.5rem;
-        }
-
-        h3 {
-          font-size: 1.5rem;
-        }
-      }
-
-      .card-body {
-        padding: 20px 15px;
-      }
-
-      .card-footer {
-        padding: 15px;
-      }
-    }
-
-    .form-label {
-      font-size: 13px;
-    }
-
-    .form-control,
-    .form-select {
-      font-size: 13px;
-      padding: 8px 12px;
-    }
-
-    .btn-primary {
-      font-size: 14px;
-      padding: 10px 15px;
-    }
-
-    // Ajustar columnas en móvil
-    .row {
-      .col-md-6,
-      .col-md-4,
-      .col-md-8 {
-        margin-bottom: 15px;
-      }
-    }
-  }
-}
-
+// ============================================
 @media (max-width: 576px) {
   .register-container {
-    .card {
-      border-radius: 10px;
+    padding: 16px;
+  }
 
-      .card-header {
-        h3 {
-          font-size: 1.3rem;
-        }
+  .register-content {
+    max-width: 100%;
+  }
 
-        p {
-          font-size: 0.85rem;
-        }
-      }
+  .register-body {
+    padding: 24px 16px;
+  }
+
+  .header-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .header-title {
+    font-size: 20px;
+  }
+
+  .form-subtitle {
+    font-size: 14px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+
+    &:has(.small-width) {
+      grid-template-columns: 1fr;
     }
+  }
 
-    .input-group {
-      .btn-outline-secondary {
-        padding: 8px 12px;
+  .half-width,
+  .small-width,
+  .large-width {
+    width: 100%;
+  }
+}
 
-        i {
-          font-size: 12px;
+// ============================================
+// Material Design Overrides
+// ============================================
+::ng-deep {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      .mat-mdc-form-field-flex {
+        .mat-mdc-form-field-infix {
+          padding-top: 16px;
+          padding-bottom: 16px;
         }
       }
     }
   }
-}
 
-// Mejoras para modo oscuro (opcional)
-@media (prefers-color-scheme: dark) {
-  .register-container {
-    .card {
-      .card-body {
-        background: #2d3748;
-        color: #e2e8f0;
-      }
-
-      .form-control,
-      .form-select {
-        background-color: #1a202c;
-        color: #e2e8f0;
-        border-color: #4a5568;
-
-        &::placeholder {
-          color: #718096;
-        }
-
-        &:focus {
-          background-color: #1a202c;
-          border-color: #667eea;
-        }
-      }
-
-      .form-label {
-        color: #e2e8f0;
-      }
-
-      .form-text {
-        color: #a0aec0;
-      }
-
-      .card-footer {
-        background-color: #1a202c;
-        border-top-color: #4a5568;
-      }
-    }
+  .mat-mdc-raised-button {
+    text-transform: none;
   }
-}
 
-// Estados de validación mejorados
-.was-validated {
-  .form-control:valid,
-  .form-select:valid {
-    border-color: #28a745;
-    padding-right: calc(1.5em + 0.75rem);
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right calc(0.375em + 0.1875rem) center;
-    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+  .mat-mdc-checkbox {
+    .mdc-checkbox__background {
+      border-radius: 4px;
+    }
 
-    &:focus {
-      border-color: #28a745;
-      box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    .mdc-form-field {
+      font-size: 14px;
     }
   }
 
-  .form-check-input:valid {
-    border-color: #28a745;
-
-    &:checked {
-      background-color: #28a745;
-      border-color: #28a745;
+  // Fix for mat-select within form-row
+  .form-row {
+    .mat-mdc-form-field {
+      display: flex;
     }
-  }
-}
-
-// Transiciones suaves
-.form-control,
-.form-select,
-.btn,
-.form-check-input,
-a {
-  transition: all 0.3s ease;
-}
-
-// Loading state
-.btn-primary {
-  position: relative;
-
-  &:disabled {
-    .spinner-border {
-      animation: spinner-border 0.75s linear infinite;
-    }
-  }
-}
-
-@keyframes spinner-border {
-  to {
-    transform: rotate(360deg);
   }
 }

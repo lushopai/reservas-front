@@ -1,160 +1,278 @@
-<div class="container-fluid py-4">
+<div class="cabanas-list-container">
   <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="mb-0">Gestión de Cabañas</h2>
-      <p class="text-muted">Administra todas las cabañas del sistema</p>
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>holiday_village</mat-icon>
+        Gestión de Cabañas
+      </h1>
+      <p class="page-subtitle">Administra todas las cabañas del sistema</p>
     </div>
-    <button class="btn btn-primary" (click)="nuevaCabana()">
-      <i class="fas fa-plus me-2"></i>Nueva Cabaña
-    </button>
+    <div class="header-actions">
+      <button mat-stroked-button routerLink="/admin">
+        <mat-icon>arrow_back</mat-icon>
+        Volver
+      </button>
+      <button mat-raised-button color="primary" (click)="nuevaCabana()">
+        <mat-icon>add</mat-icon>
+        Nueva Cabaña
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <mat-card class="kpi-card blue-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>holiday_village</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.total }}</div>
+          <div class="kpi-label">Total Cabañas</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card green-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.disponibles }}</div>
+          <div class="kpi-label">Disponibles</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card orange-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>build</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.enMantenimiento }}</div>
+          <div class="kpi-label">Mantenimiento</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="kpi-card red-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>block</mat-icon>
+        </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.fueraServicio }}</div>
+          <div class="kpi-label">Fuera de Servicio</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <!-- Filtros -->
-  <div class="card mb-4">
-    <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label">Buscar</label>
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar cabañas</mat-label>
           <input
-            type="text"
-            class="form-control"
-            placeholder="Buscar por nombre o descripción..."
+            matInput
             [(ngModel)]="busquedaTexto"
-            (input)="aplicarFiltros()"
-          />
-        </div>
-        <div class="col-md-3">
-          <label class="form-label">Estado</label>
-          <select
-            class="form-select"
-            [(ngModel)]="estadoFiltro"
-            (change)="aplicarFiltros()"
-          >
-            <option value="">Todos</option>
-            <option *ngFor="let estado of estados" [value]="estado">
-              {{ estado }}
-            </option>
-          </select>
-        </div>
-        <div class="col-md-2 d-flex align-items-end">
-          <button class="btn btn-outline-secondary w-100" (click)="limpiarFiltros()">
-            <i class="fas fa-redo me-2"></i>Limpiar
+            (keyup)="aplicarFiltros()"
+            placeholder="Buscar por nombre, descripción, tipo...">
+          <mat-icon matPrefix>search</mat-icon>
+          <button mat-icon-button matSuffix *ngIf="busquedaTexto" (click)="limpiarFiltros()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="estadoFiltro" (selectionChange)="aplicarFiltros()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let estado of estados" [value]="estado.value">
+              {{ estado.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>filter_list</mat-icon>
+        </mat-form-field>
+
+        <button mat-raised-button color="accent" (click)="exportarCSV()" class="export-button">
+          <mat-icon>download</mat-icon>
+          Exportar CSV
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tabla de Cabañas -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- Loading Spinner -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="60"></mat-spinner>
+        <p class="loading-text">Cargando cabañas...</p>
+      </div>
+
+      <!-- Tabla -->
+      <div *ngIf="!loading" class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="cabanas-table">
+
+          <!-- Columna Imagen -->
+          <ng-container matColumnDef="imagen">
+            <th mat-header-cell *matHeaderCellDef>Imagen</th>
+            <td mat-cell *matCellDef="let cabana">
+              <div class="image-container">
+                <img
+                  *ngIf="cabana.imagenPrincipalUrl"
+                  [src]="cabana.imagenPrincipalUrl"
+                  [alt]="cabana.nombre"
+                  class="table-image">
+                <div *ngIf="!cabana.imagenPrincipalUrl" class="no-image">
+                  <mat-icon>image</mat-icon>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Nombre -->
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+            <td mat-cell *matCellDef="let cabana">
+              <div class="nombre-cell">
+                <span class="nombre">{{ cabana.nombre }}</span>
+                <span class="metros">{{ cabana.metrosCuadrados }} m²</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Tipo -->
+          <ng-container matColumnDef="tipo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+            <td mat-cell *matCellDef="let cabana">
+              <mat-chip [class]="getTipoChipClass(cabana.tipoCabana)">
+                {{ getTipoCabanaLabel(cabana.tipoCabana) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Columna Capacidad -->
+          <ng-container matColumnDef="capacidad">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Capacidad</th>
+            <td mat-cell *matCellDef="let cabana">
+              <div class="capacity-info">
+                <mat-icon>people</mat-icon>
+                <span>{{ cabana.capacidadPersonas }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Habitaciones -->
+          <ng-container matColumnDef="habitaciones">
+            <th mat-header-cell *matHeaderCellDef>Habitaciones</th>
+            <td mat-cell *matCellDef="let cabana">
+              <div class="rooms-info">
+                <span class="room-item">
+                  <mat-icon>bed</mat-icon>
+                  {{ cabana.numeroHabitaciones }}
+                </span>
+                <span class="room-item">
+                  <mat-icon>bathtub</mat-icon>
+                  {{ cabana.numeroBanos }}
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Precio -->
+          <ng-container matColumnDef="precio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio/Día</th>
+            <td mat-cell *matCellDef="let cabana">
+              <div class="price-cell">
+                <span class="price">${{ cabana.precioPorUnidad | number:'1.0-0' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Columna Estado -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+            <td mat-cell *matCellDef="let cabana">
+              <mat-chip [class]="getEstadoChipClass(cabana.estado)">
+                <mat-icon *ngIf="cabana.estado === 'DISPONIBLE'">check_circle</mat-icon>
+                <mat-icon *ngIf="cabana.estado === 'MANTENIMIENTO'">build</mat-icon>
+                <mat-icon *ngIf="cabana.estado === 'FUERA_SERVICIO'">block</mat-icon>
+                {{ cabana.estado }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Columna Reservas -->
+          <ng-container matColumnDef="reservas">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Reservas</th>
+            <td mat-cell *matCellDef="let cabana">
+              <mat-chip class="chip-reservas">
+                <mat-icon>event</mat-icon>
+                {{ cabana.totalReservas || 0 }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Columna Acciones -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef class="acciones-header">Acciones</th>
+            <td mat-cell *matCellDef="let cabana" class="acciones-cell">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="editarCabana(cabana.id!)"
+                matTooltip="Editar cabaña">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="accent"
+                (click)="cambiarEstado(cabana)"
+                matTooltip="Cambiar estado">
+                <mat-icon>swap_horiz</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="eliminarCabana(cabana)"
+                [disabled]="cabana.estado !== 'FUERA_SERVICIO'"
+                [matTooltip]="cabana.estado !== 'FUERA_SERVICIO' ? 'Solo se pueden eliminar cabañas fuera de servicio' : 'Eliminar cabaña'">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+        </table>
+
+        <!-- Empty State -->
+        <div *ngIf="dataSource.filteredData.length === 0" class="empty-state">
+          <mat-icon>search_off</mat-icon>
+          <h3>No se encontraron cabañas</h3>
+          <p>Intenta ajustar los filtros o crear una nueva cabaña</p>
+          <button mat-raised-button color="primary" (click)="nuevaCabana()">
+            <mat-icon>add</mat-icon>
+            Nueva Cabaña
           </button>
         </div>
-        <div class="col-md-3 d-flex align-items-end justify-content-end">
-          <span class="text-muted">
-            Mostrando {{ cabanasFiltradas.length }} de {{ cabanas.length }} cabañas
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Loading spinner -->
-  <div *ngIf="loading" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
-    </div>
-  </div>
-
-  <!-- Tabla de cabañas -->
-  <div *ngIf="!loading" class="card">
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Imagen</th>
-              <th>Nombre</th>
-              <th>Tipo</th>
-              <th>Capacidad</th>
-              <th>Habitaciones</th>
-              <th>Precio/Día</th>
-              <th>Estado</th>
-              <th>Reservas</th>
-              <th class="text-end">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngIf="cabanasFiltradas.length === 0">
-              <td colspan="10" class="text-center py-4 text-muted">
-                <i class="fas fa-search fa-2x mb-2"></i>
-                <p class="mb-0">No se encontraron cabañas</p>
-              </td>
-            </tr>
-            <tr *ngFor="let cabana of cabanasFiltradas">
-              <td>{{ cabana.id }}</td>
-              <td>
-                <div class="thumbnail-container">
-                  <img
-                    *ngIf="cabana.imagenPrincipalUrl"
-                    [src]="cabana.imagenPrincipalUrl"
-                    [alt]="cabana.nombre"
-                    class="table-thumbnail"
-                  />
-                  <div *ngIf="!cabana.imagenPrincipalUrl" class="no-image-placeholder">
-                    <i class="bi bi-image"></i>
-                  </div>
-                </div>
-              </td>
-              <td>
-                <strong>{{ cabana.nombre }}</strong>
-                <br>
-                <small class="text-muted">{{ cabana.metrosCuadrados }} m²</small>
-              </td>
-              <td>
-                <span class="badge bg-info">{{ getTipoCabanaLabel(cabana.tipoCabana) }}</span>
-              </td>
-              <td>
-                <i class="fas fa-users me-1"></i>{{ cabana.capacidadPersonas }}
-              </td>
-              <td>
-                <i class="fas fa-bed me-1"></i>{{ cabana.numeroHabitaciones }} /
-                <i class="fas fa-bath ms-2 me-1"></i>{{ cabana.numeroBanos }}
-              </td>
-              <td>
-                <strong>${{ cabana.precioPorUnidad | number:'1.0-0' }}</strong>
-              </td>
-              <td>
-                <span [class]="getEstadoBadgeClass(cabana.estado)">
-                  {{ cabana.estado }}
-                </span>
-              </td>
-              <td>
-                <span class="badge bg-secondary">{{ cabana.totalReservas || 0 }}</span>
-              </td>
-              <td class="text-end">
-                <div class="btn-group" role="group">
-                  <button
-                    class="btn btn-sm btn-outline-primary"
-                    (click)="editarCabana(cabana.id!)"
-                    title="Editar"
-                  >
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline-warning"
-                    (click)="cambiarEstado(cabana)"
-                    title="Cambiar estado"
-                  >
-                    <i class="fas fa-toggle-on"></i>
-                  </button>
-                  <button
-                    class="btn btn-sm btn-outline-danger"
-                    (click)="eliminarCabana(cabana)"
-                    title="Eliminar"
-                    [disabled]="cabana.estado !== 'FUERA_SERVICIO'"
-                  >
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Paginator -->
+        <mat-paginator
+          *ngIf="dataSource.filteredData.length > 0"
+          [pageSize]="10"
+          [pageSizeOptions]="[5, 10, 25, 50, 100]"
+          showFirstLastButtons
+          aria-label="Seleccionar página de cabañas">
+        </mat-paginator>
       </div>
-    </div>
-  </div>
+    </mat-card-content>
+  </mat-card>
 </div>

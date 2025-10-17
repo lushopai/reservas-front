@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { UserService } from 'src/app/core/services/UserService.service';
 import { DashboardService, DashboardStats, ReservaResume } from 'src/app/core/services/dashboard.service';
@@ -12,13 +14,22 @@ import Swal from 'sweetalert2';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
   currentUser: User | null = null;
   loading = true;
 
   stats: DashboardStats | null = null;
-  reservasRecientes: ReservaResume[] = [];
-  usuariosRecientes: User[] = [];
+
+  // MatTableDataSource para paginación
+  reservasDataSource = new MatTableDataSource<ReservaResume>([]);
+  usuariosDataSource = new MatTableDataSource<User>([]);
+
+  // Columnas de la tabla de reservas
+  displayedColumns: string[] = ['id', 'usuario', 'recurso', 'estado', 'monto', 'acciones'];
+
+  // ViewChild para paginadores
+  @ViewChild('reservasPaginator') reservasPaginator!: MatPaginator;
+  @ViewChild('usuariosPaginator') usuariosPaginator!: MatPaginator;
 
   // Datos para gráficos
   reservasChart = {
@@ -35,11 +46,23 @@ export class DashboardComponent implements OnInit {
     private authService: AuthService,
     private userService: UserService,
     private dashboardService: DashboardService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
     this.loadDashboardData();
+  }
+
+  ngAfterViewInit(): void {
+    // Asignar paginadores después de que la vista se inicialice
+    if (this.reservasPaginator) {
+      this.reservasDataSource.paginator = this.reservasPaginator;
+    }
+    if (this.usuariosPaginator) {
+      this.usuariosDataSource.paginator = this.usuariosPaginator;
+    }
+    this.cdr.detectChanges();
   }
 
   loadDashboardData(): void {
@@ -50,7 +73,16 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         if (response.success) {
           this.stats = response.data;
-          this.reservasRecientes = response.data.reservasRecientes || [];
+
+          // Cargar reservas en el dataSource
+          this.reservasDataSource.data = response.data.reservasRecientes || [];
+
+          // Usar setTimeout para asegurar que el DOM se haya renderizado
+          setTimeout(() => {
+            if (this.reservasPaginator) {
+              this.reservasDataSource.paginator = this.reservasPaginator;
+            }
+          }, 0);
 
           // Preparar datos para gráficos
           this.prepararGraficos();
@@ -95,14 +127,22 @@ export class DashboardComponent implements OnInit {
   cargarUsuariosRecientes(): void {
     this.userService.getAllUsers().subscribe({
       next: (usuarios) => {
-        // Últimos 5 usuarios registrados
-        this.usuariosRecientes = usuarios
-          .sort((a, b) => {
-            const dateA = a.fechaRegistro ? new Date(a.fechaRegistro).getTime() : 0;
-            const dateB = b.fechaRegistro ? new Date(b.fechaRegistro).getTime() : 0;
-            return dateB - dateA;
-          })
-          .slice(0, 5);
+        // Cargar todos los usuarios ordenados por fecha de registro (más recientes primero)
+        const usuariosOrdenados = usuarios.sort((a, b) => {
+          const dateA = a.fechaRegistro ? new Date(a.fechaRegistro).getTime() : 0;
+          const dateB = b.fechaRegistro ? new Date(b.fechaRegistro).getTime() : 0;
+          return dateB - dateA;
+        });
+
+        // Cargar en el dataSource para usar paginación
+        this.usuariosDataSource.data = usuariosOrdenados;
+
+        // Usar setTimeout para asegurar que el DOM se haya renderizado
+        setTimeout(() => {
+          if (this.usuariosPaginator) {
+            this.usuariosDataSource.paginator = this.usuariosPaginator;
+          }
+        }, 0);
       },
       error: (error) => {
         console.error('Error al cargar usuarios:', error);

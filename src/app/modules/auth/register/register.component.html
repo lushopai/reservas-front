@@ -1,273 +1,231 @@
 <div class="register-container">
-  <div class="container">
-    <div class="row justify-content-center align-items-center min-vh-100 py-5">
-      <div class="col-lg-6 col-md-8 col-sm-10">
-
-        <!-- Card de Registro -->
-        <div class="card shadow-lg border-0 rounded-lg">
-
-          <!-- Header -->
-          <div class="card-header bg-primary text-white text-center py-4">
-            <div class="mb-2">
-              <i class="fas fa-user-plus fa-3x"></i>
-            </div>
-            <h3 class="fw-bold mb-0">Crear Cuenta</h3>
-            <p class="mb-0 small">Sistema de Reservas</p>
-          </div>
-
-          <!-- Body -->
-          <div class="card-body p-4">
-            <p class="text-center text-muted mb-4">
-              Complete el formulario para crear su cuenta
-            </p>
-
-            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-
-              <!-- Datos Personales -->
-              <div class="row">
-
-                <!-- Nombres -->
-                <div class="col-md-6 mb-3">
-                  <label for="nombres" class="form-label">
-                    <i class="fas fa-user me-2"></i>Nombres *
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    [class.is-invalid]="f['nombres'].invalid && f['nombres'].touched"
-                    id="nombres"
-                    formControlName="nombres"
-                    placeholder="Juan Carlos"
-                    autocomplete="given-name">
-
-                  <div class="invalid-feedback" *ngIf="f['nombres'].invalid && f['nombres'].touched">
-                    <span *ngIf="f['nombres'].errors?.['required']">Los nombres son obligatorios</span>
-                    <span *ngIf="f['nombres'].errors?.['minlength']">Mínimo 2 caracteres</span>
-                    <span *ngIf="f['nombres'].errors?.['maxlength']">Máximo 50 caracteres</span>
-                  </div>
-                </div>
-
-                <!-- Apellidos -->
-                <div class="col-md-6 mb-3">
-                  <label for="apellidos" class="form-label">
-                    <i class="fas fa-user me-2"></i>Apellidos *
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    [class.is-invalid]="f['apellidos'].invalid && f['apellidos'].touched"
-                    id="apellidos"
-                    formControlName="apellidos"
-                    placeholder="Pérez González"
-                    autocomplete="family-name">
-
-                  <div class="invalid-feedback" *ngIf="f['apellidos'].invalid && f['apellidos'].touched">
-                    <span *ngIf="f['apellidos'].errors?.['required']">Los apellidos son obligatorios</span>
-                    <span *ngIf="f['apellidos'].errors?.['minlength']">Mínimo 2 caracteres</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Email -->
-              <div class="mb-3">
-                <label for="email" class="form-label">
-                  <i class="fas fa-envelope me-2"></i>Correo Electrónico *
-                </label>
-                <input
-                  type="email"
-                  class="form-control"
-                  [class.is-invalid]="f['email'].invalid && f['email'].touched"
-                  id="email"
-                  formControlName="email"
-                  placeholder="ejemplo@correo.com"
-                  autocomplete="email">
-
-                <div class="invalid-feedback" *ngIf="f['email'].invalid && f['email'].touched">
-                  <span *ngIf="f['email'].errors?.['required']">El correo es obligatorio</span>
-                  <span *ngIf="f['email'].errors?.['email']">Ingrese un correo válido</span>
-                </div>
-              </div>
-
-              <!-- Teléfono -->
-              <div class="mb-3">
-                <label for="telefono" class="form-label">
-                  <i class="fas fa-phone me-2"></i>Teléfono *
-                </label>
-                <input
-                  type="tel"
-                  class="form-control"
-                  [class.is-invalid]="f['telefono'].invalid && f['telefono'].touched"
-                  id="telefono"
-                  formControlName="telefono"
-                  placeholder="+56912345678"
-                  autocomplete="tel">
-
-                <small class="form-text text-muted">
-                  Formato: +56912345678 (con código de país)
-                </small>
-
-                <div class="invalid-feedback" *ngIf="f['telefono'].invalid && f['telefono'].touched">
-                  <span *ngIf="f['telefono'].errors?.['required']">El teléfono es obligatorio</span>
-                  <span *ngIf="f['telefono'].errors?.['pattern']">Formato inválido (ej: +56912345678)</span>
-                </div>
-              </div>
-
-              <!-- Documento -->
-              <div class="row">
-                <div class="col-md-4 mb-3">
-                  <label for="tipoDocumento" class="form-label">
-                    <i class="fas fa-id-card me-2"></i>Tipo Doc. *
-                  </label>
-                  <select
-                    class="form-select"
-                    id="tipoDocumento"
-                    formControlName="tipoDocumento">
-                    <option *ngFor="let tipo of tiposDocumento" [value]="tipo.value">
-                      {{ tipo.label }}
-                    </option>
-                  </select>
-                </div>
-
-                <div class="col-md-8 mb-3">
-                  <label for="documento" class="form-label">
-                    <i class="fas fa-id-card me-2"></i>Número de Documento *
-                  </label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    [class.is-invalid]="f['documento'].invalid && f['documento'].touched"
-                    id="documento"
-                    formControlName="documento"
-                    placeholder="12345678-9">
-
-                  <div class="invalid-feedback" *ngIf="f['documento'].invalid && f['documento'].touched">
-                    <span *ngIf="f['documento'].errors?.['required']">El documento es obligatorio</span>
-                    <span *ngIf="f['documento'].errors?.['minlength']">Mínimo 7 caracteres</span>
-                  </div>
-                </div>
-              </div>
-
-              <hr class="my-4">
-
-              <!-- Contraseña -->
-              <div class="mb-3">
-                <label for="password" class="form-label">
-                  <i class="fas fa-lock me-2"></i>Contraseña *
-                </label>
-                <div class="input-group">
-                  <input
-                    [type]="showPassword ? 'text' : 'password'"
-                    class="form-control"
-                    [class.is-invalid]="f['password'].invalid && f['password'].touched"
-                    id="password"
-                    formControlName="password"
-                    placeholder="••••••••"
-                    autocomplete="new-password">
-
-                  <button
-                    class="btn btn-outline-secondary"
-                    type="button"
-                    (click)="togglePassword()">
-                    <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
-                  </button>
-                </div>
-
-                <small class="form-text text-muted">
-                  Mínimo 6 caracteres
-                </small>
-
-                <div class="invalid-feedback d-block" *ngIf="f['password'].invalid && f['password'].touched">
-                  <span *ngIf="f['password'].errors?.['required']">La contraseña es obligatoria</span>
-                  <span *ngIf="f['password'].errors?.['minlength']">Mínimo 6 caracteres</span>
-                </div>
-              </div>
-
-              <!-- Confirmar Contraseña -->
-              <div class="mb-3">
-                <label for="confirmPassword" class="form-label">
-                  <i class="fas fa-lock me-2"></i>Confirmar Contraseña *
-                </label>
-                <div class="input-group">
-                  <input
-                    [type]="showConfirmPassword ? 'text' : 'password'"
-                    class="form-control"
-                    [class.is-invalid]="f['confirmPassword'].invalid && f['confirmPassword'].touched"
-                    id="confirmPassword"
-                    formControlName="confirmPassword"
-                    placeholder="••••••••"
-                    autocomplete="new-password">
-
-                  <button
-                    class="btn btn-outline-secondary"
-                    type="button"
-                    (click)="toggleConfirmPassword()">
-                    <i class="fas" [class.fa-eye]="!showConfirmPassword" [class.fa-eye-slash]="showConfirmPassword"></i>
-                  </button>
-                </div>
-
-                <div class="invalid-feedback d-block" *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched">
-                  <span *ngIf="f['confirmPassword'].errors?.['required']">Debe confirmar la contraseña</span>
-                  <span *ngIf="f['confirmPassword'].errors?.['passwordMismatch']">Las contraseñas no coinciden</span>
-                </div>
-              </div>
-
-              <!-- Términos y Condiciones -->
-              <div class="mb-4">
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    [class.is-invalid]="f['aceptaTerminos'].invalid && f['aceptaTerminos'].touched"
-                    type="checkbox"
-                    id="aceptaTerminos"
-                    formControlName="aceptaTerminos">
-                  <label class="form-check-label" for="aceptaTerminos">
-                    Acepto los <a href="#" class="text-primary">términos y condiciones</a>
-                    y la <a href="#" class="text-primary">política de privacidad</a> *
-                  </label>
-
-                  <div class="invalid-feedback" *ngIf="f['aceptaTerminos'].invalid && f['aceptaTerminos'].touched">
-                    Debe aceptar los términos y condiciones
-                  </div>
-                </div>
-              </div>
-
-              <!-- Botón Registrar -->
-              <div class="d-grid gap-2">
-                <button
-                  type="submit"
-                  class="btn btn-primary btn-lg"
-                  [disabled]="loading">
-                  <span *ngIf="!loading">
-                    <i class="fas fa-user-plus me-2"></i>Crear Cuenta
-                  </span>
-                  <span *ngIf="loading">
-                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-                    Creando cuenta...
-                  </span>
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Footer -->
-          <div class="card-footer text-center py-3 bg-light">
-            <p class="mb-0 small">
-              ¿Ya tienes cuenta?
-              <a href="javascript:void(0)" (click)="goToLogin()" class="text-primary fw-bold">
-                Inicia sesión aquí
-              </a>
-            </p>
+  <div class="register-content">
+    <!-- Card de Registro -->
+    <mat-card class="register-card">
+      <!-- Header -->
+      <mat-card-header class="register-header">
+        <div class="header-content">
+          <mat-icon class="header-icon">person_add</mat-icon>
+          <div class="header-text">
+            <h1 class="header-title">Crear Cuenta</h1>
+            <p class="header-subtitle">Sistema de Reservas</p>
           </div>
         </div>
+      </mat-card-header>
 
-        <!-- Info adicional -->
-        <div class="text-center mt-3 text-white">
-          <p class="small">
-            <i class="fas fa-shield-alt me-1"></i>
-            Tus datos están protegidos y seguros
-          </p>
-        </div>
-      </div>
+      <!-- Body -->
+      <mat-card-content class="register-body">
+        <p class="form-subtitle">Complete el formulario para crear su cuenta</p>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+          <!-- Nombres y Apellidos -->
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Nombres *</mat-label>
+              <mat-icon matPrefix>person</mat-icon>
+              <input
+                matInput
+                type="text"
+                formControlName="nombres"
+                placeholder="Juan Carlos"
+                autocomplete="given-name">
+              <mat-error *ngIf="f['nombres'].hasError('required')">
+                Los nombres son obligatorios
+              </mat-error>
+              <mat-error *ngIf="f['nombres'].hasError('minlength')">
+                Mínimo 2 caracteres
+              </mat-error>
+              <mat-error *ngIf="f['nombres'].hasError('maxlength')">
+                Máximo 50 caracteres
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-width">
+              <mat-label>Apellidos *</mat-label>
+              <mat-icon matPrefix>person</mat-icon>
+              <input
+                matInput
+                type="text"
+                formControlName="apellidos"
+                placeholder="Pérez González"
+                autocomplete="family-name">
+              <mat-error *ngIf="f['apellidos'].hasError('required')">
+                Los apellidos son obligatorios
+              </mat-error>
+              <mat-error *ngIf="f['apellidos'].hasError('minlength')">
+                Mínimo 2 caracteres
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Email -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Correo Electrónico *</mat-label>
+            <mat-icon matPrefix>email</mat-icon>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="ejemplo@correo.com"
+              autocomplete="email">
+            <mat-error *ngIf="f['email'].hasError('required')">
+              El correo es obligatorio
+            </mat-error>
+            <mat-error *ngIf="f['email'].hasError('email')">
+              Ingrese un correo válido
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Teléfono -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Teléfono *</mat-label>
+            <mat-icon matPrefix>phone</mat-icon>
+            <input
+              matInput
+              type="tel"
+              formControlName="telefono"
+              placeholder="+56912345678"
+              autocomplete="tel">
+            <mat-hint>Formato: +56912345678 (con código de país)</mat-hint>
+            <mat-error *ngIf="f['telefono'].hasError('required')">
+              El teléfono es obligatorio
+            </mat-error>
+            <mat-error *ngIf="f['telefono'].hasError('pattern')">
+              Formato inválido (ej: +56912345678)
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Tipo de Documento y Número -->
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="small-width">
+              <mat-label>Tipo Doc. *</mat-label>
+              <mat-icon matPrefix>badge</mat-icon>
+              <mat-select formControlName="tipoDocumento">
+                <mat-option *ngFor="let tipo of tiposDocumento" [value]="tipo.value">
+                  {{ tipo.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="large-width">
+              <mat-label>Número de Documento *</mat-label>
+              <input
+                matInput
+                type="text"
+                formControlName="documento"
+                placeholder="12345678-9">
+              <mat-error *ngIf="f['documento'].hasError('required')">
+                El documento es obligatorio
+              </mat-error>
+              <mat-error *ngIf="f['documento'].hasError('minlength')">
+                Mínimo 7 caracteres
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <mat-divider class="section-divider"></mat-divider>
+
+          <!-- Contraseña -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Contraseña *</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input
+              matInput
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="new-password">
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="togglePassword()">
+              <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-hint>Mínimo 6 caracteres</mat-hint>
+            <mat-error *ngIf="f['password'].hasError('required')">
+              La contraseña es obligatoria
+            </mat-error>
+            <mat-error *ngIf="f['password'].hasError('minlength')">
+              Mínimo 6 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Confirmar Contraseña -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Confirmar Contraseña *</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+            <input
+              matInput
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              formControlName="confirmPassword"
+              placeholder="••••••••"
+              autocomplete="new-password">
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="toggleConfirmPassword()">
+              <mat-icon>{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="f['confirmPassword'].hasError('required')">
+              Debe confirmar la contraseña
+            </mat-error>
+            <mat-error *ngIf="f['confirmPassword'].hasError('passwordMismatch')">
+              Las contraseñas no coinciden
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Términos y Condiciones -->
+          <div class="terms-section">
+            <mat-checkbox formControlName="aceptaTerminos">
+              <span class="terms-text">
+                Acepto los <a href="#" class="terms-link">términos y condiciones</a>
+                y la <a href="#" class="terms-link">política de privacidad</a> *
+              </span>
+            </mat-checkbox>
+            <mat-error *ngIf="f['aceptaTerminos'].invalid && f['aceptaTerminos'].touched" class="terms-error">
+              Debe aceptar los términos y condiciones
+            </mat-error>
+          </div>
+
+          <!-- Botón Registrar -->
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="register-button"
+            [disabled]="loading">
+            <ng-container *ngIf="!loading">
+              <mat-icon>person_add</mat-icon>
+              Crear Cuenta
+            </ng-container>
+            <ng-container *ngIf="!loading">
+              <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+              Creando cuenta...
+            </ng-container>
+          </button>
+        </form>
+      </mat-card-content>
+
+      <mat-divider></mat-divider>
+
+      <!-- Footer -->
+      <mat-card-actions class="register-footer">
+        <p class="login-text">
+          ¿Ya tienes cuenta?
+          <a href="javascript:void(0)" (click)="goToLogin()" class="login-link">
+            Inicia sesión aquí
+          </a>
+        </p>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Info adicional -->
+    <div class="footer-info">
+      <mat-icon class="security-icon">shield</mat-icon>
+      <p class="security-text">Tus datos están protegidos y seguros</p>
     </div>
   </div>
 </div>

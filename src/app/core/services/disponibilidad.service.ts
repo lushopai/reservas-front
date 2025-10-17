@@ -65,6 +65,25 @@ export class DisponibilidadService {
   }
 
   /**
+   * Obtener solo las fechas ocupadas/bloqueadas de una cabaña
+   * Retorna array de strings ISO (yyyy-MM-dd)
+   */
+  obtenerFechasOcupadas(
+    cabanaId: number,
+    fechaInicio: string,
+    fechaFin: string
+  ): Observable<string[]> {
+    const params = new HttpParams()
+      .set('fechaInicio', fechaInicio)
+      .set('fechaFin', fechaFin);
+
+    return this.http.get<string[]>(
+      `${this.apiUrl}/cabanas/${cabanaId}/fechas-ocupadas`,
+      { params }
+    );
+  }
+
+  /**
    * Bloquear fechas de una cabaña manualmente
    */
   bloquearFechasCabana(

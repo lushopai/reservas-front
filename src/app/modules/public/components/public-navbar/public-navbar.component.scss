@@ -1,0 +1,297 @@
+// ============================================
+// Public Navbar - Material Design
+// ============================================
+
+.navbar-material {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  height: 64px;
+}
+
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 16px;
+}
+
+// ============================================
+// Brand / Logo
+// ============================================
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.brand-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+}
+
+.brand-text {
+  white-space: nowrap;
+}
+
+// ============================================
+// Spacer
+// ============================================
+.navbar-spacer {
+  flex: 1;
+}
+
+// ============================================
+// Desktop Menu
+// ============================================
+.navbar-menu {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+
+  a {
+    color: white;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 16px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    &.active-link {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+    }
+  }
+}
+
+// ============================================
+// Desktop Actions
+// ============================================
+.navbar-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  button {
+    height: 42px;
+    border-radius: 21px;
+    font-weight: 500;
+
+    mat-icon {
+      margin-right: 6px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .action-button {
+    border-color: white;
+    color: white;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+// ============================================
+// Mobile Only / Desktop Only
+// ============================================
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: flex;
+}
+
+// ============================================
+// Mobile Menu Drawer
+// ============================================
+.mobile-menu {
+  position: fixed;
+  top: 64px;
+  right: -100%;
+  width: 280px;
+  height: calc(100vh - 64px);
+  background-color: white;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  transition: right 0.3s ease;
+  z-index: 999;
+  overflow-y: auto;
+
+  &.open {
+    right: 0;
+  }
+}
+
+.mobile-menu-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  a {
+    width: 100%;
+    justify-content: flex-start;
+    height: 48px;
+    color: #333;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+
+    mat-icon {
+      color: #666;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+
+    &.active-link {
+      background-color: rgba(63, 81, 181, 0.1);
+      color: #3f51b5;
+      font-weight: 600;
+
+      mat-icon {
+        color: #3f51b5;
+      }
+    }
+  }
+}
+
+.mobile-user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
+
+  .mobile-action-btn {
+    width: 100%;
+    height: 48px;
+    justify-content: flex-start;
+
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// ============================================
+// Mobile Backdrop
+// ============================================
+.mobile-backdrop {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  width: 100%;
+  height: calc(100vh - 64px);
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 998;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// ============================================
+// Responsive Design
+// ============================================
+@media (max-width: 768px) {
+  .mobile-only {
+    display: flex;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  .brand-text {
+    font-size: 16px;
+  }
+
+  .brand-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-menu {
+    width: 100%;
+    right: -100%;
+
+    &.open {
+      right: 0;
+    }
+  }
+}
+
+// ============================================
+// Material Design Overrides
+// ============================================
+::ng-deep {
+  .navbar-material {
+    .mat-toolbar-row {
+      height: 64px;
+      padding: 0;
+    }
+  }
+
+  .mat-mdc-button,
+  .mat-mdc-raised-button,
+  .mat-mdc-stroked-button {
+    text-transform: none;
+    font-weight: 500;
+  }
+
+  .mat-mdc-stroked-button {
+    border-width: 2px;
+  }
+}

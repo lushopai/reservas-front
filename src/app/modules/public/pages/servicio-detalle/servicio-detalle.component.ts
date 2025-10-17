@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServicioEntretencionService } from '../../../../core/services/servicio-entretencion.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { ServicioEntretencion } from '../../../../core/models/servicio.model';
 import Swal from 'sweetalert2';
 
@@ -37,7 +38,8 @@ export class ServicioDetalleComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private servicioService: ServicioEntretencionService
+    private servicioService: ServicioEntretencionService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -136,8 +138,7 @@ export class ServicioDetalleComponent implements OnInit {
     sessionStorage.setItem('reserva_pendiente', JSON.stringify(reservaData));
 
     // Verificar si está autenticado
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!this.authService.isAuthenticated()) {
       Swal.fire({
         icon: 'info',
         title: 'Inicia sesión para continuar',

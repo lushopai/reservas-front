@@ -1,0 +1,566 @@
+.reserva-detail-container {
+  padding: 2rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  min-height: 100vh;
+
+  // Page Header
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.5s ease;
+
+    .header-content {
+      .page-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0 0 0.25rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        mat-icon {
+          font-size: 2rem;
+          width: 2rem;
+          height: 2rem;
+          color: #3f51b5;
+        }
+      }
+
+      .page-subtitle {
+        font-size: 1rem;
+        color: #64748b;
+        margin: 0;
+        font-weight: 600;
+      }
+    }
+
+    .header-actions {
+      button {
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        &:hover {
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+
+  // Loading Container
+  .loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    gap: 1.5rem;
+
+    .loading-text {
+      font-size: 1.1rem;
+      color: #64748b;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+
+  // Content Grid
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+    animation: fadeIn 0.6s ease;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // Info Cards
+  .info-card, .action-card, .price-card {
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: none;
+    margin-bottom: 1.5rem;
+    animation: slideIn 0.5s ease;
+
+    ::ng-deep {
+      .mat-mdc-card-header {
+        padding: 1.5rem 1.5rem 1rem 1.5rem;
+
+        .mat-mdc-card-header-text {
+          width: 100%;
+        }
+
+        .mat-mdc-card-avatar {
+          margin-right: 1rem;
+        }
+
+        .mat-mdc-card-title {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin: 0;
+        }
+
+        .mat-mdc-card-subtitle {
+          font-size: 0.9rem;
+          color: #64748b;
+          margin-top: 0.25rem;
+        }
+      }
+
+      .mat-mdc-card-content {
+        padding: 0 1.5rem 1.5rem 1.5rem;
+      }
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+
+      &.blue-icon {
+        background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%);
+        color: white;
+      }
+
+      &.teal-icon {
+        background: linear-gradient(135deg, #009688 0%, #26a69a 100%);
+        color: white;
+      }
+
+      &.green-icon {
+        background: linear-gradient(135deg, #43a047 0%, #66bb6a 100%);
+        color: white;
+      }
+
+      &.orange-icon {
+        background: linear-gradient(135deg, #fb8c00 0%, #ffa726 100%);
+        color: white;
+      }
+
+      &.gray-icon {
+        background: linear-gradient(135deg, #607d8b 0%, #78909c 100%);
+        color: white;
+      }
+
+      &.purple-icon {
+        background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%);
+        color: white;
+      }
+
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+    }
+  }
+
+  // Info Grid
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+    }
+
+    .info-item {
+      label {
+        display: block;
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+      }
+
+      .value {
+        font-size: 1rem;
+        color: #1e293b;
+        font-weight: 600;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &.id-badge {
+          display: inline-block;
+          padding: 0.5rem 1rem;
+          background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%);
+          color: white;
+          border-radius: 12px;
+          font-weight: 700;
+        }
+
+        &.resource-name {
+          font-size: 1.1rem;
+          color: #3f51b5;
+        }
+
+        .inline-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          color: #64748b;
+        }
+      }
+
+      &.full-width {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
+  // Items Table
+  .items-table {
+    overflow-x: auto;
+
+    .items-table-mat {
+      width: 100%;
+
+      ::ng-deep {
+        .mat-mdc-header-cell {
+          font-weight: 600;
+          font-size: 0.85rem;
+          color: #64748b;
+          text-transform: uppercase;
+          background: #f8fafc;
+          padding: 12px;
+        }
+
+        .mat-mdc-cell {
+          padding: 12px;
+          color: #1e293b;
+          font-size: 0.95rem;
+
+          &.text-bold {
+            font-weight: 700;
+          }
+        }
+
+        .mat-mdc-row:hover {
+          background-color: #f8fafc;
+        }
+      }
+    }
+  }
+
+  // Observaciones
+  .observaciones-content {
+    background: #f8fafc;
+    padding: 1rem;
+    border-radius: 12px;
+    border-left: 4px solid #3f51b5;
+
+    p {
+      margin: 0;
+      color: #1e293b;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+  }
+
+  // Gestión de Estado
+  .estado-actual {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.75rem;
+    }
+
+    .estado-badge-container {
+      background: #f8fafc;
+      padding: 1rem;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+
+      .estado-chip-large {
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
+        height: auto;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .my-divider {
+    margin: 1.5rem 0;
+  }
+
+  .cambios-estado {
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.75rem;
+    }
+
+    .estado-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .estado-button {
+        border-radius: 12px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
+
+  .no-cambios-alert {
+    background: #e3f2fd;
+    padding: 1rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+
+    mat-icon {
+      color: #1976d2;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    p {
+      margin: 0;
+      color: #1565c0;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+  }
+
+  .cancel-button {
+    width: 100%;
+    border-radius: 12px;
+    padding: 0.875rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+    }
+  }
+
+  // Price Breakdown
+  .price-breakdown {
+    .price-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+
+      .price-label {
+        color: #64748b;
+        font-size: 0.95rem;
+        font-weight: 500;
+      }
+
+      .price-value {
+        color: #1e293b;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      &.total {
+        padding-top: 1rem;
+
+        .price-label {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #1e293b;
+        }
+
+        .total-price {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: #43a047;
+        }
+      }
+    }
+
+    mat-divider {
+      margin: 1rem 0;
+    }
+  }
+
+  // Chips
+  ::ng-deep {
+    .mat-mdc-chip {
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 0.5rem 0.75rem;
+      height: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        margin: 0;
+      }
+
+      &.chip-pendiente {
+        background-color: #fff3e0 !important;
+        color: #e65100 !important;
+      }
+
+      &.chip-confirmada {
+        background-color: #e8f5e9 !important;
+        color: #2e7d32 !important;
+      }
+
+      &.chip-en-curso {
+        background-color: #e1f5fe !important;
+        color: #0277bd !important;
+      }
+
+      &.chip-completada {
+        background-color: #e8eaf6 !important;
+        color: #3f51b5 !important;
+      }
+
+      &.chip-cancelada {
+        background-color: #ffebee !important;
+        color: #c62828 !important;
+      }
+    }
+  }
+
+  // Processing Overlay
+  .processing-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+
+    .processing-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+
+      p {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+      }
+    }
+  }
+
+  // Responsive
+  @media (max-width: 1200px) {
+    padding: 1rem;
+
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.5rem;
+
+      .header-content .page-title {
+        font-size: 1.5rem;
+      }
+
+      .header-actions button {
+        width: 100%;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.75rem;
+
+    .page-header {
+      padding: 1rem;
+      border-radius: 12px;
+    }
+
+    .info-card, .action-card, .price-card {
+      ::ng-deep {
+        .mat-mdc-card-header {
+          padding: 1rem;
+        }
+
+        .mat-mdc-card-content {
+          padding: 0 1rem 1rem 1rem;
+        }
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

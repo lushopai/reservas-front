@@ -1,78 +1,113 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
-  <div class="container">
+<mat-toolbar color="primary" class="navbar-material">
+  <div class="navbar-container">
     <!-- Logo / Brand -->
-    <a class="navbar-brand d-flex align-items-center" routerLink="/">
-      <i class="bi bi-house-heart-fill me-2 fs-4"></i>
-      <span class="fw-bold">Cabañas & Servicios</span>
+    <a class="navbar-brand" routerLink="/">
+      <mat-icon class="brand-icon">cottage</mat-icon>
+      <span class="brand-text">Cabañas & Servicios</span>
     </a>
 
-    <!-- Mobile Toggle Button -->
-    <button
-      class="navbar-toggler"
-      type="button"
-      (click)="toggleMenu()"
-      [attr.aria-expanded]="isMenuOpen">
-      <span class="navbar-toggler-icon"></span>
+    <!-- Spacer -->
+    <span class="navbar-spacer"></span>
+
+    <!-- Desktop Menu -->
+    <div class="navbar-menu desktop-only">
+      <a mat-button routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+        <mat-icon>home</mat-icon>
+        Inicio
+      </a>
+      <a mat-button routerLink="/cabanas" routerLinkActive="active-link">
+        <mat-icon>holiday_village</mat-icon>
+        Cabañas
+      </a>
+      <a mat-button routerLink="/servicios" routerLinkActive="active-link">
+        <mat-icon>stars</mat-icon>
+        Servicios
+      </a>
+    </div>
+
+    <!-- Desktop User Actions -->
+    <div class="navbar-actions desktop-only">
+      <!-- Si NO está logueado -->
+      <ng-container *ngIf="!isLoggedIn">
+        <button mat-stroked-button class="action-button" (click)="goToLogin()">
+          <mat-icon>login</mat-icon>
+          Iniciar Sesión
+        </button>
+        <button mat-raised-button color="accent" (click)="goToRegister()">
+          <mat-icon>person_add</mat-icon>
+          Registrarse
+        </button>
+      </ng-container>
+
+      <!-- Si SÍ está logueado -->
+      <ng-container *ngIf="isLoggedIn">
+        <button mat-stroked-button class="action-button" (click)="goToDashboard()">
+          <mat-icon>{{ userRole === 'ADMIN' ? 'admin_panel_settings' : 'event_note' }}</mat-icon>
+          {{ userRole === 'ADMIN' ? 'Panel Admin' : 'Mis Reservas' }}
+        </button>
+        <button mat-raised-button color="accent" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          Salir
+        </button>
+      </ng-container>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button mat-icon-button class="mobile-only" (click)="toggleMenu()">
+      <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
     </button>
+  </div>
+</mat-toolbar>
 
-    <!-- Navbar Content -->
-    <div class="collapse navbar-collapse" [class.show]="isMenuOpen">
-      <!-- Links principales -->
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">
-            <i class="bi bi-house me-1"></i>
-            Inicio
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/cabanas" routerLinkActive="active" (click)="closeMenu()">
-            <i class="bi bi-building me-1"></i>
-            Cabañas
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/servicios" routerLinkActive="active" (click)="closeMenu()">
-            <i class="bi bi-star me-1"></i>
-            Servicios
-          </a>
-        </li>
-      </ul>
+<!-- Mobile Menu Drawer -->
+<div class="mobile-menu" [class.open]="isMenuOpen">
+  <div class="mobile-menu-content">
+    <!-- Navigation Links -->
+    <div class="mobile-nav-links">
+      <a mat-button routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" (click)="closeMenu()">
+        <mat-icon>home</mat-icon>
+        Inicio
+      </a>
+      <a mat-button routerLink="/cabanas" routerLinkActive="active-link" (click)="closeMenu()">
+        <mat-icon>holiday_village</mat-icon>
+        Cabañas
+      </a>
+      <a mat-button routerLink="/servicios" routerLinkActive="active-link" (click)="closeMenu()">
+        <mat-icon>stars</mat-icon>
+        Servicios
+      </a>
+    </div>
 
-      <!-- User Menu (derecha) -->
-      <ul class="navbar-nav ms-auto">
-        <!-- Si NO está logueado -->
-        <ng-container *ngIf="!isLoggedIn">
-          <li class="nav-item">
-            <button class="btn btn-outline-light me-2" (click)="goToLogin()">
-              <i class="bi bi-box-arrow-in-right me-1"></i>
-              Iniciar Sesión
-            </button>
-          </li>
-          <li class="nav-item">
-            <button class="btn btn-light" (click)="goToRegister()">
-              <i class="bi bi-person-plus me-1"></i>
-              Registrarse
-            </button>
-          </li>
-        </ng-container>
+    <mat-divider></mat-divider>
 
-        <!-- Si SÍ está logueado -->
-        <ng-container *ngIf="isLoggedIn">
-          <li class="nav-item me-2">
-            <button class="btn btn-outline-light" (click)="goToDashboard()">
-              <i class="bi bi-speedometer2 me-1"></i>
-              {{ userRole === 'ADMIN' ? 'Panel Admin' : 'Mis Reservas' }}
-            </button>
-          </li>
-          <li class="nav-item">
-            <button class="btn btn-light" (click)="logout()">
-              <i class="bi bi-box-arrow-right me-1"></i>
-              Salir
-            </button>
-          </li>
-        </ng-container>
-      </ul>
+    <!-- User Actions -->
+    <div class="mobile-user-actions">
+      <!-- Si NO está logueado -->
+      <ng-container *ngIf="!isLoggedIn">
+        <button mat-stroked-button color="primary" class="mobile-action-btn" (click)="goToLogin(); closeMenu()">
+          <mat-icon>login</mat-icon>
+          Iniciar Sesión
+        </button>
+        <button mat-raised-button color="primary" class="mobile-action-btn" (click)="goToRegister(); closeMenu()">
+          <mat-icon>person_add</mat-icon>
+          Registrarse
+        </button>
+      </ng-container>
+
+      <!-- Si SÍ está logueado -->
+      <ng-container *ngIf="isLoggedIn">
+        <button mat-stroked-button color="primary" class="mobile-action-btn" (click)="goToDashboard(); closeMenu()">
+          <mat-icon>{{ userRole === 'ADMIN' ? 'admin_panel_settings' : 'event_note' }}</mat-icon>
+          {{ userRole === 'ADMIN' ? 'Panel Admin' : 'Mis Reservas' }}
+        </button>
+        <button mat-raised-button color="warn" class="mobile-action-btn" (click)="logout(); closeMenu()">
+          <mat-icon>logout</mat-icon>
+          Salir
+        </button>
+      </ng-container>
     </div>
   </div>
-</nav>
+</div>
+
+<!-- Backdrop for mobile menu -->
+<div class="mobile-backdrop" [class.visible]="isMenuOpen" (click)="closeMenu()"></div>

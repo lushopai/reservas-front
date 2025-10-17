@@ -2,6 +2,24 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
+// Angular Material
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+
 import { ClienteRoutingModule } from './cliente-routing.module';
 import { ClienteComponent } from './cliente.component';
 import { MisReservasComponent } from './pages/mis-reservas/mis-reservas.component';
@@ -26,7 +44,24 @@ import { ConfirmarReservaComponent } from './pages/confirmar-reserva/confirmar-r
     ReactiveFormsModule,
     FormsModule,
     ClienteRoutingModule,
-    SharedModule
+    SharedModule,
+    // Angular Material
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatChipsModule,
+    MatCardModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    MatBadgeModule,
+    MatTooltipModule,
+    MatDatepickerModule,
+    MatMenuModule,
+    MatDividerModule
   ]
 })
 export class ClienteModule { }

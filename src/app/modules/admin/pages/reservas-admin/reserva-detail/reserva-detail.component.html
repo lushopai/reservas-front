@@ -1,252 +1,271 @@
-<div class="container-fluid py-4">
-  <!-- Título y Botón Volver -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="d-flex justify-content-between align-items-center">
-        <h2>
-          <i class="bi bi-calendar-check me-2"></i>
-          Detalles de Reserva
-        </h2>
-        <button class="btn btn-secondary" (click)="volver()">
-          <i class="bi bi-arrow-left me-2"></i>Volver
-        </button>
-      </div>
+<div class="reserva-detail-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>event_note</mat-icon>
+        Detalle de Reserva
+      </h1>
+      <p class="page-subtitle" *ngIf="reserva">Reserva #{{ reserva.id }}</p>
+    </div>
+    <div class="header-actions">
+      <button mat-stroked-button (click)="volver()">
+        <mat-icon>arrow_back</mat-icon>
+        Volver
+      </button>
     </div>
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="cargando" class="text-center py-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
-    </div>
-    <p class="mt-3 text-muted">Cargando información de la reserva...</p>
+  <div *ngIf="cargando" class="loading-container">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p class="loading-text">Cargando información de la reserva...</p>
   </div>
 
   <!-- Contenido Principal -->
-  <div *ngIf="!cargando && reserva" class="row">
-    <!-- Columna Izquierda: Información de Reserva -->
-    <div class="col-lg-8">
+  <div *ngIf="!cargando && reserva" class="content-grid">
+
+    <!-- Columna Izquierda -->
+    <div class="left-column">
+
       <!-- Card: Información General -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-primary text-white">
-          <h5 class="mb-0">
-            <i class="bi bi-info-circle me-2"></i>
-            Información General
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="text-muted small">ID Reserva</label>
-              <p class="fw-bold">#{{ reserva.id }}</p>
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon blue-icon">info</mat-icon>
+          <mat-card-title>Información General</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>ID Reserva</label>
+              <p class="value id-badge">#{{ reserva.id }}</p>
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="text-muted small">Estado Actual</label>
-              <p>
-                <span [ngClass]="getBadgeClass(reserva.estado)">
-                  <i [ngClass]="'bi ' + getEstadoIcon(reserva.estado)" class="me-1"></i>
+            <div class="info-item">
+              <label>Estado Actual</label>
+              <p class="value">
+                <mat-chip [class]="getEstadoChipClass(reserva.estado)">
+                  <mat-icon>{{ getEstadoIcon(reserva.estado) }}</mat-icon>
                   {{ reserva.estado }}
-                </span>
+                </mat-chip>
               </p>
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="text-muted small">Tipo de Reserva</label>
-              <p class="fw-bold">{{ reserva.tipoReserva }}</p>
+            <div class="info-item">
+              <label>Tipo de Reserva</label>
+              <p class="value">{{ reserva.tipoReserva === 'CABANA_DIA' ? 'Cabaña' : 'Servicio' }}</p>
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="text-muted small">Fecha de Reserva</label>
-              <p class="fw-bold">{{ reserva.fechaReserva ? formatearFecha(reserva.fechaReserva) : 'N/A' }}</p>
+            <div class="info-item">
+              <label>Fecha de Reserva</label>
+              <p class="value">{{ reserva.fechaReserva ? formatearFecha(reserva.fechaReserva) : 'N/A' }}</p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card: Usuario -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-info text-white">
-          <h5 class="mb-0">
-            <i class="bi bi-person me-2"></i>
-            Información del Cliente
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="text-muted small">Nombre Completo</label>
-              <p class="fw-bold">{{ reserva.nombreUsuario || 'N/A' }}</p>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="text-muted small">Email</label>
-              <p class="fw-bold">{{ reserva.emailUsuario || 'N/A' }}</p>
+            <div class="info-item full-width">
+              <label>Duración</label>
+              <p class="value">
+                <mat-icon class="inline-icon">schedule</mat-icon>
+                {{ calcularDias() }} {{ calcularDias() === 1 ? 'día' : 'días' }}
+              </p>
             </div>
           </div>
-        </div>
-      </div>
+        </mat-card-content>
+      </mat-card>
 
-      <!-- Card: Recurso Reservado -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-success text-white">
-          <h5 class="mb-0">
-            <i class="bi bi-house-door me-2"></i>
-            Recurso Reservado
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-12 mb-3">
-              <label class="text-muted small">Nombre del Recurso</label>
-              <p class="fw-bold">{{ reserva.nombreRecurso || 'N/A' }}</p>
+      <!-- Card: Cliente -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon teal-icon">person</mat-icon>
+          <mat-card-title>Información del Cliente</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Nombre Completo</label>
+              <p class="value">{{ reserva.nombreUsuario || 'N/A' }}</p>
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="text-muted small">Fecha Inicio</label>
-              <p class="fw-bold">{{ formatearFecha(reserva.fechaInicio) }}</p>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="text-muted small">Fecha Fin</label>
-              <p class="fw-bold">{{ formatearFecha(reserva.fechaFin) }}</p>
+            <div class="info-item">
+              <label>Email</label>
+              <p class="value">
+                <mat-icon class="inline-icon">email</mat-icon>
+                {{ reserva.emailUsuario || 'N/A' }}
+              </p>
             </div>
           </div>
-        </div>
-      </div>
+        </mat-card-content>
+      </mat-card>
 
-      <!-- Card: Items Reservados -->
-      <div class="card shadow-sm mb-4" *ngIf="reserva.itemsReservados && reserva.itemsReservados.length > 0">
-        <div class="card-header bg-warning text-dark">
-          <h5 class="mb-0">
-            <i class="bi bi-box-seam me-2"></i>
-            Items Adicionales / Equipamiento
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Cantidad</th>
-                  <th class="text-end">Precio Unitario</th>
-                  <th class="text-end">Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let item of reserva.itemsReservados">
-                  <td>{{ item.nombreItem }}</td>
-                  <td>{{ item.cantidad }}</td>
-                  <td class="text-end">{{ item.precioUnitario ? formatearPrecio(item.precioUnitario) : 'N/A' }}</td>
-                  <td class="text-end">{{ item.subtotal ? formatearPrecio(item.subtotal) : 'N/A' }}</td>
-                </tr>
-              </tbody>
+      <!-- Card: Recurso -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon green-icon">holiday_village</mat-icon>
+          <mat-card-title>Recurso Reservado</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-grid">
+            <div class="info-item full-width">
+              <label>Nombre del Recurso</label>
+              <p class="value resource-name">{{ reserva.nombreRecurso || 'N/A' }}</p>
+            </div>
+            <div class="info-item">
+              <label>Fecha Inicio</label>
+              <p class="value">
+                <mat-icon class="inline-icon">event</mat-icon>
+                {{ formatearFechaCorta(reserva.fechaInicio) }}
+              </p>
+            </div>
+            <div class="info-item">
+              <label>Fecha Fin</label>
+              <p class="value">
+                <mat-icon class="inline-icon">event</mat-icon>
+                {{ formatearFechaCorta(reserva.fechaFin) }}
+              </p>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Card: Items Adicionales -->
+      <mat-card class="info-card" *ngIf="reserva.itemsReservados && reserva.itemsReservados.length > 0">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon orange-icon">inventory_2</mat-icon>
+          <mat-card-title>Items Adicionales</mat-card-title>
+          <mat-card-subtitle>Equipamiento y servicios extras</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="items-table">
+            <table mat-table [dataSource]="reserva.itemsReservados" class="items-table-mat">
+              <ng-container matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef>Item</th>
+                <td mat-cell *matCellDef="let item">{{ item.nombreItem }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="cantidad">
+                <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+                <td mat-cell *matCellDef="let item">{{ item.cantidad }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="precio">
+                <th mat-header-cell *matHeaderCellDef>P. Unitario</th>
+                <td mat-cell *matCellDef="let item">{{ item.precioUnitario ? formatearPrecio(item.precioUnitario) : 'N/A' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="subtotal">
+                <th mat-header-cell *matHeaderCellDef>Subtotal</th>
+                <td mat-cell *matCellDef="let item" class="text-bold">{{ item.subtotal ? formatearPrecio(item.subtotal) : 'N/A' }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['nombre', 'cantidad', 'precio', 'subtotal']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['nombre', 'cantidad', 'precio', 'subtotal']"></tr>
             </table>
           </div>
-        </div>
-      </div>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Card: Observaciones -->
-      <div class="card shadow-sm mb-4" *ngIf="reserva.observaciones">
-        <div class="card-header bg-secondary text-white">
-          <h5 class="mb-0">
-            <i class="bi bi-chat-left-text me-2"></i>
-            Observaciones
-          </h5>
-        </div>
-        <div class="card-body">
-          <pre class="mb-0" style="white-space: pre-wrap;">{{ reserva.observaciones }}</pre>
-        </div>
-      </div>
+      <mat-card class="info-card" *ngIf="reserva.observaciones">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon gray-icon">comment</mat-icon>
+          <mat-card-title>Observaciones</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="observaciones-content">
+            <p>{{ reserva.observaciones }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
     </div>
 
-    <!-- Columna Derecha: Acciones y Precios -->
-    <div class="col-lg-4">
+    <!-- Columna Derecha -->
+    <div class="right-column">
+
       <!-- Card: Gestión de Estado -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-dark text-white">
-          <h5 class="mb-0">
-            <i class="bi bi-gear me-2"></i>
-            Gestión de Estado
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="mb-3">
-            <label class="text-muted small">Estado Actual</label>
-            <div class="p-3 bg-light rounded text-center">
-              <span [ngClass]="getBadgeClass(reserva.estado)" class="fs-6">
-                <i [ngClass]="'bi ' + getEstadoIcon(reserva.estado)" class="me-1"></i>
+      <mat-card class="action-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon purple-icon">settings</mat-icon>
+          <mat-card-title>Gestión de Estado</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="estado-actual">
+            <label>Estado Actual</label>
+            <div class="estado-badge-container">
+              <mat-chip [class]="getEstadoChipClass(reserva.estado)" class="estado-chip-large">
+                <mat-icon>{{ getEstadoIcon(reserva.estado) }}</mat-icon>
                 {{ reserva.estado }}
-              </span>
+              </mat-chip>
             </div>
           </div>
 
-          <div *ngIf="estadosDisponibles.length > 0">
-            <label class="text-muted small mb-2">Cambiar a:</label>
-            <div class="d-grid gap-2">
+          <mat-divider class="my-divider"></mat-divider>
+
+          <div *ngIf="estadosDisponibles.length > 0" class="cambios-estado">
+            <label>Cambiar a:</label>
+            <div class="estado-buttons">
               <button
                 *ngFor="let estado of estadosDisponibles"
-                class="btn btn-outline-primary"
-                (click)="cambiarEstado(estado)"
+                mat-raised-button
+                [color]="estado.color"
+                (click)="cambiarEstado(estado.value, estado.label)"
                 [disabled]="procesando"
-              >
-                <i [ngClass]="'bi ' + getEstadoIcon(estado)" class="me-2"></i>
-                {{ estado }}
+                class="estado-button">
+                <mat-icon>{{ getEstadoIcon(estado.value) }}</mat-icon>
+                {{ estado.label }}
               </button>
             </div>
           </div>
 
-          <div *ngIf="estadosDisponibles.length === 0" class="alert alert-info mt-3 mb-0">
-            <i class="bi bi-info-circle me-2"></i>
-            No se pueden realizar cambios de estado desde {{ reserva.estado }}
+          <div *ngIf="estadosDisponibles.length === 0" class="no-cambios-alert">
+            <mat-icon>info</mat-icon>
+            <p>No se pueden realizar cambios desde {{ reserva.estado }}</p>
           </div>
 
-          <hr class="my-3">
+          <mat-divider class="my-divider"></mat-divider>
 
-          <!-- Botón de Cancelación Directa -->
+          <!-- Botón Cancelar -->
           <button
             *ngIf="reserva.estado !== 'CANCELADA' && reserva.estado !== 'COMPLETADA'"
-            class="btn btn-danger w-100"
+            mat-raised-button
+            color="warn"
             (click)="cancelarReserva()"
             [disabled]="procesando"
-          >
-            <i class="bi bi-x-circle me-2"></i>
+            class="cancel-button">
+            <mat-icon>cancel</mat-icon>
             Cancelar Reserva
           </button>
-        </div>
-      </div>
+        </mat-card-content>
+      </mat-card>
 
       <!-- Card: Resumen de Precios -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-success text-white">
-          <h5 class="mb-0">
-            <i class="bi bi-currency-dollar me-2"></i>
-            Resumen de Precios
-          </h5>
-        </div>
-        <div class="card-body">
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">Precio Base:</span>
-            <span class="fw-bold">{{ formatearPrecio(reserva.precioBase) }}</span>
+      <mat-card class="price-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon green-icon">attach_money</mat-icon>
+          <mat-card-title>Resumen de Precios</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="price-breakdown">
+            <div class="price-item">
+              <span class="price-label">Precio Base:</span>
+              <span class="price-value">{{ formatearPrecio(reserva.precioBase) }}</span>
+            </div>
+            <div class="price-item">
+              <span class="price-label">Items Adicionales:</span>
+              <span class="price-value">{{ formatearPrecio(reserva.precioItems || 0) }}</span>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="price-item total">
+              <span class="price-label">Total:</span>
+              <span class="price-value total-price">{{ formatearPrecio(reserva.precioTotal) }}</span>
+            </div>
           </div>
-          <div class="d-flex justify-content-between mb-2">
-            <span class="text-muted">Items Adicionales:</span>
-            <span class="fw-bold">{{ formatearPrecio(reserva.precioItems || 0) }}</span>
-          </div>
-          <hr>
-          <div class="d-flex justify-content-between">
-            <span class="fw-bold">Total:</span>
-            <span class="fw-bold text-success fs-5">{{ formatearPrecio(reserva.precioTotal) }}</span>
-          </div>
-        </div>
-      </div>
+        </mat-card-content>
+      </mat-card>
 
     </div>
+
   </div>
 
   <!-- Overlay de Procesamiento -->
-  <div *ngIf="procesando" class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-       style="background: rgba(0,0,0,0.5); z-index: 9999;">
-    <div class="text-center">
-      <div class="spinner-border text-light mb-3" style="width: 3rem; height: 3rem;" role="status">
-        <span class="visually-hidden">Procesando...</span>
-      </div>
-      <p class="text-white fs-5">Procesando cambio de estado...</p>
+  <div *ngIf="procesando" class="processing-overlay">
+    <div class="processing-content">
+      <mat-spinner diameter="60" color="accent"></mat-spinner>
+      <p>Procesando cambio de estado...</p>
     </div>
   </div>
 </div>

@@ -144,40 +144,27 @@
               <i class="bi bi-calendar-week me-2"></i>Selecciona tus fechas
             </h5>
 
-            <!-- Check-in -->
-            <mat-form-field appearance="outline" class="w-100 mb-3">
+            <!-- Date Range Picker (Check-in y Check-out en un solo calendario) -->
+            <mat-form-field appearance="outline" class="w-100">
               <mat-label>
-                <i class="bi bi-calendar-event me-2"></i>Check-in
+                <i class="bi bi-calendar-range me-2"></i>Check-in → Check-out
               </mat-label>
-              <input
-                matInput
-                [matDatepicker]="pickerInicio"
-                [(ngModel)]="fechaInicio"
+              <mat-date-range-input
+                [formGroup]="rangoFechas"
+                [rangePicker]="picker"
                 [min]="fechaMinima"
-                [matDatepickerFilter]="dateFilter"
-                (dateChange)="onFechaChange()"
-                placeholder="Selecciona fecha de entrada"
-                readonly>
-              <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-              <mat-datepicker #pickerInicio></mat-datepicker>
-            </mat-form-field>
-
-            <!-- Check-out -->
-            <mat-form-field appearance="outline" class="w-100 mb-3">
-              <mat-label>
-                <i class="bi bi-calendar-check me-2"></i>Check-out
-              </mat-label>
-              <input
-                matInput
-                [matDatepicker]="pickerFin"
-                [(ngModel)]="fechaFin"
-                [min]="fechaInicio || fechaMinima"
-                [matDatepickerFilter]="dateFilter"
-                (dateChange)="onFechaChange()"
-                placeholder="Selecciona fecha de salida"
-                readonly>
-              <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
-              <mat-datepicker #pickerFin></mat-datepicker>
+                [dateFilter]="dateFilter">
+                <input
+                  matStartDate
+                  formControlName="start"
+                  placeholder="Entrada">
+                <input
+                  matEndDate
+                  formControlName="end"
+                  placeholder="Salida">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-date-range-picker #picker></mat-date-range-picker>
             </mat-form-field>
 
             <!-- Loading indicador para fechas -->
@@ -186,6 +173,26 @@
                 <span class="spinner-border spinner-border-sm me-2"></span>
                 Cargando disponibilidad...
               </small>
+            </div>
+
+            <!-- Leyenda de disponibilidad -->
+            <div class="card border-0 bg-light mb-3 p-3">
+              <div class="d-flex flex-wrap gap-3 justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                  <div style="width: 16px; height: 16px; background-color: #667eea; border-radius: 50%; margin-right: 8px;"></div>
+                  <small class="text-muted">Seleccionado</small>
+                </div>
+                <div class="d-flex align-items-center">
+                  <div style="width: 16px; height: 16px; background-color: #f5f5f5; border: 1px solid #d0d0d0; border-radius: 50%; margin-right: 8px; position: relative;">
+                    <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #888; transform: rotate(-45deg);"></div>
+                  </div>
+                  <small class="text-muted">Ocupado</small>
+                </div>
+                <div class="d-flex align-items-center">
+                  <div style="width: 16px; height: 16px; background-color: white; border: 2px solid #667eea; border-radius: 50%; margin-right: 8px;"></div>
+                  <small class="text-muted">Hoy</small>
+                </div>
+              </div>
             </div>
 
             <button
@@ -206,8 +213,15 @@
               <strong>¡Disponible!</strong>
               <div class="mt-2">
                 <small class="d-block">{{ numeroNoches }} noche(s)</small>
-                <div class="h5 mb-0 mt-1">
+                <div *ngIf="serviciosSeleccionados.size === 0" class="h5 mb-0 mt-1">
                   Total: ${{ formatearPrecio(precioCalculado) }}
+                </div>
+                <div *ngIf="serviciosSeleccionados.size > 0">
+                  <small class="d-block text-muted">Cabaña: ${{ formatearPrecio(precioCalculado) }}</small>
+                  <small class="d-block text-muted">Servicios: ${{ formatearPrecio(calcularPrecioConServicios() - precioCalculado) }}</small>
+                  <div class="h5 mb-0 mt-1">
+                    Total: ${{ formatearPrecio(calcularPrecioConServicios()) }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -216,6 +230,105 @@
               <i class="bi bi-exclamation-triangle me-2"></i>
               <strong>No disponible</strong>
               <small class="d-block mt-1">Intenta con otras fechas</small>
+            </div>
+          </div>
+
+          <!-- Servicios Adicionales Opcionales -->
+          <div *ngIf="disponibilidadVerificada && disponible && serviciosDisponibles.length > 0" class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">
+                <i class="bi bi-plus-circle me-2"></i>Agregar Servicios
+              </h5>
+              <button class="btn btn-sm btn-link" (click)="mostrarServicios = !mostrarServicios">
+                <i class="bi" [ngClass]="mostrarServicios ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+              </button>
+            </div>
+
+            <div *ngIf="mostrarServicios" class="border rounded p-3 bg-light">
+              <p class="text-muted small mb-3">
+                Complementa tu estadía con nuestros servicios de entretenimiento
+              </p>
+
+              <div *ngIf="cargandoServicios" class="text-center py-3">
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                <small>Cargando servicios...</small>
+              </div>
+
+              <div *ngIf="!cargandoServicios" class="d-flex flex-column gap-2">
+                <div *ngFor="let servicio of serviciosDisponibles"
+                     class="card border"
+                     [class.border-primary]="servicio.id && isServicioSeleccionado(servicio.id)"
+                     [class.bg-primary]="servicio.id && isServicioSeleccionado(servicio.id)"
+                     [class.bg-opacity-10]="servicio.id && isServicioSeleccionado(servicio.id)">
+                  <div class="card-body p-3" *ngIf="servicio.id">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        [id]="'servicio-' + servicio.id"
+                        [checked]="isServicioSeleccionado(servicio.id)"
+                        (change)="toggleServicio(servicio.id)">
+                      <label class="form-check-label w-100" [for]="'servicio-' + servicio.id">
+                        <div class="d-flex justify-content-between align-items-start">
+                          <div>
+                            <strong>{{ servicio.nombre }}</strong>
+                            <small class="d-block text-muted">{{ servicio.tipoServicio }}</small>
+                            <small class="d-block text-primary fw-bold" *ngIf="servicio.precioPorUnidad">
+                              ${{ formatearPrecio(servicio.precioPorUnidad) }}/bloque
+                            </small>
+                          </div>
+                          <span class="badge bg-info" *ngIf="servicio.duracionBloqueMinutos">{{ servicio.duracionBloqueMinutos }}min</span>
+                        </div>
+                      </label>
+                    </div>
+
+                    <!-- Opciones del servicio seleccionado -->
+                    <div *ngIf="isServicioSeleccionado(servicio.id)" class="mt-3 pt-3 border-top">
+                      <div class="row g-2">
+                        <div class="col-6">
+                          <label class="form-label small">Fecha</label>
+                          <input
+                            type="date"
+                            class="form-control form-control-sm"
+                            [value]="serviciosSeleccionados.get(servicio.id)?.fecha"
+                            [min]="fechaInicio ? formatearFechaParaBackend(fechaInicio) : ''"
+                            [max]="fechaFin ? formatearFechaParaBackend(fechaFin) : ''"
+                            (change)="actualizarServicio(servicio.id, 'fecha', $any($event.target).value)">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label small">Hora</label>
+                          <input
+                            type="time"
+                            class="form-control form-control-sm"
+                            [value]="serviciosSeleccionados.get(servicio.id)?.horaInicio"
+                            (change)="actualizarServicio(servicio.id, 'horaInicio', $any($event.target).value)">
+                        </div>
+                        <div class="col-12">
+                          <label class="form-label small">Bloques<span *ngIf="servicio.duracionBloqueMinutos"> ({{ servicio.duracionBloqueMinutos }}min c/u)</span></label>
+                          <input
+                            type="number"
+                            class="form-control form-control-sm"
+                            min="1"
+                            max="8"
+                            [value]="serviciosSeleccionados.get(servicio.id)?.duracionBloques"
+                            (change)="actualizarServicio(servicio.id, 'duracionBloques', +$any($event.target).value)">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Resumen de servicios seleccionados -->
+              <div *ngIf="serviciosSeleccionados.size > 0" class="mt-3 p-3 bg-white rounded">
+                <small class="text-muted d-block mb-2">Servicios agregados:</small>
+                <div *ngFor="let item of serviciosSeleccionados | keyvalue" class="d-flex justify-content-between mb-1">
+                  <small>{{ item.value.nombre }}</small>
+                  <small class="text-primary fw-bold">
+                    ${{ formatearPrecio(calcularPrecioServicio(item.key, item.value.duracionBloques)) }}
+                  </small>
+                </div>
+              </div>
             </div>
           </div>
 

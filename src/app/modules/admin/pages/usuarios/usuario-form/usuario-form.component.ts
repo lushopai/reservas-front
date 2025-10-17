@@ -18,6 +18,15 @@ export class UsuarioFormComponent implements OnInit {
   showPassword = false;
   showConfirmPassword = false;
 
+  // Tipos de documento disponibles
+  tiposDocumento = [
+    { value: 'RUT', label: 'RUT (Chile)' },
+    { value: 'DNI', label: 'DNI' },
+    { value: 'PASAPORTE', label: 'Pasaporte' },
+    { value: 'CEDULA', label: 'Cédula' },
+    { value: 'OTRO', label: 'Otro' }
+  ];
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -33,13 +42,13 @@ export class UsuarioFormComponent implements OnInit {
   initForm(): void {
     this.usuarioForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2)]],
-      apellidos: ['', [Validators.required, Validators.minLength(2)]], // Cambiar a plural
+      apellidos: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
       telefono: ['', [Validators.pattern(/^[0-9]{9,15}$/)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
-      documento:['',[Validators.required]],
-      tipoDocumento:['',[Validators.required]],
+      documento: ['', [Validators.required]],
+      tipoDocumento: ['', [Validators.required]],
       enabled: [true]
     }, {
       validators: this.passwordMatchValidator
@@ -58,7 +67,14 @@ export class UsuarioFormComponent implements OnInit {
       confirmPassword.setErrors({ passwordMismatch: true });
       return { passwordMismatch: true };
     } else {
-      confirmPassword.setErrors(null);
+      // Solo limpiar el error si no hay otros errores
+      const errors = confirmPassword.errors;
+      if (errors) {
+        delete errors['passwordMismatch'];
+        if (Object.keys(errors).length === 0) {
+          confirmPassword.setErrors(null);
+        }
+      }
       return null;
     }
   }
@@ -83,15 +99,15 @@ export class UsuarioFormComponent implements OnInit {
 
     this.userService.getProfile(id).subscribe({
       next: (usuario) => {
-        console.log('info user: ',usuario);
+        console.log('info user: ', usuario);
         this.usuarioForm.patchValue({
           nombre: usuario.nombre,
-          apellidos: usuario.apellidos, // Cambiar a plural
+          apellidos: usuario.apellidos,
           email: usuario.email,
           telefono: usuario.telefono,
           documento: usuario.documento,
           tipoDocumento: usuario.tipoDocumento,
-          enabled: true // Asumiendo que está activo si se está editando
+          enabled: usuario.enabled !== undefined ? usuario.enabled : true
         });
         this.loading = false;
       },
@@ -119,7 +135,7 @@ export class UsuarioFormComponent implements OnInit {
         icon: 'warning',
         title: 'Formulario incompleto',
         text: 'Por favor completa todos los campos requeridos correctamente',
-        confirmButtonColor: '#667eea'
+        confirmButtonColor: '#3f51b5'
       });
       return;
     }
@@ -162,7 +178,7 @@ export class UsuarioFormComponent implements OnInit {
           icon: 'success',
           title: '¡Usuario creado!',
           text: 'El usuario ha sido creado exitosamente',
-          confirmButtonColor: '#667eea'
+          confirmButtonColor: '#3f51b5'
         }).then(() => {
           this.router.navigate(['/admin/usuarios']);
         });
@@ -201,19 +217,24 @@ export class UsuarioFormComponent implements OnInit {
           icon: 'success',
           title: '¡Usuario actualizado!',
           text: 'Los datos han sido actualizados exitosamente',
-          confirmButtonColor: '#667eea'
+          confirmButtonColor: '#3f51b5'
         }).then(() => {
-          this.router.navigate(['/admin/usuarios', this.userId]);
+          this.router.navigate(['/admin/usuarios']);
         });
       },
       error: (error: any) => {
         this.submitting = false;
         console.error('Error al actualizar usuario:', error);
 
+        let errorMessage = 'No se pudo actualizar el usuario';
+        if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudo actualizar el usuario',
+          text: errorMessage,
           confirmButtonColor: '#dc3545'
         });
       }

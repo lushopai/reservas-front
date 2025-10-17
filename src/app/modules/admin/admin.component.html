@@ -1,9 +1,295 @@
-<div class="admin-container">
-  <!-- Header con navegación -->
-  <app-header></app-header>
+<div class="admin-layout">
 
-  <!-- Contenido principal -->
-  <div class="container-fluid mt-4">
+  <!-- NAVBAR HORIZONTAL -->
+  <mat-toolbar color="primary" class="admin-navbar">
+
+    <!-- Logo & Brand -->
+    <div class="navbar-brand" routerLink="/admin/dashboard">
+      <mat-icon class="brand-icon">cottage</mat-icon>
+      <span class="brand-text">Admin Panel</span>
+    </div>
+
+    <!-- Navigation Menu (Desktop) -->
+    <div class="navbar-menu desktop-menu">
+
+      <!-- Dashboard -->
+      <a mat-button routerLink="/admin/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+        <mat-icon>dashboard</mat-icon>
+        <span>Dashboard</span>
+      </a>
+
+      <!-- Usuarios -->
+      <button mat-button [matMenuTriggerFor]="usuariosMenu" class="menu-button">
+        <mat-icon>group</mat-icon>
+        <span>Usuarios</span>
+        <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #usuariosMenu="matMenu">
+        <a mat-menu-item routerLink="/admin/usuarios">
+          <mat-icon>list</mat-icon>
+          <span>Lista de Usuarios</span>
+        </a>
+        <a mat-menu-item routerLink="/admin/usuarios/nuevo">
+          <mat-icon>person_add</mat-icon>
+          <span>Nuevo Usuario</span>
+        </a>
+      </mat-menu>
+
+      <!-- Cabañas -->
+      <button mat-button [matMenuTriggerFor]="cabanasMenu" class="menu-button">
+        <mat-icon>cottage</mat-icon>
+        <span>Cabañas</span>
+        <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #cabanasMenu="matMenu">
+        <a mat-menu-item routerLink="/admin/cabanas">
+          <mat-icon>list</mat-icon>
+          <span>Lista de Cabañas</span>
+        </a>
+        <a mat-menu-item routerLink="/admin/cabanas/nueva">
+          <mat-icon>add_circle</mat-icon>
+          <span>Nueva Cabaña</span>
+        </a>
+      </mat-menu>
+
+      <!-- Servicios -->
+      <button mat-button [matMenuTriggerFor]="serviciosMenu" class="menu-button">
+        <mat-icon>star</mat-icon>
+        <span>Servicios</span>
+        <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #serviciosMenu="matMenu">
+        <a mat-menu-item routerLink="/admin/servicios">
+          <mat-icon>list</mat-icon>
+          <span>Lista de Servicios</span>
+        </a>
+        <a mat-menu-item routerLink="/admin/servicios/nuevo">
+          <mat-icon>add_circle</mat-icon>
+          <span>Nuevo Servicio</span>
+        </a>
+      </mat-menu>
+
+      <!-- Reservas -->
+      <a mat-button routerLink="/admin/reservas" routerLinkActive="active-link">
+        <mat-icon>event</mat-icon>
+        <span>Reservas</span>
+      </a>
+
+      <!-- Inventario -->
+      <button mat-button [matMenuTriggerFor]="inventarioMenu" class="menu-button">
+        <mat-icon>inventory</mat-icon>
+        <span>Inventario</span>
+        <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #inventarioMenu="matMenu">
+        <a mat-menu-item routerLink="/admin/inventario">
+          <mat-icon>list</mat-icon>
+          <span>Lista de Items</span>
+        </a>
+        <a mat-menu-item routerLink="/admin/inventario/nuevo">
+          <mat-icon>add_circle</mat-icon>
+          <span>Nuevo Item</span>
+        </a>
+      </mat-menu>
+
+      <!-- Pagos -->
+      <a mat-button routerLink="/admin/pagos" routerLinkActive="active-link">
+        <mat-icon>payments</mat-icon>
+        <span>Pagos</span>
+      </a>
+
+      <!-- Disponibilidad -->
+      <button mat-button [matMenuTriggerFor]="disponibilidadMenu" class="menu-button">
+        <mat-icon>calendar_month</mat-icon>
+        <span>Disponibilidad</span>
+        <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #disponibilidadMenu="matMenu">
+        <a mat-menu-item routerLink="/admin/disponibilidad/cabanas">
+          <mat-icon>cottage</mat-icon>
+          <span>Cabañas</span>
+        </a>
+        <a mat-menu-item routerLink="/admin/disponibilidad/servicios">
+          <mat-icon>star</mat-icon>
+          <span>Servicios</span>
+        </a>
+      </mat-menu>
+
+    </div>
+
+    <!-- Spacer -->
+    <span class="navbar-spacer"></span>
+
+    <!-- Right Actions -->
+    <div class="navbar-actions">
+
+      <!-- Search -->
+      <button mat-icon-button (click)="toggleSearchBar()" matTooltip="Buscar">
+        <mat-icon>search</mat-icon>
+      </button>
+
+      <!-- Notifications -->
+      <button mat-icon-button [matMenuTriggerFor]="notificationsMenu" matTooltip="Notificaciones">
+        <mat-icon [matBadge]="unreadNotificationsCount" matBadgeColor="warn" [matBadgeHidden]="unreadNotificationsCount === 0">
+          notifications
+        </mat-icon>
+      </button>
+
+      <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+        <div class="notifications-header" (click)="$event.stopPropagation()">
+          <h3>Notificaciones</h3>
+          <button mat-button (click)="markAllAsRead()" *ngIf="unreadNotificationsCount > 0">
+            Marcar todas
+          </button>
+        </div>
+        <mat-divider></mat-divider>
+        <div class="notifications-list">
+          <button mat-menu-item *ngFor="let notification of notifications"
+                  (click)="markNotificationAsRead(notification)"
+                  [class.unread]="!notification.read">
+            <mat-icon>{{ notification.icon }}</mat-icon>
+            <div class="notification-content">
+              <p class="notification-message">{{ notification.message }}</p>
+              <span class="notification-time">{{ notification.time }}</span>
+            </div>
+          </button>
+        </div>
+      </mat-menu>
+
+      <!-- User Menu -->
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+        <mat-icon>account_circle</mat-icon>
+        <span class="user-name">{{ currentUser?.username || 'Admin' }}</span>
+        <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <div class="user-menu-header" (click)="$event.stopPropagation()">
+          <mat-icon class="user-icon-large">account_circle</mat-icon>
+          <div class="user-details">
+            <p class="user-full-name">{{ currentUser?.username || 'Administrador' }}</p>
+            <p class="user-email">{{ currentUser?.email || 'admin@sistema.com' }}</p>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="goToProfile()">
+          <mat-icon>person</mat-icon>
+          <span>Mi Perfil</span>
+        </button>
+        <button mat-menu-item (click)="viewAsCustomer()">
+          <mat-icon>visibility</mat-icon>
+          <span>Ver como Cliente</span>
+        </button>
+        <mat-divider></mat-divider>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          <span>Cerrar Sesión</span>
+        </button>
+      </mat-menu>
+
+      <!-- Mobile Menu Toggle -->
+      <button mat-icon-button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+    </div>
+
+  </mat-toolbar>
+
+  <!-- Search Bar Expandible -->
+  <div class="search-bar-container" *ngIf="showSearchBar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Buscar usuarios, cabañas, reservas..." autocomplete="off">
+      <button mat-icon-button matSuffix (click)="toggleSearchBar()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" [class.open]="isMobileMenuOpen">
+    <mat-nav-list>
+      <a mat-list-item routerLink="/admin/dashboard" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+
+      <mat-divider></mat-divider>
+      <h3 mat-subheader>Usuarios</h3>
+      <a mat-list-item routerLink="/admin/usuarios" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>list</mat-icon>
+        <span matListItemTitle>Lista de Usuarios</span>
+      </a>
+      <a mat-list-item routerLink="/admin/usuarios/nuevo" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>person_add</mat-icon>
+        <span matListItemTitle>Nuevo Usuario</span>
+      </a>
+
+      <mat-divider></mat-divider>
+      <h3 mat-subheader>Cabañas</h3>
+      <a mat-list-item routerLink="/admin/cabanas" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>list</mat-icon>
+        <span matListItemTitle>Lista de Cabañas</span>
+      </a>
+      <a mat-list-item routerLink="/admin/cabanas/nueva" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>add_circle</mat-icon>
+        <span matListItemTitle>Nueva Cabaña</span>
+      </a>
+
+      <mat-divider></mat-divider>
+      <h3 mat-subheader>Servicios</h3>
+      <a mat-list-item routerLink="/admin/servicios" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>list</mat-icon>
+        <span matListItemTitle>Lista de Servicios</span>
+      </a>
+      <a mat-list-item routerLink="/admin/servicios/nuevo" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>add_circle</mat-icon>
+        <span matListItemTitle>Nuevo Servicio</span>
+      </a>
+
+      <mat-divider></mat-divider>
+      <a mat-list-item routerLink="/admin/reservas" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>event</mat-icon>
+        <span matListItemTitle>Reservas</span>
+      </a>
+
+      <mat-divider></mat-divider>
+      <h3 mat-subheader>Inventario</h3>
+      <a mat-list-item routerLink="/admin/inventario" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>list</mat-icon>
+        <span matListItemTitle>Lista de Items</span>
+      </a>
+      <a mat-list-item routerLink="/admin/inventario/nuevo" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>add_circle</mat-icon>
+        <span matListItemTitle>Nuevo Item</span>
+      </a>
+
+      <mat-divider></mat-divider>
+      <a mat-list-item routerLink="/admin/pagos" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>payments</mat-icon>
+        <span matListItemTitle>Pagos</span>
+      </a>
+
+      <mat-divider></mat-divider>
+      <h3 mat-subheader>Disponibilidad</h3>
+      <a mat-list-item routerLink="/admin/disponibilidad/cabanas" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>cottage</mat-icon>
+        <span matListItemTitle>Cabañas</span>
+      </a>
+      <a mat-list-item routerLink="/admin/disponibilidad/servicios" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>star</mat-icon>
+        <span matListItemTitle>Servicios</span>
+      </a>
+    </mat-nav-list>
+  </div>
+
+  <!-- Mobile Menu Backdrop -->
+  <div class="mobile-backdrop" [class.visible]="isMobileMenuOpen" (click)="closeMobileMenu()"></div>
+
+  <!-- PAGE CONTENT -->
+  <div class="page-content">
     <router-outlet></router-outlet>
   </div>
+
 </div>

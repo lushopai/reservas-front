@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CabanaService } from '../../../../core/services/cabana.service';
 import { DisponibilidadService } from '../../../../core/services/disponibilidad.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ServicioEntretencionService } from '../../../../core/services/servicio-entretencion.service';
 import { Cabana } from '../../../../core/models/cabana.model';
+import { ServicioEntretencion } from '../../../../core/models/servicio.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,9 +19,13 @@ export class CabanaDetalleComponent implements OnInit {
   cargando = true;
   imagenActual = 0;
 
-  // Datos de reserva con Date objects para Material Datepicker
-  fechaInicio: Date | null = null;
-  fechaFin: Date | null = null;
+  // Form Group para Date Range Picker
+  rangoFechas = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null)
+  });
+
+  // Datos de reserva
   verificandoDisponibilidad = false;
   disponibilidadVerificada = false;
   disponible = false;
@@ -27,6 +35,21 @@ export class CabanaDetalleComponent implements OnInit {
   // Fechas bloqueadas (ocupadas)
   fechasOcupadas: Date[] = [];
   cargandoFechas = false;
+
+  // Servicios adicionales opcionales
+  serviciosDisponibles: ServicioEntretencion[] = [];
+  serviciosSeleccionados: Map<number, any> = new Map();
+  cargandoServicios = false;
+  mostrarServicios = true; // Mostrar expandido por defecto
+
+  // Getters para acceder a las fechas del form
+  get fechaInicio(): Date | null {
+    return this.rangoFechas.get('start')?.value || null;
+  }
+
+  get fechaFin(): Date | null {
+    return this.rangoFechas.get('end')?.value || null;
+  }
 
   // Ubicación por defecto (puedes configurar esto desde el backend)
   ubicacion = {
@@ -55,14 +78,22 @@ export class CabanaDetalleComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private cabanaService: CabanaService,
-    private disponibilidadService: DisponibilidadService
+    private disponibilidadService: DisponibilidadService,
+    private authService: AuthService,
+    private servicioService: ServicioEntretencionService
   ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.cargarCabana(+id);
+      this.cargarServiciosDisponibles();
     }
+
+    // Escuchar cambios en el rango de fechas
+    this.rangoFechas.valueChanges.subscribe(() => {
+      this.onFechaChange();
+    });
   }
 
   cargarCabana(id: number): void {
@@ -93,23 +124,21 @@ export class CabanaDetalleComponent implements OnInit {
     const fechaInicioStr = this.formatearFechaParaBackend(fechaInicio);
     const fechaFinStr = this.formatearFechaParaBackend(fechaFin);
 
-    this.disponibilidadService.consultarDisponibilidadCabana(
+    this.disponibilidadService.obtenerFechasOcupadas(
       cabanaId,
       fechaInicioStr,
       fechaFinStr
     ).subscribe({
-      next: (response) => {
+      next: (fechasStr: string[]) => {
+        // Convertir strings ISO a objetos Date
+        this.fechasOcupadas = fechasStr.map(fechaStr => new Date(fechaStr + 'T00:00:00'));
         this.cargandoFechas = false;
-        // Si no está disponible, obtener las fechas ocupadas del motivo
-        if (!response.disponible && response.motivo) {
-          // Aquí puedes parsear las fechas ocupadas del backend si las envía
-          // Por ahora, simplemente marcamos el periodo como ocupado si no está disponible
-          console.log('Respuesta disponibilidad:', response);
-        }
+        console.log(`Fechas ocupadas cargadas: ${this.fechasOcupadas.length} fechas`);
       },
       error: (error) => {
         console.error('Error al cargar fechas ocupadas:', error);
         this.cargandoFechas = false;
+        // No mostrar error al usuario, simplemente no bloquear fechas
       }
     });
   }
@@ -118,6 +147,67 @@ export class CabanaDetalleComponent implements OnInit {
     return this.fechasOcupadas.some(fechaOcupada =>
       fechaOcupada.toDateString() === date.toDateString()
     );
+  }
+
+  cargarServiciosDisponibles(): void {
+    this.cargandoServicios = true;
+    this.servicioService.obtenerPorEstado('DISPONIBLE').subscribe({
+      next: (servicios) => {
+        this.serviciosDisponibles = servicios;
+        this.cargandoServicios = false;
+        console.log(`Servicios disponibles: ${servicios.length}`);
+      },
+      error: (error) => {
+        console.error('Error al cargar servicios:', error);
+        this.cargandoServicios = false;
+      }
+    });
+  }
+
+  toggleServicio(servicioId: number): void {
+    if (this.serviciosSeleccionados.has(servicioId)) {
+      this.serviciosSeleccionados.delete(servicioId);
+    } else {
+      // Valores por defecto para el servicio
+      const servicio = this.serviciosDisponibles.find(s => s.id === servicioId);
+      this.serviciosSeleccionados.set(servicioId, {
+        servicioId: servicioId,
+        fecha: this.formatearFechaParaBackend(this.fechaInicio!),
+        horaInicio: '10:00',
+        duracionBloques: 1,
+        nombre: servicio?.nombre
+      });
+    }
+  }
+
+  isServicioSeleccionado(servicioId: number): boolean {
+    return this.serviciosSeleccionados.has(servicioId);
+  }
+
+  actualizarServicio(servicioId: number, campo: string, valor: any): void {
+    const servicio = this.serviciosSeleccionados.get(servicioId);
+    if (servicio) {
+      servicio[campo] = valor;
+      this.serviciosSeleccionados.set(servicioId, servicio);
+    }
+  }
+
+  calcularPrecioConServicios(): number {
+    let precioTotal = this.precioCalculado;
+
+    this.serviciosSeleccionados.forEach((datos, servicioId) => {
+      const servicio = this.serviciosDisponibles.find(s => s.id === servicioId);
+      if (servicio && servicio.precioPorUnidad) {
+        precioTotal += servicio.precioPorUnidad * datos.duracionBloques;
+      }
+    });
+
+    return precioTotal;
+  }
+
+  calcularPrecioServicio(servicioId: number, duracionBloques: number): number {
+    const servicio = this.serviciosDisponibles.find(s => s.id === servicioId);
+    return (servicio?.precioPorUnidad || 0) * duracionBloques;
   }
 
   formatearFechaParaBackend(date: Date): string {
@@ -217,22 +307,30 @@ export class CabanaDetalleComponent implements OnInit {
 
     if (!this.fechaInicio || !this.fechaFin) return;
 
+    // Preparar servicios seleccionados
+    const serviciosArray = Array.from(this.serviciosSeleccionados.values());
+
     // Guardar datos de la reserva en sessionStorage (convertir Date a string)
-    const reservaData = {
-      tipo: 'cabana',
+    const reservaData: any = {
+      tipo: this.serviciosSeleccionados.size > 0 ? 'paquete' : 'cabana',
       cabanaId: this.cabana?.id,
       cabana: this.cabana,
       fechaInicio: this.formatearFechaParaBackend(this.fechaInicio),
       fechaFin: this.formatearFechaParaBackend(this.fechaFin),
       numeroNoches: this.numeroNoches,
-      precioCalculado: this.precioCalculado
+      precioCalculado: this.precioCalculado,
+      precioTotal: this.calcularPrecioConServicios()
     };
+
+    // Si hay servicios seleccionados, es un paquete
+    if (this.serviciosSeleccionados.size > 0) {
+      reservaData.servicios = serviciosArray;
+    }
 
     sessionStorage.setItem('reserva_pendiente', JSON.stringify(reservaData));
 
     // Verificar si está autenticado
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!this.authService.isAuthenticated()) {
       Swal.fire({
         icon: 'info',
         title: 'Inicia sesión para continuar',

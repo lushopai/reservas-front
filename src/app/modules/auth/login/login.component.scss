@@ -1,84 +1,199 @@
+// ============================================
+// Login - Material Design
+// ============================================
+
 .login-container {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
-
-  .card {
-    border-radius: 15px;
-    overflow: hidden;
-
-    .card-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-      border: none;
-    }
-
-    .form-control {
-      border-radius: 10px;
-      border: 2px solid #e0e0e0;
-      padding: 12px 15px;
-
-      &:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-      }
-
-      &.is-invalid {
-        border-color: #dc3545;
-
-        &:focus {
-          box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
-        }
-      }
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      border: none;
-      border-radius: 10px;
-      padding: 12px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-
-      &:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-      }
-
-      &:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-      }
-    }
-
-    .btn-outline-secondary {
-      border-color: #e0e0e0;
-
-      &:hover {
-        background-color: #f8f9fa;
-        border-color: #667eea;
-        color: #667eea;
-      }
-    }
-  }
-
-  .form-check-input:checked {
-    background-color: #667eea;
-    border-color: #667eea;
-  }
-
-  a {
-    color: #667eea;
-
-    &:hover {
-      color: #764ba2;
-    }
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
 }
 
-// Animación de entrada
-.card {
+.login-content {
+  width: 100%;
+  max-width: 480px;
   animation: fadeInUp 0.6s ease-out;
 }
 
+// ============================================
+// Login Card
+// ============================================
+.login-card {
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+// ============================================
+// Header
+// ============================================
+.login-header {
+  background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%);
+  padding: 32px 24px;
+  color: white;
+
+  ::ng-deep .mat-mdc-card-header-text {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.header-icon {
+  font-size: 56px;
+  width: 56px;
+  height: 56px;
+  color: white;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  color: white;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+// ============================================
+// Body
+// ============================================
+.login-body {
+  padding: 32px 24px;
+}
+
+.form-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 24px 0;
+}
+
+// ============================================
+// Form Fields
+// ============================================
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+// ============================================
+// Login Options
+// ============================================
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.forgot-password {
+  font-size: 14px;
+  color: #3f51b5;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #5c6bc0;
+    text-decoration: underline;
+  }
+}
+
+// ============================================
+// Login Button
+// ============================================
+.login-button {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .button-spinner {
+    display: inline-block;
+    margin-right: 8px;
+
+    ::ng-deep circle {
+      stroke: white;
+    }
+  }
+}
+
+// ============================================
+// Footer
+// ============================================
+.login-footer {
+  padding: 16px 24px;
+  text-align: center;
+  background-color: #fafafa;
+}
+
+.register-text {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.register-link {
+  color: #3f51b5;
+  font-weight: 600;
+  text-decoration: none;
+  margin-left: 4px;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #5c6bc0;
+    text-decoration: underline;
+  }
+}
+
+// ============================================
+// Footer Info
+// ============================================
+.footer-info {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.copyright {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+// ============================================
+// Animations
+// ============================================
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -90,15 +205,65 @@
   }
 }
 
-// Responsive
+// ============================================
+// Responsive Design
+// ============================================
 @media (max-width: 576px) {
   .login-container {
-    .card {
-      margin: 20px;
+    padding: 16px;
+  }
 
-      .card-body {
-        padding: 20px;
+  .login-content {
+    max-width: 100%;
+  }
+
+  .login-body {
+    padding: 24px 16px;
+  }
+
+  .header-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
+  .header-title {
+    font-size: 22px;
+  }
+
+  .form-title {
+    font-size: 20px;
+  }
+
+  .login-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+// ============================================
+// Material Design Overrides
+// ============================================
+::ng-deep {
+  .mat-mdc-form-field {
+    .mat-mdc-text-field-wrapper {
+      .mat-mdc-form-field-flex {
+        .mat-mdc-form-field-infix {
+          padding-top: 16px;
+          padding-bottom: 16px;
+        }
       }
+    }
+  }
+
+  .mat-mdc-raised-button {
+    text-transform: none;
+  }
+
+  .mat-mdc-checkbox {
+    .mdc-checkbox__background {
+      border-radius: 4px;
     }
   }
 }

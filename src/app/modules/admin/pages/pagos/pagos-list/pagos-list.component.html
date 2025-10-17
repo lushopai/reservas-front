@@ -1,261 +1,234 @@
-<div class="container-fluid py-4">
+<div class="pagos-list-container">
   <!-- Header -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="mb-1">
-        <i class="bi bi-credit-card-2-front"></i> Gestión de Pagos
-      </h2>
-      <p class="text-muted mb-0">Administra todos los pagos del sistema</p>
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>payments</mat-icon>
+        Gestión de Pagos
+      </h1>
+      <p class="page-subtitle">Administra todos los pagos y transacciones del sistema</p>
     </div>
-    <button class="btn btn-success" (click)="exportarCSV()" *ngIf="pagosFiltrados.length > 0">
-      <i class="bi bi-file-earmark-spreadsheet"></i> Exportar CSV
-    </button>
-  </div>
-
-  <!-- Tarjetas de resumen -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="flex-shrink-0">
-              <div class="bg-primary bg-opacity-10 p-3 rounded">
-                <i class="bi bi-cash-stack fs-3 text-primary"></i>
-              </div>
-            </div>
-            <div class="flex-grow-1 ms-3">
-              <h6 class="text-muted mb-1">Total Pagos</h6>
-              <h4 class="mb-0">{{ pagos.length }}</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="flex-shrink-0">
-              <div class="bg-success bg-opacity-10 p-3 rounded">
-                <i class="bi bi-check-circle fs-3 text-success"></i>
-              </div>
-            </div>
-            <div class="flex-grow-1 ms-3">
-              <h6 class="text-muted mb-1">Completados</h6>
-              <h4 class="mb-0">{{ contarPorEstado('COMPLETADO') }}</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="flex-shrink-0">
-              <div class="bg-warning bg-opacity-10 p-3 rounded">
-                <i class="bi bi-clock-history fs-3 text-warning"></i>
-              </div>
-            </div>
-            <div class="flex-grow-1 ms-3">
-              <h6 class="text-muted mb-1">Pendientes</h6>
-              <h4 class="mb-0">{{ contarPorEstado('PENDIENTE') }}</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card border-0 shadow-sm">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="flex-shrink-0">
-              <div class="bg-info bg-opacity-10 p-3 rounded">
-                <i class="bi bi-currency-dollar fs-3 text-info"></i>
-              </div>
-            </div>
-            <div class="flex-grow-1 ms-3">
-              <h6 class="text-muted mb-1">Monto Total</h6>
-              <h4 class="mb-0">${{ formatearMonto(calcularTotalMonto()) }}</h4>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="header-actions">
+      <button mat-raised-button color="accent" (click)="exportarCSV()">
+        <mat-icon>download</mat-icon>
+        Exportar CSV
+      </button>
     </div>
   </div>
 
-  <!-- Filtros -->
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-      <h6 class="card-title mb-3">
-        <i class="bi bi-funnel"></i> Filtros
-      </h6>
-      <div class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label">Buscar</label>
-          <input
-            type="text"
-            class="form-control"
-            [(ngModel)]="filtroBusqueda"
-            (ngModelChange)="aplicarFiltros()"
-            placeholder="ID, recurso, transacción..."
-          />
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <mat-card class="kpi-card blue-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>receipt</mat-icon>
         </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.total }}</div>
+          <div class="kpi-label">Total Pagos</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-        <div class="col-md-2">
-          <label class="form-label">Estado</label>
-          <select
-            class="form-select"
-            [(ngModel)]="filtroEstado"
-            (ngModelChange)="aplicarFiltros()"
-          >
-            <option value="">Todos</option>
-            <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
-          </select>
+    <mat-card class="kpi-card green-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>check_circle</mat-icon>
         </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.completados }}</div>
+          <div class="kpi-label">Completados</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-        <div class="col-md-2">
-          <label class="form-label">Método de Pago</label>
-          <select
-            class="form-select"
-            [(ngModel)]="filtroMetodoPago"
-            (ngModelChange)="aplicarFiltros()"
-          >
-            <option value="">Todos</option>
-            <option *ngFor="let metodo of metodosPago" [value]="metodo">{{ metodo }}</option>
-          </select>
+    <mat-card class="kpi-card orange-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>schedule</mat-icon>
         </div>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ stats.pendientes }}</div>
+          <div class="kpi-label">Pendientes</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-        <div class="col-md-2">
-          <label class="form-label">Tipo</label>
-          <select
-            class="form-select"
-            [(ngModel)]="filtroTipo"
-            (ngModelChange)="aplicarFiltros()"
-          >
-            <option value="">Todos</option>
-            <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo }}</option>
-          </select>
+    <mat-card class="kpi-card purple-gradient">
+      <mat-card-content>
+        <div class="kpi-icon">
+          <mat-icon>attach_money</mat-icon>
         </div>
-
-        <div class="col-md-3 d-flex align-items-end">
-          <button class="btn btn-outline-secondary w-100" (click)="limpiarFiltros()">
-            <i class="bi bi-x-circle"></i> Limpiar Filtros
-          </button>
+        <div class="kpi-info">
+          <div class="kpi-value">{{ formatearMonto(stats.montoTotal) }}</div>
+          <div class="kpi-label">Ingresos Totales</div>
         </div>
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 
-  <!-- Tabla de pagos -->
-  <div class="card border-0 shadow-sm">
-    <div class="card-body">
-      <!-- Loading -->
-      <div *ngIf="cargando" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando...</span>
-        </div>
-        <p class="mt-3 text-muted">Cargando pagos...</p>
+  <!-- Filters Card -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-grid">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar pagos</mat-label>
+          <input matInput [(ngModel)]="filtroBusqueda" (keyup)="aplicarFiltros()" placeholder="ID, recurso, transacción...">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select [(ngModel)]="filtroEstado" (selectionChange)="aplicarFiltros()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let estado of estados" [value]="estado.value">
+              {{ estado.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>filter_list</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Método de Pago</mat-label>
+          <mat-select [(ngModel)]="filtroMetodoPago" (selectionChange)="aplicarFiltros()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let metodo of metodosPago" [value]="metodo.value">
+              {{ metodo.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>payment</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo</mat-label>
+          <mat-select [(ngModel)]="filtroTipo" (selectionChange)="aplicarFiltros()">
+            <mat-option value="">Todos</mat-option>
+            <mat-option *ngFor="let tipo of tipos" [value]="tipo.value">
+              {{ tipo.label }}
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>category</mat-icon>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Table Card -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="60"></mat-spinner>
+        <p class="loading-text">Cargando pagos...</p>
       </div>
 
-      <!-- No hay pagos -->
-      <div *ngIf="!cargando && pagosFiltrados.length === 0" class="text-center py-5">
-        <i class="bi bi-inbox fs-1 text-muted"></i>
-        <p class="mt-3 text-muted">No se encontraron pagos</p>
-      </div>
+      <!-- Table -->
+      <div *ngIf="!loading" class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="pagos-table">
 
-      <!-- Tabla -->
-      <div *ngIf="!cargando && pagosFiltrados.length > 0" class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>ID</th>
-              <th>Tipo</th>
-              <th>Recurso</th>
-              <th>Monto</th>
-              <th>Método de Pago</th>
-              <th>Estado</th>
-              <th>Fecha</th>
-              <th class="text-center">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let pago of pagosPaginados">
-              <td>
-                <span class="badge bg-secondary">#{{ pago.id }}</span>
-                <br>
-                <small class="text-muted" *ngIf="pago.reservaId">
-                  Reserva #{{ pago.reservaId }}
-                </small>
-                <small class="text-muted" *ngIf="pago.paqueteId">
-                  Paquete #{{ pago.paqueteId }}
-                </small>
-              </td>
-              <td>
-                <span class="badge bg-info">{{ pago.tipoReserva || 'N/A' }}</span>
-              </td>
-              <td>{{ pago.nombreRecurso || 'N/A' }}</td>
-              <td class="fw-bold text-success">${{ formatearMonto(pago.monto) }}</td>
-              <td>
-                <i class="{{ pagoService.getIconoMetodoPago(pago.metodoPago) }} me-1"></i>
-                {{ pago.metodoPago }}
-              </td>
-              <td>
-                <span class="badge {{ getBadgeClase(pago.estado) }}">
-                  {{ pago.estado }}
-                </span>
-              </td>
-              <td>
-                <small>{{ formatearFecha(pago.fechaPago) }}</small>
-              </td>
-              <td class="text-center">
-                <button
-                  class="btn btn-sm btn-outline-primary"
-                  (click)="verDetalle(pago)"
-                  title="Ver detalle"
-                >
-                  <i class="bi bi-eye"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
+          <!-- ID Column -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+            <td mat-cell *matCellDef="let pago">
+              <div class="id-cell">
+                <span class="id-badge">#{{ pago.id }}</span>
+                <span class="sub-id" *ngIf="pago.reservaId">Res. #{{ pago.reservaId }}</span>
+                <span class="sub-id" *ngIf="pago.paqueteId">Paq. #{{ pago.paqueteId }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Fecha Column -->
+          <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+            <td mat-cell *matCellDef="let pago">
+              <div class="fecha-cell">
+                <mat-icon class="inline-icon">event</mat-icon>
+                <span>{{ formatearFechaCorta(pago.fechaPago) }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Tipo Column -->
+          <ng-container matColumnDef="tipo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+            <td mat-cell *matCellDef="let pago">
+              <mat-chip [class]="getTipoChipClass(pago.tipoReserva)">
+                {{ getTipoLabel(pago.tipoReserva) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Recurso Column -->
+          <ng-container matColumnDef="recurso">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Recurso</th>
+            <td mat-cell *matCellDef="let pago">
+              <span class="recurso-nombre">{{ pago.nombreRecurso || 'N/A' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Monto Column -->
+          <ng-container matColumnDef="monto">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Monto</th>
+            <td mat-cell *matCellDef="let pago">
+              <span class="monto-value">{{ formatearMonto(pago.monto) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Método Column -->
+          <ng-container matColumnDef="metodo">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Método</th>
+            <td mat-cell *matCellDef="let pago">
+              <mat-chip [class]="getMetodoChipClass(pago.metodoPago)">
+                <mat-icon>{{ getMetodoPagoIcon(pago.metodoPago) }}</mat-icon>
+                {{ getMetodoPagoLabel(pago.metodoPago) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Estado Column -->
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+            <td mat-cell *matCellDef="let pago">
+              <mat-chip [class]="getEstadoChipClass(pago.estado)">
+                {{ getEstadoLabel(pago.estado) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Acciones Column -->
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef class="acciones-header">Acciones</th>
+            <td mat-cell *matCellDef="let pago" class="acciones-cell">
+              <button mat-icon-button color="primary"
+                      (click)="verDetalle(pago)"
+                      matTooltip="Ver detalle">
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
 
-        <!-- Paginación -->
-        <nav *ngIf="totalPaginas > 1" class="mt-3">
-          <ul class="pagination justify-content-center mb-0">
-            <li class="page-item" [class.disabled]="paginaActual === 1">
-              <a class="page-link" (click)="cambiarPagina(paginaActual - 1)" href="javascript:void(0)">
-                <i class="bi bi-chevron-left"></i>
-              </a>
-            </li>
-            <li
-              class="page-item"
-              *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
-              [class.active]="paginaActual === i + 1"
-            >
-              <a class="page-link" (click)="cambiarPagina(i + 1)" href="javascript:void(0)">
-                {{ i + 1 }}
-              </a>
-            </li>
-            <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
-              <a class="page-link" (click)="cambiarPagina(paginaActual + 1)" href="javascript:void(0)">
-                <i class="bi bi-chevron-right"></i>
-              </a>
-            </li>
-          </ul>
-        </nav>
+        <!-- Empty State -->
+        <div *ngIf="dataSource.filteredData.length === 0" class="empty-state">
+          <mat-icon>payments</mat-icon>
+          <h3>No se encontraron pagos</h3>
+          <p>No hay pagos que coincidan con los filtros aplicados</p>
+          <button mat-raised-button color="primary" (click)="limpiarFiltros()">
+            <mat-icon>clear</mat-icon>
+            Limpiar Filtros
+          </button>
+        </div>
 
-        <!-- Info de paginación -->
-        <p class="text-center text-muted small mt-3 mb-0">
-          Mostrando {{ (paginaActual - 1) * itemsPorPagina + 1 }} a
-          {{ Math.min(paginaActual * itemsPorPagina, pagosFiltrados.length) }} de
-          {{ pagosFiltrados.length }} pagos
-        </p>
+        <!-- Paginator -->
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]"
+                       showFirstLastButtons
+                       aria-label="Selecciona página de pagos">
+        </mat-paginator>
       </div>
-    </div>
-  </div>
+    </mat-card-content>
+  </mat-card>
 </div>

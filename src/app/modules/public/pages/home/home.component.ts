@@ -15,22 +15,22 @@ export class HomeComponent implements OnInit {
 
   features = [
     {
-      icon: 'bi-house-check',
+      icon: 'cottage',
       title: 'Cabañas Cómodas',
       description: 'Espacios acogedores totalmente equipados para tu descanso'
     },
     {
-      icon: 'bi-star-fill',
+      icon: 'stars',
       title: 'Servicios Premium',
       description: 'Disfruta de actividades y servicios de primera calidad'
     },
     {
-      icon: 'bi-calendar-check',
+      icon: 'event_available',
       title: 'Reserva Fácil',
       description: 'Sistema de reservas en línea simple y seguro'
     },
     {
-      icon: 'bi-shield-check',
+      icon: 'verified_user',
       title: 'Pago Seguro',
       description: 'Transacciones protegidas con los mejores sistemas de pago'
     }
