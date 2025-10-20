@@ -224,9 +224,9 @@
           <mat-icon>event_busy</mat-icon>
           <h3>No se encontraron reservas</h3>
           <p>No hay reservas que coincidan con los filtros aplicados</p>
-          <button mat-raised-button color="primary" (click)="limpiarFiltros()">
-            <mat-icon>refresh</mat-icon>
-            Limpiar Filtros
+          <button mat-raised-button color="primary" [disabled]="true" matTooltip="Funcionalidad no implementada">
+            <mat-icon>add</mat-icon>
+            Nueva Reserva
           </button>
         </div>
 

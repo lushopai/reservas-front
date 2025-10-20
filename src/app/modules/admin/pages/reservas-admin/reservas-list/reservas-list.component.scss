@@ -463,7 +463,7 @@
     padding: 4rem 2rem;
     text-align: center;
 
-    mat-icon {
+    & > mat-icon {
       font-size: 64px;
       width: 64px;
       height: 64px;
@@ -486,8 +486,19 @@
 
     button {
       border-radius: 12px;
-      padding: 0.75rem 2rem;
+      padding: 0.75rem 1.5rem;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      mat-icon {
+        font-size: 22px !important;
+        width: 22px !important;
+        height: 22px !important;
+        line-height: 22px !important;
+        margin-right: 8px;
+      }
     }
   }
 

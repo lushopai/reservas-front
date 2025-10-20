@@ -4,13 +4,11 @@
     <mat-card class="register-card">
       <!-- Header -->
       <mat-card-header class="register-header">
-        <div class="header-content">
+        <mat-card-title class="text-center">
           <mat-icon class="header-icon">person_add</mat-icon>
-          <div class="header-text">
-            <h1 class="header-title">Crear Cuenta</h1>
-            <p class="header-subtitle">Sistema de Reservas</p>
-          </div>
-        </div>
+          <h1>Crear Cuenta</h1>
+          <p>Sistema de Reservas</p>
+        </mat-card-title>
       </mat-card-header>
 
       <!-- Body -->
@@ -201,7 +199,7 @@
               <mat-icon>person_add</mat-icon>
               Crear Cuenta
             </ng-container>
-            <ng-container *ngIf="!loading">
+            <ng-container *ngIf="loading">
               <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
               Creando cuenta...
             </ng-container>

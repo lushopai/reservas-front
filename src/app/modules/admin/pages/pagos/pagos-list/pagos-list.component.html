@@ -217,9 +217,9 @@
           <mat-icon>payments</mat-icon>
           <h3>No se encontraron pagos</h3>
           <p>No hay pagos que coincidan con los filtros aplicados</p>
-          <button mat-raised-button color="primary" (click)="limpiarFiltros()">
-            <mat-icon>clear</mat-icon>
-            Limpiar Filtros
+          <button mat-raised-button color="primary" [disabled]="true" matTooltip="Funcionalidad no implementada">
+            <mat-icon>add</mat-icon>
+            Nuevo Pago
           </button>
         </div>
 

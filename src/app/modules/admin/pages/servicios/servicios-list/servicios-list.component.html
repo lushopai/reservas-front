@@ -220,13 +220,13 @@
         </table>
 
         <!-- Empty State -->
-        <div *ngIf="dataSource.filteredData.length === 0" class="empty-state">
-          <mat-icon>sports</mat-icon>
+        <div *ngIf="!loading && dataSource.filteredData.length === 0" class="empty-state">
+          <mat-icon>search_off</mat-icon>
           <h3>No se encontraron servicios</h3>
-          <p>No hay servicios que coincidan con los filtros aplicados</p>
-          <button mat-raised-button color="primary" (click)="limpiarFiltros()">
-            <mat-icon>clear</mat-icon>
-            Limpiar Filtros
+          <p>Intenta ajustar los filtros o crear un nuevo servicio</p>
+          <button mat-raised-button color="primary" (click)="nuevoServicio()">
+            <mat-icon>add</mat-icon>
+            Nuevo Servicio
           </button>
         </div>
 
