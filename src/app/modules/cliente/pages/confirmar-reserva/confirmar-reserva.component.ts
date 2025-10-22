@@ -5,6 +5,8 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { CabanaService } from '../../../../core/services/cabana.service';
 import { PaqueteService, PaqueteReservaRequest, ServicioReservaDTO } from '../../../../core/services/paquete.service';
 import { ItemInventario } from '../../../../core/models/inventario.model';
+import { InventarioService } from '../../../../core/services/inventario.service';
+import { forkJoin } from 'rxjs';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -27,7 +29,8 @@ export class ConfirmarReservaComponent implements OnInit {
     private reservaService: ReservaService,
     private authService: AuthService,
     private cabanaService: CabanaService,
-    private paqueteService: PaqueteService
+    private paqueteService: PaqueteService,
+    private inventarioService: InventarioService
   ) {}
 
   ngOnInit(): void {
@@ -41,9 +44,14 @@ export class ConfirmarReservaComponent implements OnInit {
 
     this.reservaData = JSON.parse(data);
 
-    // Si es una cabaña o paquete, cargar items adicionales disponibles
-    if ((this.reservaData.tipo === 'cabana' || this.reservaData.tipo === 'paquete') && this.reservaData.cabanaId) {
+    // Cargar items adicionales según el tipo
+    if (this.reservaData.tipo === 'cabana' && this.reservaData.cabanaId) {
       this.cargarItemsAdicionales(this.reservaData.cabanaId);
+    } else if (this.reservaData.tipo === 'paquete') {
+      // Para paquetes, cargar items de cabaña y servicios
+      this.cargarItemsPaquete();
+    } else if (this.reservaData.tipo === 'servicio' && this.reservaData.servicioId) {
+      this.cargarItemsServicio(this.reservaData.servicioId);
     }
   }
 
@@ -59,6 +67,68 @@ export class ConfirmarReservaComponent implements OnInit {
         console.error('Error al cargar items adicionales:', error);
         this.cargandoItems = false;
         // No mostrar error al usuario, simplemente no mostrar items
+      }
+    });
+  }
+
+  cargarItemsServicio(servicioId: number): void {
+    this.cargandoItems = true;
+    this.inventarioService.obtenerPorRecurso(servicioId).subscribe({
+      next: (items) => {
+        // Solo items reservables
+        this.itemsDisponibles = items.filter(item => item.esReservable);
+        this.cargandoItems = false;
+        console.log('Items de servicio cargados:', this.itemsDisponibles.length);
+      },
+      error: (error) => {
+        console.error('Error al cargar items de servicio:', error);
+        this.cargandoItems = false;
+      }
+    });
+  }
+
+  cargarItemsPaquete(): void {
+    this.cargandoItems = true;
+    const observables: any[] = [];
+
+    // Cargar items de la cabaña si existe
+    if (this.reservaData.cabanaId) {
+      observables.push(this.cabanaService.obtenerItemsAdicionales(this.reservaData.cabanaId));
+    }
+
+    // Cargar items de cada servicio
+    if (this.reservaData.servicios && this.reservaData.servicios.length > 0) {
+      this.reservaData.servicios.forEach((servicio: any) => {
+        if (servicio.servicioId) {
+          observables.push(this.inventarioService.obtenerPorRecurso(servicio.servicioId));
+        }
+      });
+    }
+
+    if (observables.length === 0) {
+      this.cargandoItems = false;
+      return;
+    }
+
+    forkJoin(observables).subscribe({
+      next: (resultados: ItemInventario[][]) => {
+        // Combinar todos los items y eliminar duplicados
+        const todosLosItems = resultados.flat();
+        const itemsUnicos = new Map<number, ItemInventario>();
+
+        todosLosItems.forEach(item => {
+          if (item.esReservable && !itemsUnicos.has(item.id)) {
+            itemsUnicos.set(item.id, item);
+          }
+        });
+
+        this.itemsDisponibles = Array.from(itemsUnicos.values());
+        this.cargandoItems = false;
+        console.log('Items de paquete cargados:', this.itemsDisponibles.length);
+      },
+      error: (error) => {
+        console.error('Error al cargar items del paquete:', error);
+        this.cargandoItems = false;
       }
     });
   }
@@ -262,5 +332,29 @@ export class ConfirmarReservaComponent implements OnInit {
 
   formatearPrecio(precio: number): string {
     return new Intl.NumberFormat('es-CL').format(precio);
+  }
+
+  /**
+   * Calcula la hora de fin sumando la duración en bloques a la hora de inicio
+   * Asumiendo que cada bloque = 1 hora
+   */
+  calcularHoraFin(horaInicio: string, duracionBloques: number): string {
+    if (!horaInicio) return '';
+
+    // Parse hora inicio (formato "HH:mm")
+    const [horas, minutos] = horaInicio.split(':').map(Number);
+
+    // Crear fecha auxiliar para cálculos
+    const fecha = new Date();
+    fecha.setHours(horas, minutos, 0, 0);
+
+    // Sumar duración (bloques de 1 hora)
+    fecha.setHours(fecha.getHours() + duracionBloques);
+
+    // Formatear como HH:mm
+    const horaFin = fecha.getHours().toString().padStart(2, '0');
+    const minutosFin = fecha.getMinutes().toString().padStart(2, '0');
+
+    return `${horaFin}:${minutosFin}`;
   }
 }

@@ -249,6 +249,38 @@
   color: #2e7d32;
 }
 
+// Paquete Badge
+.paquete-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background-color: #e3f2fd;
+  border-radius: 12px;
+  width: fit-content;
+
+  .paquete-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #1976d2;
+  }
+
+  strong {
+    color: #1976d2;
+    font-size: 13px;
+  }
+}
+
+.package-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #ff9800;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
 // Acciones
 .acciones-header {
   text-align: right;
@@ -256,6 +288,131 @@
 
 .acciones-cell {
   text-align: right;
+}
+
+// ============================================
+// Expansion Detail Styles
+// ============================================
+.detail-row {
+  height: 0 !important;
+  border: none !important;
+
+  td {
+    border: none !important;
+    padding: 0 !important;
+  }
+}
+
+.expanded-row {
+  border-bottom: 2px solid #e3f2fd !important;
+}
+
+.expansion-cell {
+  padding: 0 !important;
+  border: none !important;
+}
+
+.expansion-detail {
+  overflow: hidden;
+  background-color: #fafafa;
+}
+
+.paquete-details {
+  padding: 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.detail-title {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #1976d2;
+  }
+}
+
+.reservas-list {
+  display: grid;
+  gap: 16px;
+}
+
+.reserva-detail-card {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-color: #1976d2;
+  }
+}
+
+.reserva-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+
+  .reserva-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  strong {
+    flex: 1;
+    font-size: 15px;
+    color: #333;
+  }
+
+  .mini-chip {
+    min-height: 24px;
+    font-size: 11px;
+
+    ::ng-deep .mdc-evolution-chip__text-label {
+      font-size: 11px;
+    }
+  }
+}
+
+.reserva-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #999;
+  }
 }
 
 // ============================================

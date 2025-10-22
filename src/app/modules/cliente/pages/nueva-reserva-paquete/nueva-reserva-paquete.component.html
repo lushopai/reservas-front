@@ -27,7 +27,7 @@
           <div *ngIf="paso === 1" class="paso-content">
             <div class="alert alert-info">
               <i class="fas fa-info-circle me-2"></i>
-              <strong>¡Ahorra con nuestros paquetes!</strong> Reserva una cabaña + servicios y obtén descuentos automáticos.
+              <strong>¡Crea tu paquete personalizado!</strong> Reserva una cabaña + servicios en una sola transacción.
             </div>
 
             <form [formGroup]="formPaquete">
@@ -184,7 +184,7 @@
                   <div *ngIf="serviciosSeleccionados.length > 0">
                     <div class="alert alert-success">
                       <i class="fas fa-check-circle me-2"></i>
-                      Has agregado {{ serviciosSeleccionados.length }} servicio(s) al paquete. El descuento se calculará al confirmar.
+                      Has agregado {{ serviciosSeleccionados.length }} servicio(s) al paquete.
                     </div>
 
                     <div class="table-responsive">
@@ -322,8 +322,8 @@
                 <div class="card border-success">
                   <div class="card-header bg-success text-white">
                     <h6 class="mb-0">
-                      <i class="fas fa-tags me-2"></i>
-                      Descuentos
+                      <i class="fas fa-list me-2"></i>
+                      Resumen del Paquete
                     </h6>
                   </div>
                   <div class="card-body">

@@ -3,6 +3,7 @@ export enum EstadoReserva {
   BORRADOR = 'BORRADOR',
   PENDIENTE = 'PENDIENTE',
   CONFIRMADA = 'CONFIRMADA',
+  CONFIRMADO = 'CONFIRMADO', // Alias para compatibilidad con datos existentes
   EN_CURSO = 'EN_CURSO',
   COMPLETADA = 'COMPLETADA',
   CANCELADA = 'CANCELADA'
@@ -19,6 +20,7 @@ export interface ItemReservado {
   id?: number;
   itemId: number;
   nombreItem?: string;
+  categoria?: string;
   cantidad: number;
   precioUnitario?: number;
   subtotal?: number;
@@ -46,6 +48,7 @@ export interface Reserva {
   // Package information
   paqueteId?: number;
   nombrePaquete?: string;
+  estadoPaquete?: EstadoReserva; // Estado del paquete (si pertenece a uno)
 }
 
 // Request para Reservar Cabaña
