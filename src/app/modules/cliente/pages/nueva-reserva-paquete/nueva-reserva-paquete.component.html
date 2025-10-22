@@ -7,7 +7,7 @@
             <i class="fas fa-gift me-2"></i>
             Nueva Reserva de Paquete
           </h4>
-          <small>Cabaña + Servicios con descuento</small>
+          <small>Cabaña + Servicios</small>
         </div>
         <div class="card-body">
           <!-- Indicador de pasos -->
@@ -183,10 +183,8 @@
 
                   <div *ngIf="serviciosSeleccionados.length > 0">
                     <div class="alert alert-success">
-                      <i class="fas fa-percentage me-2"></i>
-                      <strong>¡Descuento aplicado!</strong>
-                      {{ serviciosSeleccionados.length }} servicio(s) =
-                      <strong>{{ paqueteService.calcularDescuentoSugerido(serviciosSeleccionados.length) }}% OFF</strong>
+                      <i class="fas fa-check-circle me-2"></i>
+                      Has agregado {{ serviciosSeleccionados.length }} servicio(s) al paquete. El descuento se calculará al confirmar.
                     </div>
 
                     <div class="table-responsive">
@@ -331,10 +329,6 @@
                   <div class="card-body">
                     <div class="mb-3">
                       <p class="mb-1"><strong>Servicios:</strong> {{ serviciosSeleccionados.length }}</p>
-                      <p class="mb-1"><strong>Descuento aplicado:</strong></p>
-                      <h4 class="text-success">
-                        {{ paqueteService.calcularDescuentoSugerido(serviciosSeleccionados.length) }}% OFF
-                      </h4>
                     </div>
 
                     <hr>

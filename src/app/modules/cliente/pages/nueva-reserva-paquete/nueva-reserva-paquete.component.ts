@@ -313,15 +313,12 @@ export class NuevaReservaPaqueteComponent implements OnInit {
     this.paqueteService.crearPaquete(request).subscribe({
       next: (response) => {
         if (response.success) {
-          const descuento = this.paqueteService.calcularDescuentoSugerido(this.serviciosSeleccionados.length);
-
           Swal.fire({
             title: '¡Paquete creado!',
             html: `
               <p>Tu paquete ha sido creado exitosamente.</p>
               <p><strong>ID:</strong> #${response.data.id}</p>
-              <p><strong>Servicios incluidos:</strong> ${this.serviciosSeleccionados.length}</p>
-              ${descuento > 0 ? `<p class="text-success"><strong>Descuento aplicado:</strong> ${descuento}%</p>` : ''}
+              <p><strong>Precio Final:</strong> ${this.formatearPrecio(response.data.precioFinal)}</p>
               <p><strong>Estado:</strong> PENDIENTE</p>
               <p class="text-muted small">Puedes pagar desde "Mis Reservas"</p>
             `,

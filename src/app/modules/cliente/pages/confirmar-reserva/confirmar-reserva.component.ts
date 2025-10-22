@@ -134,8 +134,7 @@ export class ConfirmarReservaComponent implements OnInit {
                 <p>Su paquete de reserva ha sido creado exitosamente.</p>
                 <p><strong>ID:</strong> #${response.data.id}</p>
                 <p><strong>Estado:</strong> ${response.data.estado}</p>
-                <p><strong>Descuento aplicado:</strong> $${this.formatearPrecio(response.data.descuento)}</p>
-                <p><strong>Total:</strong> $${this.formatearPrecio(response.data.precioFinal)}</p>
+                <p><strong>Total:</strong> ${this.formatearPrecio(response.data.precioFinal)}</p>
                 <p class="text-muted mt-2">Puede ver sus reservas en "Mis Reservas"</p>
               `,
               icon: 'success',
@@ -249,10 +248,13 @@ export class ConfirmarReservaComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         sessionStorage.removeItem('reserva_pendiente');
-        if (this.reservaData.tipo === 'cabana') {
+        if (this.reservaData.tipo === 'cabana' || this.reservaData.tipo === 'paquete') {
           this.router.navigate(['/cabanas', this.reservaData.cabanaId]);
-        } else {
+        } else if (this.reservaData.tipo === 'servicio') {
           this.router.navigate(['/servicios', this.reservaData.servicioId]);
+        } else {
+          // Fallback a una página genérica si el tipo no es esperado
+          this.router.navigate(['/']);
         }
       }
     });

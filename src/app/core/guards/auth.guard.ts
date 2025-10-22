@@ -28,8 +28,6 @@ export class AuthGuard {
     }
 
     console.log('Usuario no autenticado, redirigiendo a login');
-    return this.router.createUrlTree(['/auth/login'], {
-      queryParams: { returnUrl: state.url },
-    });
+    return this.router.createUrlTree(['/']);
   }
 }

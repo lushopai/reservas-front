@@ -33,14 +33,27 @@ export class AdminGuard {
     console.log('AdminGuard - isAdmin:', isAdmin);
 
     if (!isAdmin) {
-      console.log('AdminGuard - Access denied, redirecting to login');
-      Swal.fire({
-        icon: 'error',
-        title: 'Acceso Denegado',
-        text: 'No tienes permisos para acceder a esta área',
-        confirmButtonColor: '#3085d6',
-      });
-      return this.router.createUrlTree(['/auth/login']);
+      if (this.authService.isAuthenticated()) {
+        // Logged in, but not an admin
+        console.log('AdminGuard - Access denied, user is not an admin, redirecting to client area');
+        Swal.fire({
+          icon: 'error',
+          title: 'Acceso Denegado',
+          text: 'No tienes permisos para acceder a esta área',
+          confirmButtonColor: '#3085d6',
+        });
+        return this.router.createUrlTree(['/cliente']);
+      } else {
+        // Not logged in
+        console.log('AdminGuard - Access denied, user is not authenticated, redirecting to public area');
+         Swal.fire({
+          icon: 'error',
+          title: 'Acceso Denegado',
+          text: 'No tienes permisos para acceder a esta área',
+          confirmButtonColor: '#3085d6',
+        });
+        return this.router.createUrlTree(['/']);
+      }
     }
 
     console.log('AdminGuard - Access granted');

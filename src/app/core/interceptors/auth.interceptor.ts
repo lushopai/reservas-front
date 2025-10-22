@@ -39,7 +39,7 @@ export class AuthInterceptor implements HttpInterceptor {
         // Si es 401, hacer logout
         if (error.status === 401) {
           this.authService.logout();
-          this.router.navigate(['/auth/login']);
+          this.router.navigate(['/']);
         }
 
         // Si es 403, redirigir a acceso denegado

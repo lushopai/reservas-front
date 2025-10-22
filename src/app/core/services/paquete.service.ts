@@ -35,7 +35,6 @@ export interface PaqueteResponse {
   fechaFin: string;
   estado: string;
   precioTotal: number;
-  descuento: number;
   precioFinal: number;
   reservas: any[];
   notasEspeciales?: string;
@@ -78,20 +77,6 @@ export class PaqueteService {
       `${this.apiUrl}/${paqueteId}/confirmar`,
       pagoRequest
     );
-  }
-
-  /**
-   * Calcular descuento sugerido por cantidad de servicios
-   */
-  calcularDescuentoSugerido(cantidadServicios: number): number {
-    if (cantidadServicios >= 5) {
-      return 20; // 20% de descuento por 5 o más servicios
-    } else if (cantidadServicios >= 3) {
-      return 15; // 15% de descuento por 3-4 servicios
-    } else if (cantidadServicios >= 2) {
-      return 10; // 10% de descuento por 2 servicios
-    }
-    return 0;
   }
 
   /**
