@@ -180,6 +180,11 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
         estadoFinal: estadoFinal
       });
 
+      // ✅ Usar precio final del paquete (con descuento) si está disponible
+      const precioTotal = primera.precioFinalPaquete !== undefined && primera.precioFinalPaquete !== null
+        ? primera.precioFinalPaquete
+        : reservasPaquete.reduce((sum, r) => sum + r.precioTotal, 0);
+
       resultado.push({
         id: paqueteId, // Usar el paqueteId como ID para la fila
         esPaquete: true,
@@ -190,7 +195,7 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
         fechaInicio: primera.fechaInicio,
         fechaFin: primera.fechaFin,
         estado: estadoFinal, // Usar estado del paquete si existe
-        precioTotal: reservasPaquete.reduce((sum, r) => sum + r.precioTotal, 0),
+        precioTotal: precioTotal,
         tipoReserva: 'PAQUETE', // Agregar tipo
         expandido: false
       });

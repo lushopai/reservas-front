@@ -1,0 +1,110 @@
+
+> reservas-frontend@0.0.0 build
+> ng build
+
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
+
+Warning: src/app/modules/public/pages/cabana-detalle/cabana-detalle.component.html:135:45 - warning NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator.
+
+135                 ${{ cabana.precioPorUnidad?.toLocaleString('es-CL') }}
+                                                ~~~~~~~~~~~~~~
+
+  src/app/modules/public/pages/cabana-detalle/cabana-detalle.component.ts:14:16
+    14   templateUrl: './cabana-detalle.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component CabanaDetalleComponent.
+
+
+Warning: src/app/modules/public/pages/servicio-detalle/servicio-detalle.component.html:146:47 - warning NG8107: The left side of this optional chain operation does not include 'null' or 'undefined' in its type, therefore the '?.' operator can be replaced with the '.' operator.
+
+146                 ${{ servicio.precioPorUnidad?.toLocaleString('es-CL') }}
+                                                  ~~~~~~~~~~~~~~
+
+  src/app/modules/public/pages/servicio-detalle/servicio-detalle.component.ts:10:16
+    10   templateUrl: './servicio-detalle.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component ServicioDetalleComponent.
+
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/admin.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 3.53 kB with a total of 5.53 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/cabanas/cabanas-list/cabanas-list.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 9.71 kB with a total of 11.71 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/dashboard/dashboard.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 9.02 kB with a total of 11.02 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/inventario/inventario-list/inventario-list.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 10.70 kB with a total of 12.70 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/movimientos-inventario/movimientos-list/movimientos-list.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 2.42 kB with a total of 4.42 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/pagos/pagos-list/pagos-list.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 7.93 kB with a total of 9.93 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/reservas-admin/reserva-detail/reserva-detail.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 16.51 kB with a total of 18.51 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/reservas-admin/reservas-list/reservas-list.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 12.88 kB with a total of 14.88 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/servicios/servicios-list/servicios-list.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 10.14 kB with a total of 12.14 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/usuarios/usuario-detail/usuario-detail.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 7.63 kB with a total of 9.63 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/usuarios/usuario-form/usuario-form.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 9.92 kB with a total of 11.92 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/usuarios/usuarios-list/usuarios-list.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 4.79 kB with a total of 6.79 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/auth/login/login.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 519 bytes with a total of 2.51 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/auth/register/register.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 1.13 kB with a total of 3.13 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/cliente/pages/mis-reservas/mis-reservas.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 4.25 kB with a total of 6.25 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/public/components/public-navbar/public-navbar.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 1.02 kB with a total of 3.02 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/public/pages/cabanas-catalogo/cabanas-catalogo.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 2.54 kB with a total of 4.54 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/public/pages/home/home.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 4.74 kB with a total of 6.74 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/public/pages/servicios-catalogo/servicios-catalogo.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 2.51 kB with a total of 4.51 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/shared/components/calendario-disponibilidad/calendario-disponibilidad.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 1.61 kB with a total of 3.61 kB.
+
+Warning: D:/Proyectos/sistema-reservas/reservas-front/src/app/shared/components/navbar/navbar.component.scss exceeded maximum budget. Budget 2.00 kB was not met by 219 bytes with a total of 2.21 kB.
+
+Warning: D:\Proyectos\sistema-reservas\reservas-front\src\app\core\guards\admin.guard.ts depends on 'sweetalert2'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+
+
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/admin.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 1.53 kB with a total of 5.53 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/cabanas/cabanas-list/cabanas-list.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 7.71 kB with a total of 11.71 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/dashboard/dashboard.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 7.02 kB with a total of 11.02 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/inventario/inventario-list/inventario-list.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 8.70 kB with a total of 12.70 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/movimientos-inventario/movimientos-list/movimientos-list.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 427 bytes with a total of 4.42 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/pagos/pagos-list/pagos-list.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 5.93 kB with a total of 9.93 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/reservas-admin/reserva-detail/reserva-detail.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 14.51 kB with a total of 18.51 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/reservas-admin/reservas-list/reservas-list.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 10.88 kB with a total of 14.88 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/servicios/servicios-list/servicios-list.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 8.14 kB with a total of 12.14 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/usuarios/usuario-detail/usuario-detail.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 5.63 kB with a total of 9.63 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/usuarios/usuario-form/usuario-form.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 7.92 kB with a total of 11.92 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/admin/pages/usuarios/usuarios-list/usuarios-list.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 2.79 kB with a total of 6.79 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/cliente/pages/mis-reservas/mis-reservas.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 2.25 kB with a total of 6.25 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/public/pages/cabanas-catalogo/cabanas-catalogo.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 548 bytes with a total of 4.54 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/public/pages/home/home.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 2.74 kB with a total of 6.74 kB.
+
+Error: D:/Proyectos/sistema-reservas/reservas-front/src/app/modules/public/pages/servicios-catalogo/servicios-catalogo.component.scss exceeded maximum budget. Budget 4.00 kB was not met by 519 bytes with a total of 4.51 kB.
+
+

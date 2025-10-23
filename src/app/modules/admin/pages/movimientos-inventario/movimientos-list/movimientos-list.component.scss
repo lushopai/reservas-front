@@ -1,0 +1,401 @@
+.movimientos-container {
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+// Header
+.page-header {
+  margin-bottom: 32px;
+
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #1a237e;
+
+    mat-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+    }
+  }
+
+  .subtitle {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+    padding-left: 48px;
+  }
+}
+
+// Estadísticas Cards
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px !important;
+  }
+
+  .stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: white;
+    }
+  }
+
+  .stat-info {
+    h3 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    p {
+      font-size: 13px;
+      color: #666;
+      margin: 4px 0 0 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  &.entradas {
+    .stat-icon {
+      background: linear-gradient(135deg, #4caf50, #66bb6a);
+    }
+    h3 {
+      color: #4caf50;
+    }
+  }
+
+  &.salidas {
+    .stat-icon {
+      background: linear-gradient(135deg, #f44336, #ef5350);
+    }
+    h3 {
+      color: #f44336;
+    }
+  }
+
+  &.devoluciones {
+    .stat-icon {
+      background: linear-gradient(135deg, #2196f3, #42a5f5);
+    }
+    h3 {
+      color: #2196f3;
+    }
+  }
+
+  &.ajustes {
+    .stat-icon {
+      background: linear-gradient(135deg, #ff9800, #ffa726);
+    }
+    h3 {
+      color: #ff9800;
+    }
+  }
+}
+
+// Filtros
+.filtros-card {
+  margin-bottom: 24px;
+  border-radius: 12px;
+
+  .filtros-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    .filter-field {
+      flex: 0 0 240px;
+    }
+
+    .search-field {
+      flex: 1 1 300px;
+    }
+
+    button {
+      margin-top: 8px;
+    }
+  }
+}
+
+// Tabla
+.table-card {
+  border-radius: 12px;
+  position: relative;
+
+  .loading-shade {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+}
+
+.movimientos-table {
+  width: 100%;
+
+  th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #333;
+    padding: 16px 12px;
+  }
+
+  td {
+    padding: 12px;
+    vertical-align: middle;
+  }
+
+  .movimiento-row {
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #f9f9f9;
+    }
+  }
+}
+
+// Fecha cell
+.fecha-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+
+  .fecha-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #666;
+  }
+}
+
+// Tipo chip
+.tipo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.warn {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+
+  &.primary {
+    background-color: #e3f2fd;
+    color: #1565c0;
+  }
+
+  &.accent {
+    background-color: #fff3e0;
+    color: #e65100;
+  }
+}
+
+// Item info
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  strong {
+    font-size: 14px;
+    color: #333;
+  }
+
+  small {
+    font-size: 12px;
+    color: #666;
+
+    &.recurso-name {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #1976d2;
+      margin-top: 2px;
+    }
+  }
+
+  .small-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+// Cantidad badge
+.cantidad-badge {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+
+  &.positivo {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  &.negativo {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}
+
+// Reserva link
+.reserva-link {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #1565c0;
+    text-decoration: underline;
+  }
+}
+
+// Usuario cell
+.usuario-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+
+  .user-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: #666;
+  }
+}
+
+// Utility classes
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: #999;
+}
+
+// No data state
+.no-data {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+
+  p {
+    font-size: 16px;
+    margin-bottom: 16px;
+  }
+}
+
+// Responsive
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .movimientos-container {
+    padding: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filtros-row {
+    flex-direction: column;
+
+    .filter-field,
+    .search-field {
+      flex: 1 1 100%;
+      width: 100%;
+    }
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .movimientos-table {
+    font-size: 12px;
+  }
+}

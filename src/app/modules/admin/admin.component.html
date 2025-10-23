@@ -90,6 +90,11 @@
           <mat-icon>add_circle</mat-icon>
           <span>Nuevo Item</span>
         </a>
+        <mat-divider></mat-divider>
+        <a mat-menu-item routerLink="/admin/movimientos">
+          <mat-icon>history</mat-icon>
+          <span>Movimientos</span>
+        </a>
       </mat-menu>
 
       <!-- Pagos -->
@@ -112,6 +117,11 @@
         <a mat-menu-item routerLink="/admin/disponibilidad/servicios">
           <mat-icon>star</mat-icon>
           <span>Servicios</span>
+        </a>
+        <mat-divider></mat-divider>
+        <a mat-menu-item routerLink="/admin/bloques-horarios">
+          <mat-icon>schedule</mat-icon>
+          <span>Bloques Horarios</span>
         </a>
       </mat-menu>
 
@@ -264,6 +274,10 @@
         <mat-icon matListItemIcon>add_circle</mat-icon>
         <span matListItemTitle>Nuevo Item</span>
       </a>
+      <a mat-list-item routerLink="/admin/movimientos" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>history</mat-icon>
+        <span matListItemTitle>Movimientos</span>
+      </a>
 
       <mat-divider></mat-divider>
       <a mat-list-item routerLink="/admin/pagos" (click)="closeMobileMenu()">
@@ -280,6 +294,10 @@
       <a mat-list-item routerLink="/admin/disponibilidad/servicios" (click)="closeMobileMenu()">
         <mat-icon matListItemIcon>star</mat-icon>
         <span matListItemTitle>Servicios</span>
+      </a>
+      <a mat-list-item routerLink="/admin/bloques-horarios" (click)="closeMobileMenu()">
+        <mat-icon matListItemIcon>schedule</mat-icon>
+        <span matListItemTitle>Bloques Horarios</span>
       </a>
     </mat-nav-list>
   </div>

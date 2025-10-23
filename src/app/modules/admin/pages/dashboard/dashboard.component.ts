@@ -8,6 +8,20 @@ import { DashboardService, DashboardStats, ReservaResume } from 'src/app/core/se
 import { User } from 'src/app/shared/models/User';
 import Swal from 'sweetalert2';
 
+// ✅ Interface para agrupar reservas de paquete en dashboard
+interface ReservaDisplay {
+  id?: number;
+  esPaquete: boolean;
+  paqueteId?: number;
+  nombrePaquete?: string;
+  reservas: ReservaResume[];
+  nombreUsuario: string;
+  nombreRecurso: string;
+  fechaReserva: string;
+  estado: string;
+  precioTotal: number;
+  tipoReserva?: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +35,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   stats: DashboardStats | null = null;
 
   // MatTableDataSource para paginación
-  reservasDataSource = new MatTableDataSource<ReservaResume>([]);
+  reservasDataSource = new MatTableDataSource<ReservaDisplay>([]);
+  reservasOriginales: ReservaResume[] = [];
   usuariosDataSource = new MatTableDataSource<User>([]);
 
   // Columnas de la tabla de reservas
@@ -74,8 +89,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         if (response.success) {
           this.stats = response.data;
 
-          // Cargar reservas en el dataSource
-          this.reservasDataSource.data = response.data.reservasRecientes || [];
+          // ✅ Guardar reservas originales y agrupar
+          this.reservasOriginales = response.data.reservasRecientes || [];
+          const reservasAgrupadas = this.agruparReservasPorPaquete(this.reservasOriginales);
+          this.reservasDataSource.data = reservasAgrupadas;
 
           // Usar setTimeout para asegurar que el DOM se haya renderizado
           setTimeout(() => {
@@ -175,6 +192,68 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }).format(amount);
   }
 
+  // ✅ Método para agrupar reservas por paquete
+  private agruparReservasPorPaquete(reservas: ReservaResume[]): ReservaDisplay[] {
+    const paquetes = new Map<number, ReservaResume[]>();
+    const individuales: ReservaResume[] = [];
+
+    // Separar reservas en paquetes e individuales
+    reservas.forEach(reserva => {
+      if (reserva.paqueteId) {
+        if (!paquetes.has(reserva.paqueteId)) {
+          paquetes.set(reserva.paqueteId, []);
+        }
+        paquetes.get(reserva.paqueteId)!.push(reserva);
+      } else {
+        individuales.push(reserva);
+      }
+    });
+
+    const resultado: ReservaDisplay[] = [];
+
+    // Crear wrappers para paquetes
+    paquetes.forEach((reservasPaquete, paqueteId) => {
+      const primera = reservasPaquete[0];
+      const estadoFinal = primera.estadoPaquete || primera.estado;
+
+      // ✅ Usar precio final del paquete (con descuento) si está disponible
+      const precioTotal = primera.precioFinalPaquete !== undefined && primera.precioFinalPaquete !== null
+        ? primera.precioFinalPaquete
+        : reservasPaquete.reduce((sum, r) => sum + r.precioTotal, 0);
+
+      resultado.push({
+        id: paqueteId,
+        esPaquete: true,
+        paqueteId: paqueteId,
+        nombrePaquete: primera.nombrePaquete,
+        reservas: reservasPaquete,
+        nombreUsuario: primera.nombreUsuario,
+        nombreRecurso: `Paquete: ${primera.nombrePaquete || 'Sin nombre'}`,
+        fechaReserva: primera.fechaReserva,
+        estado: estadoFinal,
+        precioTotal: precioTotal,
+        tipoReserva: 'PAQUETE'
+      });
+    });
+
+    // Crear wrappers para reservas individuales
+    individuales.forEach(reserva => {
+      resultado.push({
+        id: reserva.id,
+        esPaquete: false,
+        reservas: [reserva],
+        nombreUsuario: reserva.nombreUsuario,
+        nombreRecurso: reserva.nombreRecurso,
+        fechaReserva: reserva.fechaReserva,
+        estado: reserva.estado,
+        precioTotal: reserva.precioTotal,
+        tipoReserva: reserva.tipoReserva
+      });
+    });
+
+    return resultado;
+  }
+
   // Navegación
   verUsuarios(): void {
     this.router.navigate(['/admin/usuarios']);
@@ -184,8 +263,10 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/admin/reservas']);
   }
 
-  verReserva(id: number): void {
-    this.router.navigate(['/admin/reservas', id]);
+  verReserva(element: ReservaDisplay): void {
+    // Si es un paquete, navegar a la primera reserva del paquete
+    const reservaId = element.esPaquete ? element.reservas[0].id : element.id;
+    this.router.navigate(['/admin/reservas', reservaId]);
   }
 
   verUsuario(id: number): void {

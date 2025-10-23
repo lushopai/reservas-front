@@ -114,14 +114,30 @@
 
       <!-- Tabla -->
       <div *ngIf="!cargando" class="table-container">
-        <table mat-table [dataSource]="dataSource" matSort class="reservas-table">
+        <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows class="reservas-table">
 
-          <!-- Columna ID -->
+          <!-- ✅ Columna de Expansión -->
+          <ng-container matColumnDef="expand">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let element">
+              <button *ngIf="element.esPaquete"
+                      mat-icon-button
+                      (click)="toggleExpansion(element); $event.stopPropagation()">
+                <mat-icon>{{ element.expandido ? 'expand_less' : 'expand_more' }}</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <!-- ✅ Columna ID (Modificada para mostrar icono de paquete) -->
           <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-            <td mat-cell *matCellDef="let reserva">
+            <td mat-cell *matCellDef="let element">
               <div class="id-cell">
-                <span class="id-badge">#{{ reserva.id }}</span>
+                <span *ngIf="element.esPaquete" class="paquete-badge">
+                  <mat-icon class="badge-icon">inventory_2</mat-icon>
+                  {{ element.paqueteId }}
+                </span>
+                <span *ngIf="!element.esPaquete" class="id-badge">#{{ element.id }}</span>
               </div>
             </td>
           </ng-container>
@@ -129,10 +145,10 @@
           <!-- Columna Usuario -->
           <ng-container matColumnDef="usuario">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
-            <td mat-cell *matCellDef="let reserva">
+            <td mat-cell *matCellDef="let element">
               <div class="usuario-cell">
                 <mat-icon class="user-icon">person</mat-icon>
-                <span class="usuario-nombre">{{ reserva.nombreUsuario || 'N/A' }}</span>
+                <span class="usuario-nombre">{{ element.nombreUsuario || 'N/A' }}</span>
               </div>
             </td>
           </ng-container>
@@ -140,9 +156,9 @@
           <!-- Columna Recurso -->
           <ng-container matColumnDef="recurso">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Recurso</th>
-            <td mat-cell *matCellDef="let reserva">
+            <td mat-cell *matCellDef="let element">
               <div class="recurso-cell">
-                <span class="recurso-nombre">{{ reserva.nombreRecurso }}</span>
+                <span class="recurso-nombre">{{ element.nombreRecurso }}</span>
               </div>
             </td>
           </ng-container>
@@ -150,11 +166,12 @@
           <!-- Columna Tipo -->
           <ng-container matColumnDef="tipo">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
-            <td mat-cell *matCellDef="let reserva">
-              <mat-chip [class]="getTipoChipClass(reserva.tipoReserva)">
-                <mat-icon *ngIf="reserva.tipoReserva === 'CABANA_DIA'">holiday_village</mat-icon>
-                <mat-icon *ngIf="reserva.tipoReserva !== 'CABANA_DIA'">room_service</mat-icon>
-                {{ getTipoReservaLabel(reserva.tipoReserva) }}
+            <td mat-cell *matCellDef="let element">
+              <mat-chip [class]="getTipoChipClass(element.tipoReserva)">
+                <mat-icon *ngIf="element.tipoReserva === 'PAQUETE'">inventory_2</mat-icon>
+                <mat-icon *ngIf="element.tipoReserva === 'CABANA_DIA'">holiday_village</mat-icon>
+                <mat-icon *ngIf="element.tipoReserva !== 'CABANA_DIA' && element.tipoReserva !== 'PAQUETE'">room_service</mat-icon>
+                {{ getTipoReservaLabel(element.tipoReserva) }}
               </mat-chip>
             </td>
           </ng-container>
@@ -162,16 +179,16 @@
           <!-- Columna Fechas -->
           <ng-container matColumnDef="fechas">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Fechas</th>
-            <td mat-cell *matCellDef="let reserva">
+            <td mat-cell *matCellDef="let element">
               <div class="fechas-cell">
                 <div class="fecha-item">
                   <mat-icon>event</mat-icon>
-                  <span>{{ formatearFecha(reserva.fechaInicio) }}</span>
+                  <span>{{ formatearFecha(element.fechaInicio) }}</span>
                 </div>
                 <mat-icon class="arrow-icon">arrow_forward</mat-icon>
                 <div class="fecha-item">
                   <mat-icon>event</mat-icon>
-                  <span>{{ formatearFecha(reserva.fechaFin) }}</span>
+                  <span>{{ formatearFecha(element.fechaFin) }}</span>
                 </div>
               </div>
             </td>
@@ -180,9 +197,9 @@
           <!-- Columna Total -->
           <ng-container matColumnDef="total">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
-            <td mat-cell *matCellDef="let reserva">
+            <td mat-cell *matCellDef="let element">
               <div class="total-cell">
-                <span class="total-price">{{ formatearPrecio(reserva.precioTotal) }}</span>
+                <span class="total-price">{{ formatearPrecio(element.precioTotal) }}</span>
               </div>
             </td>
           </ng-container>
@@ -190,13 +207,13 @@
           <!-- Columna Estado -->
           <ng-container matColumnDef="estado">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
-            <td mat-cell *matCellDef="let reserva">
-              <mat-chip [class]="getEstadoChipClass(reserva.estado)">
-                <mat-icon *ngIf="reserva.estado === 'PENDIENTE'">schedule</mat-icon>
-                <mat-icon *ngIf="reserva.estado === 'CONFIRMADA'">check_circle</mat-icon>
-                <mat-icon *ngIf="reserva.estado === 'COMPLETADA'">done_all</mat-icon>
-                <mat-icon *ngIf="reserva.estado === 'CANCELADA'">cancel</mat-icon>
-                {{ reserva.estado }}
+            <td mat-cell *matCellDef="let element">
+              <mat-chip [class]="getEstadoChipClass(element.estado)">
+                <mat-icon *ngIf="element.estado === 'PENDIENTE'">schedule</mat-icon>
+                <mat-icon *ngIf="element.estado === 'CONFIRMADA'">check_circle</mat-icon>
+                <mat-icon *ngIf="element.estado === 'COMPLETADA'">done_all</mat-icon>
+                <mat-icon *ngIf="element.estado === 'CANCELADA'">cancel</mat-icon>
+                {{ element.estado }}
               </mat-chip>
             </td>
           </ng-container>
@@ -204,19 +221,65 @@
           <!-- Columna Acciones -->
           <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef class="acciones-header">Acciones</th>
-            <td mat-cell *matCellDef="let reserva" class="acciones-cell">
+            <td mat-cell *matCellDef="let element" class="acciones-cell">
               <button
                 mat-icon-button
                 color="primary"
-                (click)="verDetalle(reserva)"
+                (click)="verDetalle(element.esPaquete ? element.reservas[0] : element.reservas[0])"
                 matTooltip="Ver detalle y gestionar">
                 <mat-icon>visibility</mat-icon>
               </button>
             </td>
           </ng-container>
 
+          <!-- ✅ Columna de Detalle Expandible (para mostrar reservas del paquete) -->
+          <ng-container matColumnDef="expandedDetail">
+            <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+              <div class="element-detail" [@detailExpand]="element.expandido ? 'expanded' : 'collapsed'">
+                <div class="detail-container" *ngIf="element.esPaquete && element.expandido">
+                  <h4 class="detail-title">
+                    <mat-icon>list</mat-icon>
+                    Reservas incluidas en el paquete
+                  </h4>
+                  <div class="reservas-paquete-list">
+                    <div *ngFor="let reserva of element.reservas; let i = index" class="reserva-detalle-item">
+                      <div class="item-header">
+                        <span class="item-number">{{ i + 1 }}.</span>
+                        <span class="item-tipo">
+                          <mat-icon>{{ reserva.tipoReserva === 'CABANA_DIA' ? 'holiday_village' : 'room_service' }}</mat-icon>
+                          {{ reserva.nombreRecurso }}
+                        </span>
+                        <!-- Mostrar estado del paquete, no individual -->
+                        <mat-chip [class]="getEstadoChipClass(element.estado)" class="item-estado">
+                          {{ element.estado }}
+                        </mat-chip>
+                      </div>
+                      <div class="item-info">
+                        <span class="info-label">ID:</span>
+                        <span class="info-value">#{{ reserva.id }}</span>
+                        <span class="info-separator">|</span>
+                        <span class="info-label">Total:</span>
+                        <span class="info-value">{{ formatearPrecio(reserva.precioTotal) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- ✅ Filas de la tabla con soporte para expansión -->
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns" class="table-row"></tr>
+          <tr mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              class="table-row"
+              [class.paquete-row]="row.esPaquete"
+              [class.expanded-row]="row.expandido">
+          </tr>
+          <tr mat-row
+              *matRowDef="let row; columns: ['expandedDetail']"
+              class="detail-row">
+          </tr>
         </table>
 
         <!-- Empty State -->

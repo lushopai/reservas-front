@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServicioEntretencionService } from '../../../../core/services/servicio-entretencion.service';
+import { BloqueHorarioService } from '../../../../core/services/bloque-horario.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ServicioEntretencion } from '../../../../core/models/servicio.model';
+import { BloqueHorario } from '../../../../core/models/bloque-horario.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -23,6 +25,12 @@ export class ServicioDetalleComponent implements OnInit {
   datosCompletados = false;
   precioCalculado: number = 0;
 
+  // Bloques disponibles
+  bloquesDisponibles: BloqueHorario[] = [];
+  bloqueSeleccionado?: BloqueHorario;
+  cargandoBloques = false;
+  modoSeleccionVisual = true; // true = selector visual, false = manual
+
   // Ubicación por defecto
   ubicacion = {
     lat: -33.4489,
@@ -39,6 +47,7 @@ export class ServicioDetalleComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private servicioService: ServicioEntretencionService,
+    private bloqueService: BloqueHorarioService,
     private authService: AuthService
   ) {}
 
@@ -170,5 +179,67 @@ export class ServicioDetalleComponent implements OnInit {
 
   formatearPrecio(precio: number): string {
     return new Intl.NumberFormat('es-CL').format(precio);
+  }
+
+  // Cargar bloques disponibles cuando se selecciona una fecha
+  cargarBloquesDisponibles(): void {
+    if (!this.fecha || !this.servicio?.id) return;
+
+    this.cargandoBloques = true;
+    this.bloqueService.obtenerBloquesPorFecha(this.servicio.id, this.fecha).subscribe({
+      next: (bloques) => {
+        // Filtrar solo bloques disponibles y que no hayan pasado
+        const ahora = new Date();
+        const fechaSeleccionada = new Date(this.fecha + 'T00:00:00');
+
+        this.bloquesDisponibles = bloques.filter(b => {
+          if (!b.disponible) return false;
+
+          // Si la fecha es hoy, verificar que la hora no haya pasado
+          if (fechaSeleccionada.toDateString() === ahora.toDateString()) {
+            const [horas, minutos] = b.horaInicio.split(':').map(Number);
+            const horaBloque = new Date(ahora);
+            horaBloque.setHours(horas, minutos, 0, 0);
+            return horaBloque > ahora;
+          }
+
+          // Si es una fecha futura, mostrar todos los bloques disponibles
+          return true;
+        });
+
+        this.cargandoBloques = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar bloques:', error);
+        this.cargandoBloques = false;
+        this.bloquesDisponibles = [];
+      }
+    });
+  }
+
+  // Seleccionar un bloque
+  seleccionarBloque(bloque: BloqueHorario): void {
+    this.bloqueSeleccionado = bloque;
+    this.horaInicio = bloque.horaInicio;
+    this.fecha = bloque.fecha;
+    this.datosCompletados = false; // Resetear validación
+  }
+
+  // Cambiar entre modo visual y manual
+  cambiarModoSeleccion(): void {
+    this.modoSeleccionVisual = !this.modoSeleccionVisual;
+    if (this.modoSeleccionVisual && this.fecha) {
+      this.cargarBloquesDisponibles();
+    }
+  }
+
+  // Listener cuando cambia la fecha
+  onFechaChange(): void {
+    this.bloqueSeleccionado = undefined;
+    this.horaInicio = '';
+    this.datosCompletados = false;
+    if (this.modoSeleccionVisual) {
+      this.cargarBloquesDisponibles();
+    }
   }
 }

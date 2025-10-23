@@ -329,6 +329,13 @@
         color: #7b1fa2 !important;
       }
 
+      // ✅ Chip de paquete
+      &.chip-paquete {
+        background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%) !important;
+        color: white !important;
+        box-shadow: 0 2px 6px rgba(123, 31, 162, 0.25);
+      }
+
       // Chips de estado
       &.chip-pendiente {
         background-color: #fff3e0 !important;
@@ -373,6 +380,27 @@
       font-weight: 700;
       font-size: 0.9rem;
       color: #3f51b5;
+    }
+
+    // ✅ Estilo para paquetes
+    .paquete-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.9rem;
+      background: linear-gradient(135deg, #7b1fa2 0%, #9c27b0 100%);
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: white;
+      box-shadow: 0 2px 8px rgba(123, 31, 162, 0.3);
+
+      .badge-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        margin: 0;
+      }
     }
   }
 
@@ -615,6 +643,148 @@
         .mat-column-usuario,
         .mat-column-recurso {
           display: none;
+        }
+      }
+    }
+  }
+
+  // ✅ Estilos para filas expandibles de paquetes
+  ::ng-deep {
+    .paquete-row {
+      background-color: #faf5ff !important;
+      border-left: 4px solid #7b1fa2;
+      font-weight: 600;
+
+      &:hover {
+        background-color: #f3e5f5 !important;
+      }
+
+      &.expanded-row {
+        border-bottom: 2px solid #7b1fa2;
+      }
+    }
+
+    .detail-row {
+      height: 0;
+      overflow: hidden;
+
+      &:hover {
+        background: transparent !important;
+      }
+    }
+  }
+
+  // ✅ Contenedor del detalle expandible
+  .element-detail {
+    overflow: hidden;
+    display: flex;
+    background: #fafafa;
+  }
+
+  .detail-container {
+    padding: 1.5rem 2rem;
+    width: 100%;
+    border-left: 4px solid #7b1fa2;
+    background: linear-gradient(to right, #faf5ff 0%, #ffffff 100%);
+
+    .detail-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #7b1fa2;
+      margin: 0 0 1rem 0;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .reservas-paquete-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+
+      .reserva-detalle-item {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        border: 2px solid #e9d5ff;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #7b1fa2;
+          box-shadow: 0 4px 12px rgba(123, 31, 162, 0.15);
+          transform: translateX(4px);
+        }
+
+        .item-header {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          margin-bottom: 0.5rem;
+
+          .item-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: #7b1fa2;
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+          }
+
+          .item-tipo {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 600;
+            color: #1e293b;
+            flex: 1;
+
+            mat-icon {
+              font-size: 18px;
+              width: 18px;
+              height: 18px;
+              color: #7b1fa2;
+            }
+          }
+
+          .item-estado {
+            padding: 0.25rem 0.6rem;
+            font-size: 0.75rem;
+            height: auto;
+          }
+        }
+
+        .item-info {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding-left: 2rem;
+          font-size: 0.85rem;
+
+          .info-label {
+            color: #64748b;
+            font-weight: 600;
+          }
+
+          .info-value {
+            color: #1e293b;
+            font-weight: 700;
+          }
+
+          .info-separator {
+            color: #cbd5e1;
+            margin: 0 0.25rem;
+          }
         }
       }
     }

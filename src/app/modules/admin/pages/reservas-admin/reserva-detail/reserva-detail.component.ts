@@ -201,6 +201,21 @@ export class ReservaDetailComponent implements OnInit {
     });
   }
 
+  getItemIcon(categoria: string | undefined): string {
+    if (!categoria) return 'inventory_2';
+
+    const categoriaLower = categoria.toLowerCase();
+    if (categoriaLower.includes('deporte') || categoriaLower.includes('sport')) return 'sports_tennis';
+    if (categoriaLower.includes('cocina') || categoriaLower.includes('kitchen')) return 'kitchen';
+    if (categoriaLower.includes('limpieza') || categoriaLower.includes('clean')) return 'cleaning_services';
+    if (categoriaLower.includes('electr')) return 'electrical_services';
+    if (categoriaLower.includes('mobil') || categoriaLower.includes('furniture')) return 'chair';
+    if (categoriaLower.includes('ropa') || categoriaLower.includes('textil')) return 'checkroom';
+    if (categoriaLower.includes('herramienta') || categoriaLower.includes('tool')) return 'construction';
+
+    return 'inventory_2';
+  }
+
   formatearPrecio(precio: number): string {
     return new Intl.NumberFormat('es-CL', {
       style: 'currency',

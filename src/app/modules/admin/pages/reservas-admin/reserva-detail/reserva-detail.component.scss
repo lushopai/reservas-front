@@ -228,6 +228,46 @@
     }
   }
 
+  // Recurso Detail
+  .recurso-detail {
+    .recurso-info {
+      h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 0.5rem 0;
+      }
+
+      .recurso-description {
+        color: #64748b;
+        line-height: 1.6;
+        margin: 0 0 1rem 0;
+      }
+
+      .recurso-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        .meta-chip {
+          background-color: #f1f5f9 !important;
+          color: #475569 !important;
+          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+            color: #3f51b5;
+          }
+        }
+      }
+    }
+  }
+
   // Items Table
   .items-table {
     overflow-x: auto;
@@ -253,6 +293,40 @@
           &.text-bold {
             font-weight: 700;
           }
+
+          .item-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+
+            .item-icon {
+              font-size: 20px;
+              width: 20px;
+              height: 20px;
+              color: #3f51b5;
+            }
+
+            .item-nombre {
+              font-weight: 600;
+              color: #1e293b;
+            }
+
+            .item-categoria {
+              font-size: 0.8rem;
+              color: #64748b;
+              margin-top: 0.1rem;
+            }
+          }
+
+          .cantidad-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+          }
         }
 
         .mat-mdc-row:hover {
@@ -277,7 +351,7 @@
     }
   }
 
-  // Gestión de Estado
+  // Gestiï¿½n de Estado
   .estado-actual {
     margin-bottom: 1.5rem;
 
@@ -387,6 +461,29 @@
 
   // Price Breakdown
   .price-breakdown {
+    .section-label {
+      font-size: 0.9rem;
+      color: #1e293b;
+      margin-bottom: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      background: #f1f5f9;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .inline-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #3f51b5;
+      }
+
+      strong {
+        color: #1e293b;
+      }
+    }
+
     .price-item {
       display: flex;
       justify-content: space-between;
@@ -403,6 +500,10 @@
         color: #1e293b;
         font-size: 1rem;
         font-weight: 600;
+
+        &.text-success {
+          color: #43a047;
+        }
       }
 
       &.total {
@@ -420,10 +521,203 @@
           color: #43a047;
         }
       }
+
+      &.package-total {
+        .total-price {
+          color: #3f51b5;
+        }
+      }
     }
 
     mat-divider {
       margin: 1rem 0;
+
+      &.my-3 {
+        margin: 1.5rem 0;
+      }
+    }
+
+    &.package-summary {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8ebff 100%);
+      border-radius: 12px;
+      border: 2px solid #e8ebff;
+
+      .my-2 {
+        margin: 0.5rem 0;
+      }
+    }
+
+    .info-note {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      padding: 0.5rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 6px;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        color: #3f51b5;
+      }
+
+      small {
+        color: #64748b;
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+  // Package Breakdown Table
+  .package-breakdown-table {
+    margin: 1rem 0;
+    overflow-x: auto;
+
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+
+      thead {
+        background: linear-gradient(135deg, #3f51b5 0%, #5c6bc0 100%);
+
+        tr th {
+          color: white;
+          font-size: 0.8rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          padding: 0.75rem 0.5rem;
+          text-align: left;
+
+          &.text-right {
+            text-align: right;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          border-bottom: 1px solid #e0e0e0;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: #f5f7fa;
+          }
+
+          &.current-reserva {
+            background-color: #fff8e1;
+            font-weight: 600;
+
+            &:hover {
+              background-color: #fff3cd;
+            }
+          }
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.9rem;
+            color: #1e293b;
+
+            &.text-right {
+              text-align: right;
+            }
+
+            &.text-bold {
+              font-weight: 700;
+              color: #3f51b5;
+            }
+
+            .recurso-cell {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              flex-wrap: wrap;
+
+              .recurso-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+                color: #3f51b5;
+              }
+
+              span {
+                font-weight: 500;
+              }
+
+              .chip-current {
+                background-color: #ffc107 !important;
+                color: #000 !important;
+                padding: 0.25rem 0.5rem;
+                font-size: 0.7rem;
+                height: auto;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.25rem;
+
+                mat-icon {
+                  font-size: 14px;
+                  width: 14px;
+                  height: 14px;
+                }
+              }
+            }
+
+            .tipo-badge {
+              display: inline-block;
+              padding: 0.25rem 0.75rem;
+              border-radius: 12px;
+              font-size: 0.75rem;
+              font-weight: 600;
+              text-transform: uppercase;
+              background-color: #e3f2fd;
+              color: #1976d2;
+
+              &.tipo-cabana {
+                background-color: #e8f5e9;
+                color: #388e3c;
+              }
+            }
+
+            .has-items {
+              color: #43a047;
+              font-weight: 600;
+
+              .items-count {
+                font-size: 0.75rem;
+                color: #64748b;
+                font-weight: 400;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    @media (max-width: 768px) {
+      .breakdown-table {
+        font-size: 0.85rem;
+
+        thead tr th,
+        tbody tr td {
+          padding: 0.5rem 0.25rem;
+        }
+
+        .recurso-cell {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
     }
   }
 
@@ -469,6 +763,11 @@
       &.chip-cancelada {
         background-color: #ffebee !important;
         color: #c62828 !important;
+      }
+
+      &.chip-paquete {
+        background-color: #f3e5f5 !important;
+        color: #7b1fa2 !important;
       }
     }
   }

@@ -53,6 +53,15 @@
               <label>Tipo de Reserva</label>
               <p class="value">{{ reserva.tipoReserva === 'CABANA_DIA' ? 'Cabaña' : 'Servicio' }}</p>
             </div>
+            <div class="info-item full-width" *ngIf="reserva.paqueteId">
+              <label>Paquete</label>
+              <p class="value">
+                <mat-chip class="chip-paquete">
+                  <mat-icon>card_giftcard</mat-icon>
+                  {{ reserva.nombrePaquete || 'Paquete #' + reserva.paqueteId }}
+                </mat-chip>
+              </p>
+            </div>
             <div class="info-item">
               <label>Fecha de Reserva</label>
               <p class="value">{{ reserva.fechaReserva ? formatearFecha(reserva.fechaReserva) : 'N/A' }}</p>
@@ -121,24 +130,71 @@
         </mat-card-content>
       </mat-card>
 
+      <!-- Card: Información del Recurso (más detallada) -->
+      <mat-card class="info-card" *ngIf="reserva.recurso">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon purple-icon">
+            {{ reserva.tipoReserva === 'CABANA_DIA' ? 'cottage' : 'celebration' }}
+          </mat-icon>
+          <mat-card-title>Información del Recurso</mat-card-title>
+          <mat-card-subtitle>{{ reserva.tipoReserva === 'CABANA_DIA' ? 'Cabaña' : 'Servicio de Entretención' }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="recurso-detail">
+            <div class="recurso-info">
+              <h3>{{ reserva.recurso.nombre }}</h3>
+              <p class="recurso-description" *ngIf="reserva.recurso.descripcion">
+                {{ reserva.recurso.descripcion }}
+              </p>
+              <div class="recurso-meta">
+                <mat-chip class="meta-chip">
+                  <mat-icon>attach_money</mat-icon>
+                  {{ formatearPrecio(reserva.recurso.precioPorUnidad) }} por unidad
+                </mat-chip>
+                <mat-chip class="meta-chip" *ngIf="reserva.tipoReserva === 'CABANA_DIA' && reserva.recurso.capacidadPersonas">
+                  <mat-icon>people</mat-icon>
+                  Capacidad: {{ reserva.recurso.capacidadPersonas }} personas
+                </mat-chip>
+                <mat-chip class="meta-chip" *ngIf="reserva.tipoReserva === 'SERVICIO_BLOQUE' && reserva.recurso.duracionBloqueMinutos">
+                  <mat-icon>schedule</mat-icon>
+                  {{ reserva.recurso.duracionBloqueMinutos }} minutos por bloque
+                </mat-chip>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
       <!-- Card: Items Adicionales -->
       <mat-card class="info-card" *ngIf="reserva.itemsReservados && reserva.itemsReservados.length > 0">
         <mat-card-header>
           <mat-icon mat-card-avatar class="card-icon orange-icon">inventory_2</mat-icon>
-          <mat-card-title>Items Adicionales</mat-card-title>
-          <mat-card-subtitle>Equipamiento y servicios extras</mat-card-subtitle>
+          <mat-card-title>Items Adicionales de esta Reserva</mat-card-title>
+          <mat-card-subtitle>
+            Equipamiento reservado para {{ reserva.nombreRecurso }}
+          </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <div class="items-table">
             <table mat-table [dataSource]="reserva.itemsReservados" class="items-table-mat">
               <ng-container matColumnDef="nombre">
                 <th mat-header-cell *matHeaderCellDef>Item</th>
-                <td mat-cell *matCellDef="let item">{{ item.nombreItem }}</td>
+                <td mat-cell *matCellDef="let item">
+                  <div class="item-cell">
+                    <mat-icon class="item-icon">{{  getItemIcon(item.categoria) }}</mat-icon>
+                    <div>
+                      <div class="item-nombre">{{ item.nombreItem }}</div>
+                      <div class="item-categoria" *ngIf="item.categoria">{{ item.categoria }}</div>
+                    </div>
+                  </div>
+                </td>
               </ng-container>
 
               <ng-container matColumnDef="cantidad">
                 <th mat-header-cell *matHeaderCellDef>Cantidad</th>
-                <td mat-cell *matCellDef="let item">{{ item.cantidad }}</td>
+                <td mat-cell *matCellDef="let item">
+                  <span class="cantidad-badge">{{ item.cantidad }}</span>
+                </td>
               </ng-container>
 
               <ng-container matColumnDef="precio">
@@ -237,9 +293,17 @@
         <mat-card-header>
           <mat-icon mat-card-avatar class="card-icon green-icon">attach_money</mat-icon>
           <mat-card-title>Resumen de Precios</mat-card-title>
+          <mat-card-subtitle *ngIf="reserva.paqueteId">
+            <mat-icon class="inline-icon">info</mat-icon>
+            Esta reserva es parte de un paquete
+          </mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
+          <!-- Precios de esta reserva individual -->
           <div class="price-breakdown">
+            <div class="section-label" *ngIf="reserva.paqueteId">
+              <strong>Precio de esta reserva individual:</strong>
+            </div>
             <div class="price-item">
               <span class="price-label">Precio Base:</span>
               <span class="price-value">{{ formatearPrecio(reserva.precioBase) }}</span>
@@ -250,8 +314,85 @@
             </div>
             <mat-divider></mat-divider>
             <div class="price-item total">
-              <span class="price-label">Total:</span>
+              <span class="price-label">Subtotal Reserva:</span>
               <span class="price-value total-price">{{ formatearPrecio(reserva.precioTotal) }}</span>
+            </div>
+          </div>
+
+          <!-- Precios del paquete completo (si aplica) -->
+          <div class="price-breakdown package-summary" *ngIf="reserva.paqueteId && reserva.precioFinalPaquete">
+            <mat-divider class="my-3"></mat-divider>
+            <div class="section-label">
+              <mat-icon class="inline-icon">card_giftcard</mat-icon>
+              <strong>Desglose completo del paquete:</strong>
+            </div>
+
+            <!-- Tabla de desglose de todas las reservas del paquete -->
+            <div class="package-breakdown-table" *ngIf="reserva.reservasPaquete && reserva.reservasPaquete.length > 0">
+              <table class="breakdown-table">
+                <thead>
+                  <tr>
+                    <th>Recurso</th>
+                    <th>Tipo</th>
+                    <th class="text-right">Base</th>
+                    <th class="text-right">Items</th>
+                    <th class="text-right">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let reservaPaq of reserva.reservasPaquete"
+                      [class.current-reserva]="reservaPaq.id === reserva.id">
+                    <td>
+                      <div class="recurso-cell">
+                        <mat-icon class="recurso-icon">
+                          {{ reservaPaq.tipoReserva === 'CABANA_DIA' ? 'cottage' : 'celebration' }}
+                        </mat-icon>
+                        <span>{{ reservaPaq.nombreRecurso }}</span>
+                        <mat-chip class="chip-current" *ngIf="reservaPaq.id === reserva.id">
+                          <mat-icon>visibility</mat-icon>
+                          Vista actual
+                        </mat-chip>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="tipo-badge" [class.tipo-cabana]="reservaPaq.tipoReserva === 'CABANA_DIA'">
+                        {{ reservaPaq.tipoReserva === 'CABANA_DIA' ? 'Cabaña' : 'Servicio' }}
+                      </span>
+                    </td>
+                    <td class="text-right">{{ formatearPrecio(reservaPaq.precioBase) }}</td>
+                    <td class="text-right">
+                      <span [class.has-items]="reservaPaq.cantidadItems > 0">
+                        {{ formatearPrecio(reservaPaq.precioItems) }}
+                        <span class="items-count" *ngIf="reservaPaq.cantidadItems > 0">
+                          ({{ reservaPaq.cantidadItems }})
+                        </span>
+                      </span>
+                    </td>
+                    <td class="text-right text-bold">{{ formatearPrecio(reservaPaq.precioTotal) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <mat-divider class="my-2"></mat-divider>
+
+            <!-- Resumen de precios del paquete -->
+            <div class="price-item">
+              <span class="price-label">Total Paquete:</span>
+              <span class="price-value">{{ formatearPrecio(reserva.precioTotalPaquete || 0) }}</span>
+            </div>
+            <div class="price-item" *ngIf="reserva.descuentoPaquete && reserva.descuentoPaquete > 0">
+              <span class="price-label">Descuento:</span>
+              <span class="price-value text-success">-{{ formatearPrecio(reserva.descuentoPaquete) }}</span>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="price-item total package-total">
+              <span class="price-label">Total Final Paquete:</span>
+              <span class="price-value total-price">{{ formatearPrecio(reserva.precioFinalPaquete) }}</span>
+            </div>
+            <div class="info-note">
+              <mat-icon>info</mat-icon>
+              <small>Este paquete incluye {{ reserva.reservasPaquete?.length || 0 }} reserva(s)</small>
             </div>
           </div>
         </mat-card-content>

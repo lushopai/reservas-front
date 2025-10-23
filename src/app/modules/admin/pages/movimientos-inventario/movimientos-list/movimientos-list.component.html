@@ -1,0 +1,232 @@
+<div class="movimientos-container">
+  <!-- Header -->
+  <div class="page-header">
+    <h1>
+      <mat-icon>history</mat-icon>
+      Movimientos de Inventario
+    </h1>
+    <p class="subtitle">Historial completo de entradas, salidas y ajustes de inventario</p>
+  </div>
+
+  <!-- Estadísticas Cards -->
+  <div class="stats-grid">
+    <mat-card class="stat-card entradas">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>add_circle</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ totalEntradas }}</h3>
+          <p>Entradas</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card salidas">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>remove_circle</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ totalSalidas }}</h3>
+          <p>Salidas</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card devoluciones">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>replay</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ totalDevoluciones }}</h3>
+          <p>Devoluciones</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card ajustes">
+      <mat-card-content>
+        <div class="stat-icon">
+          <mat-icon>tune</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ totalAjustes }}</h3>
+          <p>Ajustes</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Filtros -->
+  <mat-card class="filtros-card">
+    <mat-card-content>
+      <div class="filtros-row">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Tipo de Movimiento</mat-label>
+          <mat-select [(ngModel)]="filtroTipo" (selectionChange)="aplicarFiltros()">
+            <mat-option value="">Todos los tipos</mat-option>
+            <mat-option *ngFor="let tipo of tiposMovimiento" [value]="tipo.value">
+              <mat-icon [color]="tipo.color">{{ tipo.icon }}</mat-icon>
+              {{ tipo.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field search-field">
+          <mat-label>Buscar</mat-label>
+          <input matInput
+                 [(ngModel)]="filtroBusqueda"
+                 (keyup)="aplicarFiltros()"
+                 placeholder="Item, recurso, usuario...">
+          <mat-icon matPrefix>search</mat-icon>
+          <button mat-icon-button matSuffix
+                  *ngIf="filtroBusqueda"
+                  (click)="filtroBusqueda = ''; aplicarFiltros()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <button mat-raised-button
+                color="accent"
+                (click)="limpiarFiltros()"
+                *ngIf="filtroTipo || filtroBusqueda">
+          <mat-icon>clear_all</mat-icon>
+          Limpiar Filtros
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Tabla de Movimientos -->
+  <mat-card class="table-card">
+    <mat-card-content>
+      <!-- Loading spinner -->
+      <div class="loading-shade" *ngIf="cargando">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <!-- Tabla -->
+      <div class="table-container" *ngIf="!cargando">
+        <table mat-table [dataSource]="dataSource" matSort class="movimientos-table">
+
+          <!-- Fecha Column -->
+          <ng-container matColumnDef="fechaMovimiento">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
+            <td mat-cell *matCellDef="let movimiento">
+              <div class="fecha-cell">
+                <mat-icon class="fecha-icon">schedule</mat-icon>
+                {{ formatearFecha(movimiento.fechaMovimiento) }}
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Tipo Movimiento Column -->
+          <ng-container matColumnDef="tipoMovimiento">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Tipo</th>
+            <td mat-cell *matCellDef="let movimiento">
+              <span class="tipo-chip" [ngClass]="getTipoInfo(movimiento.tipoMovimiento).color">
+                <mat-icon>{{ getTipoInfo(movimiento.tipoMovimiento).icon }}</mat-icon>
+                {{ getTipoInfo(movimiento.tipoMovimiento).label }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Item Column -->
+          <ng-container matColumnDef="nombreItem">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Item</th>
+            <td mat-cell *matCellDef="let movimiento">
+              <div class="item-info">
+                <strong>{{ movimiento.nombreItem }}</strong>
+                <small *ngIf="movimiento.categoriaItem">{{ movimiento.categoriaItem }}</small>
+                <small *ngIf="movimiento.nombreRecurso" class="recurso-name">
+                  <mat-icon class="small-icon">location_on</mat-icon>
+                  {{ movimiento.nombreRecurso }}
+                </small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Cantidad Column -->
+          <ng-container matColumnDef="cantidad">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">Cantidad</th>
+            <td mat-cell *matCellDef="let movimiento" class="text-center">
+              <span class="cantidad-badge" [ngClass]="{
+                'positivo': getVariacionStock(movimiento) > 0,
+                'negativo': getVariacionStock(movimiento) < 0
+              }">
+                {{ getVariacionStock(movimiento) > 0 ? '+' : '' }}{{ getVariacionStock(movimiento) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Stock Anterior Column -->
+          <ng-container matColumnDef="stockAnterior">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">Stock Anterior</th>
+            <td mat-cell *matCellDef="let movimiento" class="text-center">
+              {{ movimiento.stockAnterior }}
+            </td>
+          </ng-container>
+
+          <!-- Stock Posterior Column -->
+          <ng-container matColumnDef="stockPosterior">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">Stock Posterior</th>
+            <td mat-cell *matCellDef="let movimiento" class="text-center">
+              <strong>{{ movimiento.stockPosterior }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Reserva Column -->
+          <ng-container matColumnDef="reservaId">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-center">Reserva</th>
+            <td mat-cell *matCellDef="let movimiento" class="text-center">
+              <a *ngIf="movimiento.reservaId"
+                 [routerLink]="['/admin/reservas', movimiento.reservaId]"
+                 class="reserva-link">
+                #{{ movimiento.reservaId }}
+              </a>
+              <span *ngIf="!movimiento.reservaId" class="text-muted">-</span>
+            </td>
+          </ng-container>
+
+          <!-- Usuario Column -->
+          <ng-container matColumnDef="nombreUsuario">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
+            <td mat-cell *matCellDef="let movimiento">
+              <div class="usuario-cell" *ngIf="movimiento.nombreUsuario">
+                <mat-icon class="user-icon">person</mat-icon>
+                {{ movimiento.nombreUsuario }}
+              </div>
+              <span *ngIf="!movimiento.nombreUsuario" class="text-muted">Sistema</span>
+            </td>
+          </ng-container>
+
+          <!-- Header and Row Declarations -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="movimiento-row"></tr>
+
+          <!-- Empty State -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+              <div class="no-data">
+                <mat-icon>inventory_2</mat-icon>
+                <p>No se encontraron movimientos</p>
+                <button mat-raised-button color="primary" (click)="limpiarFiltros()" *ngIf="filtroTipo || filtroBusqueda">
+                  Limpiar Filtros
+                </button>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <!-- Paginador -->
+        <mat-paginator
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          [pageSize]="25"
+          showFirstLastButtons>
+        </mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

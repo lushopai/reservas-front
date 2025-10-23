@@ -90,10 +90,12 @@ export class ConfirmarReservaComponent implements OnInit {
   cargarItemsPaquete(): void {
     this.cargandoItems = true;
     const observables: any[] = [];
+    const recursosIds: number[] = []; // IDs de recursos del paquete
 
     // Cargar items de la cabaña si existe
     if (this.reservaData.cabanaId) {
       observables.push(this.cabanaService.obtenerItemsAdicionales(this.reservaData.cabanaId));
+      recursosIds.push(this.reservaData.cabanaId);
     }
 
     // Cargar items de cada servicio
@@ -101,6 +103,7 @@ export class ConfirmarReservaComponent implements OnInit {
       this.reservaData.servicios.forEach((servicio: any) => {
         if (servicio.servicioId) {
           observables.push(this.inventarioService.obtenerPorRecurso(servicio.servicioId));
+          recursosIds.push(servicio.servicioId);
         }
       });
     }
@@ -117,14 +120,18 @@ export class ConfirmarReservaComponent implements OnInit {
         const itemsUnicos = new Map<number, ItemInventario>();
 
         todosLosItems.forEach(item => {
-          if (item.esReservable && !itemsUnicos.has(item.id)) {
+          // ✅ VALIDACIÓN CRÍTICA: Solo agregar items que pertenezcan a los recursos del paquete
+          if (item.esReservable &&
+              item.recursoId &&
+              recursosIds.includes(item.recursoId) &&
+              !itemsUnicos.has(item.id)) {
             itemsUnicos.set(item.id, item);
           }
         });
 
         this.itemsDisponibles = Array.from(itemsUnicos.values());
         this.cargandoItems = false;
-        console.log('Items de paquete cargados:', this.itemsDisponibles.length);
+        console.log('Items de paquete cargados:', this.itemsDisponibles.length, 'de recursos:', recursosIds);
       },
       error: (error) => {
         console.error('Error al cargar items del paquete:', error);
@@ -172,14 +179,34 @@ export class ConfirmarReservaComponent implements OnInit {
 
     // Si es paquete (cabaña + servicios)
     if (this.reservaData.tipo === 'paquete') {
-      // Preparar items adicionales para el request
-      const itemsAdicionales = Array.from(this.itemsSeleccionados.entries()).map(([itemId, cantidad]) => ({
-        itemId: itemId,
-        cantidad: cantidad
-      }));
+      // ✅ Separar items por recurso
+      const itemsCabana: any[] = [];
+      const itemsPorServicio = new Map<number, any[]>(); // servicioId -> items
 
-      // Preparar servicios
-      const servicios: ServicioReservaDTO[] = this.reservaData.servicios || [];
+      // Clasificar cada item seleccionado según su recurso
+      this.itemsSeleccionados.forEach((cantidad, itemId) => {
+        const item = this.itemsDisponibles.find(i => i.id === itemId);
+        if (item && item.recursoId) {
+          const itemDto = { itemId: itemId, cantidad: cantidad };
+
+          if (item.recursoId === this.reservaData.cabanaId) {
+            // Item pertenece a la cabaña
+            itemsCabana.push(itemDto);
+          } else {
+            // Item pertenece a un servicio
+            if (!itemsPorServicio.has(item.recursoId)) {
+              itemsPorServicio.set(item.recursoId, []);
+            }
+            itemsPorServicio.get(item.recursoId)!.push(itemDto);
+          }
+        }
+      });
+
+      // Preparar servicios con sus items correspondientes
+      const servicios: ServicioReservaDTO[] = (this.reservaData.servicios || []).map((servicio: any) => ({
+        ...servicio,
+        equipamiento: itemsPorServicio.get(servicio.servicioId) || []
+      }));
 
       const request: PaqueteReservaRequest = {
         clienteId: user.id,
@@ -187,7 +214,7 @@ export class ConfirmarReservaComponent implements OnInit {
         fechaInicio: this.reservaData.fechaInicio,
         fechaFin: this.reservaData.fechaFin,
         cabanaId: this.reservaData.cabanaId,
-        itemsCabana: itemsAdicionales.length > 0 ? itemsAdicionales : undefined,
+        itemsCabana: itemsCabana.length > 0 ? itemsCabana : undefined,
         servicios: servicios,
         notasEspeciales: this.observaciones
       };
