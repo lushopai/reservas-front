@@ -9,6 +9,10 @@
       <p class="page-subtitle">Administra todas las reservas del sistema</p>
     </div>
     <div class="header-actions">
+      <button mat-raised-button color="primary" routerLink="/admin/reservas/nueva">
+        <mat-icon>add</mat-icon>
+        Nueva Reserva
+      </button>
       <button mat-stroked-button routerLink="/admin">
         <mat-icon>arrow_back</mat-icon>
         Volver
@@ -229,6 +233,14 @@
                 matTooltip="Ver detalle y gestionar">
                 <mat-icon>visibility</mat-icon>
               </button>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="cancelarReserva(element)"
+                matTooltip="Cancelar reserva"
+                [disabled]="element.estado === 'CANCELADA' || element.estado === 'COMPLETADA'">
+                <mat-icon>delete</mat-icon>
+              </button>
             </td>
           </ng-container>
 
@@ -287,7 +299,7 @@
           <mat-icon>event_busy</mat-icon>
           <h3>No se encontraron reservas</h3>
           <p>No hay reservas que coincidan con los filtros aplicados</p>
-          <button mat-raised-button color="primary" [disabled]="true" matTooltip="Funcionalidad no implementada">
+          <button mat-raised-button color="primary" routerLink="/admin/reservas/nueva">
             <mat-icon>add</mat-icon>
             Nueva Reserva
           </button>

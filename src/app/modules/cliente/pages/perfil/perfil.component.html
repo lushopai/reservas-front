@@ -1,0 +1,332 @@
+<div class="perfil-container">
+  <div class="header-section">
+    <h1 class="page-title">
+      <mat-icon>account_circle</mat-icon>
+      Mi Perfil
+    </h1>
+  </div>
+
+  <!-- Loader -->
+  <div *ngIf="cargando && !usuario" class="loading-container">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- Contenido del perfil -->
+  <div *ngIf="!cargando || usuario" class="content-grid">
+    <!-- Columna principal - Información del perfil -->
+    <div class="main-column">
+      <!-- Card de información personal -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person</mat-icon>
+            Información Personal
+          </mat-card-title>
+          <div class="header-actions">
+            <button
+              *ngIf="!editando"
+              mat-raised-button
+              color="primary"
+              (click)="toggleEditar()">
+              <mat-icon>edit</mat-icon>
+              Editar
+            </button>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form [formGroup]="perfilForm">
+            <div class="form-grid">
+              <!-- Nombres -->
+              <mat-form-field appearance="outline">
+                <mat-label>Nombres</mat-label>
+                <input
+                  matInput
+                  formControlName="nombres"
+                  placeholder="Ingrese sus nombres">
+                <mat-icon matPrefix>badge</mat-icon>
+                <mat-error *ngIf="perfilForm.get('nombres')?.hasError('required')">
+                  Los nombres son requeridos
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('nombres')?.hasError('minlength')">
+                  Mínimo 2 caracteres
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Apellidos -->
+              <mat-form-field appearance="outline">
+                <mat-label>Apellidos</mat-label>
+                <input
+                  matInput
+                  formControlName="apellidos"
+                  placeholder="Ingrese sus apellidos">
+                <mat-icon matPrefix>badge</mat-icon>
+                <mat-error *ngIf="perfilForm.get('apellidos')?.hasError('required')">
+                  Los apellidos son requeridos
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('apellidos')?.hasError('minlength')">
+                  Mínimo 2 caracteres
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Email -->
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input
+                  matInput
+                  formControlName="email"
+                  placeholder="email@ejemplo.com"
+                  readonly>
+                <mat-icon matPrefix>email</mat-icon>
+                <mat-hint>El email no puede ser modificado</mat-hint>
+              </mat-form-field>
+
+              <!-- Teléfono -->
+              <mat-form-field appearance="outline">
+                <mat-label>Teléfono</mat-label>
+                <input
+                  matInput
+                  formControlName="telefono"
+                  placeholder="912345678">
+                <mat-icon matPrefix>phone</mat-icon>
+                <mat-error *ngIf="perfilForm.get('telefono')?.hasError('required')">
+                  El teléfono es requerido
+                </mat-error>
+                <mat-error *ngIf="perfilForm.get('telefono')?.hasError('pattern')">
+                  Formato inválido (9-12 dígitos)
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Tipo de Documento -->
+              <mat-form-field appearance="outline">
+                <mat-label>Tipo de Documento</mat-label>
+                <mat-select formControlName="tipoDocumento">
+                  <mat-option value="RUT">RUT</mat-option>
+                  <mat-option value="DNI">DNI</mat-option>
+                  <mat-option value="PASAPORTE">Pasaporte</mat-option>
+                  <mat-option value="CEDULA">Cédula</mat-option>
+                </mat-select>
+                <mat-icon matPrefix>description</mat-icon>
+              </mat-form-field>
+
+              <!-- Documento -->
+              <mat-form-field appearance="outline">
+                <mat-label>Documento</mat-label>
+                <input
+                  matInput
+                  formControlName="documento"
+                  placeholder="12345678-9">
+                <mat-icon matPrefix>credit_card</mat-icon>
+                <mat-error *ngIf="perfilForm.get('documento')?.hasError('required')">
+                  El documento es requerido
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Botones de acción -->
+            <div *ngIf="editando" class="action-buttons">
+              <button
+                mat-stroked-button
+                (click)="toggleEditar()"
+                [disabled]="cargando">
+                <mat-icon>close</mat-icon>
+                Cancelar
+              </button>
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="guardarCambios()"
+                [disabled]="perfilForm.invalid || cargando">
+                <mat-spinner *ngIf="cargando" diameter="20"></mat-spinner>
+                <mat-icon *ngIf="!cargando">save</mat-icon>
+                Guardar Cambios
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Card de cambio de contraseña -->
+      <mat-card class="password-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>lock</mat-icon>
+            Seguridad
+          </mat-card-title>
+          <div class="header-actions">
+            <button
+              *ngIf="!cambiandoPassword"
+              mat-raised-button
+              color="accent"
+              (click)="toggleCambiarPassword()">
+              <mat-icon>vpn_key</mat-icon>
+              Cambiar Contraseña
+            </button>
+          </div>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div *ngIf="!cambiandoPassword" class="info-message">
+            <mat-icon>info</mat-icon>
+            <p>Haz clic en "Cambiar Contraseña" para actualizar tu contraseña</p>
+          </div>
+
+          <!-- Formulario de cambio de contraseña -->
+          <div *ngIf="cambiandoPassword">
+            <form [formGroup]="passwordForm">
+              <div class="password-form">
+                <!-- Contraseña Actual -->
+                <mat-form-field appearance="outline">
+                  <mat-label>Contraseña Actual</mat-label>
+                  <input
+                    matInput
+                    [type]="hideCurrentPassword ? 'password' : 'text'"
+                    formControlName="currentPassword"
+                    placeholder="Ingrese su contraseña actual">
+                  <mat-icon matPrefix>lock_outline</mat-icon>
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="hideCurrentPassword = !hideCurrentPassword">
+                    <mat-icon>{{hideCurrentPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
+                  </button>
+                  <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('required')">
+                    La contraseña actual es requerida
+                  </mat-error>
+                  <mat-error *ngIf="passwordForm.get('currentPassword')?.hasError('minlength')">
+                    Mínimo 6 caracteres
+                  </mat-error>
+                </mat-form-field>
+
+                <!-- Nueva Contraseña -->
+                <mat-form-field appearance="outline">
+                  <mat-label>Nueva Contraseña</mat-label>
+                  <input
+                    matInput
+                    [type]="hideNewPassword ? 'password' : 'text'"
+                    formControlName="newPassword"
+                    placeholder="Ingrese su nueva contraseña">
+                  <mat-icon matPrefix>lock</mat-icon>
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="hideNewPassword = !hideNewPassword">
+                    <mat-icon>{{hideNewPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
+                  </button>
+                  <mat-hint>Mínimo 6 caracteres</mat-hint>
+                  <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('required')">
+                    La nueva contraseña es requerida
+                  </mat-error>
+                  <mat-error *ngIf="passwordForm.get('newPassword')?.hasError('minlength')">
+                    Mínimo 6 caracteres
+                  </mat-error>
+                </mat-form-field>
+
+                <!-- Confirmar Contraseña -->
+                <mat-form-field appearance="outline">
+                  <mat-label>Confirmar Nueva Contraseña</mat-label>
+                  <input
+                    matInput
+                    [type]="hideConfirmPassword ? 'password' : 'text'"
+                    formControlName="confirmPassword"
+                    placeholder="Confirme su nueva contraseña">
+                  <mat-icon matPrefix>lock_clock</mat-icon>
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    type="button"
+                    (click)="hideConfirmPassword = !hideConfirmPassword">
+                    <mat-icon>{{hideConfirmPassword ? 'visibility' : 'visibility_off'}}</mat-icon>
+                  </button>
+                  <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('required')">
+                    Debe confirmar la contraseña
+                  </mat-error>
+                  <mat-error *ngIf="passwordForm.get('confirmPassword')?.hasError('passwordMismatch')">
+                    Las contraseñas no coinciden
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Botones -->
+              <div class="action-buttons">
+                <button
+                  mat-stroked-button
+                  (click)="toggleCambiarPassword()"
+                  [disabled]="cargando">
+                  <mat-icon>close</mat-icon>
+                  Cancelar
+                </button>
+                <button
+                  mat-raised-button
+                  color="accent"
+                  (click)="cambiarPassword()"
+                  [disabled]="passwordForm.invalid || cargando">
+                  <mat-spinner *ngIf="cargando" diameter="20"></mat-spinner>
+                  <mat-icon *ngIf="!cargando">check_circle</mat-icon>
+                  Cambiar Contraseña
+                </button>
+              </div>
+            </form>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Columna lateral - Estadísticas -->
+    <div class="side-column">
+      <mat-card class="stats-card">
+        <mat-card-content>
+          <div class="user-avatar">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <h3 class="user-name">{{ usuario?.nombre }} {{ usuario?.apellidos }}</h3>
+          <p class="user-email">{{ usuario?.email }}</p>
+
+          <mat-divider></mat-divider>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <mat-icon color="primary">event</mat-icon>
+              <div class="stat-content">
+                <div class="stat-value">{{ usuario?.totalReservas || 0 }}</div>
+                <div class="stat-label">Reservas</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <mat-icon [color]="usuario?.enabled ? 'accent' : 'warn'">
+                {{ usuario?.enabled ? 'check_circle' : 'cancel' }}
+              </mat-icon>
+              <div class="stat-content">
+                <div class="stat-value">{{ usuario?.enabled ? 'Activo' : 'Inactivo' }}</div>
+                <div class="stat-label">Estado</div>
+              </div>
+            </div>
+          </div>
+
+          <mat-divider></mat-divider>
+
+          <div class="user-info">
+            <div class="info-item">
+              <mat-icon>calendar_today</mat-icon>
+              <div class="info-content">
+                <div class="info-label">Miembro desde</div>
+                <div class="info-value">{{ usuario?.fechaRegistro | date:'dd/MM/yyyy' }}</div>
+              </div>
+            </div>
+
+            <div class="info-item" *ngIf="usuario?.ultimoAcceso">
+              <mat-icon>schedule</mat-icon>
+              <div class="info-content">
+                <div class="info-label">Último acceso</div>
+                <div class="info-value">{{ usuario?.ultimoAcceso | date:'dd/MM/yyyy HH:mm' }}</div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -33,6 +33,13 @@ export class UserService {
   }
 
   /**
+   * Obtener usuario por ID (alias de getProfile)
+   */
+  getUserById(id: number): Observable<UserResponse> {
+    return this.getProfile(id);
+  }
+
+  /**
    * Actualizar perfil de usuario
    */
   updateProfile(
@@ -65,7 +72,7 @@ export class UserService {
   }
 
   // Actualizar usuario
-  updateUser(id: number, user: User): Observable<ApiResponse<UserResponse>> {
+  updateUser(id: number, user: any): Observable<ApiResponse<UserResponse>> {
     return this.api.put<ApiResponse<UserResponse>>(
       API_CONFIG.endpoints.users.byId(id),
       user
@@ -84,6 +91,14 @@ export class UserService {
   deleteUser(id: number): Observable<ApiResponse<string>> {
     return this.api.delete<ApiResponse<string>>(
       API_CONFIG.endpoints.users.byId(id)
+    );
+  }
+
+  // Cambiar contraseña
+  changePassword(id: number, passwordData: { currentPassword: string, newPassword: string }): Observable<ApiResponse<any>> {
+    return this.api.put<ApiResponse<any>>(
+      `${API_CONFIG.endpoints.users.byId(id)}/change-password`,
+      passwordData
     );
   }
 }

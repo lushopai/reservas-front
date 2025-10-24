@@ -4,8 +4,8 @@ import { ClienteComponent } from './cliente.component';
 import { MisReservasComponent } from './pages/mis-reservas/mis-reservas.component';
 import { NuevaReservaComponent } from './pages/nueva-reserva/nueva-reserva.component';
 import { ConfirmarPagoComponent } from './pages/confirmar-pago/confirmar-pago.component';
-import { NuevaReservaPaqueteComponent } from './pages/nueva-reserva-paquete/nueva-reserva-paquete.component';
 import { ConfirmarReservaComponent } from './pages/confirmar-reserva/confirmar-reserva.component';
+import { PerfilComponent } from './pages/perfil/perfil.component';
 
 const routes: Routes = [
   {
@@ -28,11 +28,6 @@ const routes: Routes = [
         data: { title: 'Nueva Reserva' },
       },
       {
-        path: 'nueva-reserva-paquete',
-        component: NuevaReservaPaqueteComponent,
-        data: { title: 'Nueva Reserva - Paquete' },
-      },
-      {
         path: 'confirmar-pago/:id',
         component: ConfirmarPagoComponent,
         data: { title: 'Confirmar Pago' },
@@ -41,6 +36,11 @@ const routes: Routes = [
         path: 'confirmar-reserva',
         component: ConfirmarReservaComponent,
         data: { title: 'Confirmar Reserva' },
+      },
+      {
+        path: 'perfil',
+        component: PerfilComponent,
+        data: { title: 'Mi Perfil' },
       },
     ],
   },

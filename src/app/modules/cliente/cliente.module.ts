@@ -19,15 +19,17 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatSelectModule } from '@angular/material/select';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { ClienteRoutingModule } from './cliente-routing.module';
 import { ClienteComponent } from './cliente.component';
 import { MisReservasComponent } from './pages/mis-reservas/mis-reservas.component';
 import { NuevaReservaComponent } from './pages/nueva-reserva/nueva-reserva.component';
 import { ConfirmarPagoComponent } from './pages/confirmar-pago/confirmar-pago.component';
-import { NuevaReservaPaqueteComponent } from './pages/nueva-reserva-paquete/nueva-reserva-paquete.component';
 import { SharedModule } from '../../shared/shared.module';
 import { ConfirmarReservaComponent } from './pages/confirmar-reserva/confirmar-reserva.component';
+import { PerfilComponent } from './pages/perfil/perfil.component';
 
 
 @NgModule({
@@ -36,8 +38,8 @@ import { ConfirmarReservaComponent } from './pages/confirmar-reserva/confirmar-r
     MisReservasComponent,
     NuevaReservaComponent,
     ConfirmarPagoComponent,
-    NuevaReservaPaqueteComponent,
-    ConfirmarReservaComponent
+    ConfirmarReservaComponent,
+    PerfilComponent
   ],
   imports: [
     CommonModule,
@@ -61,7 +63,9 @@ import { ConfirmarReservaComponent } from './pages/confirmar-reserva/confirmar-r
     MatTooltipModule,
     MatDatepickerModule,
     MatMenuModule,
-    MatDividerModule
+    MatDividerModule,
+    MatSelectModule,
+    MatToolbarModule
   ]
 })
 export class ClienteModule { }

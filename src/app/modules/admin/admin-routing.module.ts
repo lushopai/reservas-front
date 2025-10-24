@@ -7,6 +7,7 @@ import { UsuarioFormComponent } from './pages/usuarios/usuario-form/usuario-form
 import { UsuarioDetailComponent } from './pages/usuarios/usuario-detail/usuario-detail.component';
 import { ReservasListComponent } from './pages/reservas-admin/reservas-list/reservas-list.component';
 import { ReservaDetailComponent } from './pages/reservas-admin/reserva-detail/reserva-detail.component';
+import { ReservaFormComponent } from './pages/reservas-admin/reserva-form/reserva-form.component';
 import { CabanasListComponent } from './pages/cabanas/cabanas-list/cabanas-list.component';
 import { CabanaFormComponent } from './pages/cabanas/cabana-form/cabana-form.component';
 import { ServiciosListComponent } from './pages/servicios/servicios-list/servicios-list.component';
@@ -66,6 +67,11 @@ const routes: Routes = [
             path: '',
             component: ReservasListComponent,
             data: { title: 'Gestión de Reservas' },
+          },
+          {
+            path: 'nueva',
+            component: ReservaFormComponent,
+            data: { title: 'Nueva Reserva' },
           },
           {
             path: ':id',

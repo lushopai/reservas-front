@@ -1,53 +1,578 @@
-.sticky-top {
-  position: sticky;
-  top: 20px;
-  z-index: 100;
-}
+// ============================================
+// Loading State
+// ============================================
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 24px;
 
-.ratio {
-  position: relative;
-  width: 100%;
-
-  &::before {
-    display: block;
-    padding-top: 56.25%; // 16:9 aspect ratio
-    content: "";
-  }
-
-  > * {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  .loading-text {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
   }
 }
 
-.overflow-auto {
-  &::-webkit-scrollbar {
-    height: 8px;
-  }
+// ============================================
+// Main Container
+// ============================================
+.detalle-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
 
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
+// ============================================
+// Breadcrumb Navigation (Material Style)
+// ============================================
+.breadcrumb-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
 
-  &::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
+  .breadcrumb-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #667eea;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
 
     &:hover {
-      background: #555;
+      color: #5568d3;
+      text-decoration: underline;
+    }
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .breadcrumb-separator {
+    color: #999;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  .breadcrumb-current {
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+// ============================================
+// Grid Layout
+// ============================================
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ============================================
+// Gallery Card
+// ============================================
+.gallery-card {
+  position: relative;
+  overflow: hidden;
+
+  .gallery-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: #f5f5f5;
+
+    .gallery-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .placeholder-image {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #999;
+
+      mat-icon {
+        font-size: 80px;
+        width: 80px;
+        height: 80px;
+        margin-bottom: 16px;
+      }
+
+      span {
+        font-size: 16px;
+      }
+    }
+
+    .nav-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+
+      &.prev {
+        left: 16px;
+      }
+
+      &.next {
+        right: 16px;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .thumbnail-strip {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    overflow-x: auto;
+    background-color: #fafafa;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 3px;
+
+      &:hover {
+        background: #555;
+      }
+    }
+
+    .thumbnail {
+      flex-shrink: 0;
+      width: 100px;
+      height: 70px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: #667eea;
+        transform: scale(1.05);
+      }
+
+      &.active {
+        border-color: #667eea;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+
+  .image-counter {
+    position: absolute;
+    bottom: 80px;
+    right: 16px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    z-index: 2;
+  }
+}
+
+// ============================================
+// Description Card
+// ============================================
+.description-card {
+  mat-card-header {
+    margin-bottom: 16px;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+
+      mat-icon {
+        color: #667eea;
+      }
+    }
+  }
+
+  .description-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #555;
+  }
+}
+
+// ============================================
+// Booking Card (Sticky)
+// ============================================
+.booking-card {
+  &.sticky {
+    position: sticky;
+    top: 24px;
+    z-index: 10;
+  }
+
+  mat-card-header {
+    margin-bottom: 16px;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      h2 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #667eea;
+        margin: 0;
+      }
+
+      .price-label {
+        font-size: 13px;
+        color: #999;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .full-width {
+    width: 100%;
+  }
+
+  mat-divider {
+    margin: 16px 0;
+  }
+
+  // Price Summary
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 8px;
+
+    &.total {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+      padding-top: 8px;
+      border-top: 2px solid #e0e0e0;
+      margin-top: 8px;
+      margin-bottom: 0;
+    }
+  }
+
+  // Action Buttons
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+
+    button {
+      width: 100%;
+      height: 48px;
+      font-size: 16px;
+      font-weight: 600;
     }
   }
 }
 
-// Estilos para Material Datepicker
+// ============================================
+// Services Expansion Panel
+// ============================================
+mat-expansion-panel {
+  margin: 16px 0;
+  box-shadow: none;
+  border: 1px solid #e0e0e0;
+
+  mat-expansion-panel-header {
+    mat-panel-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+
+      mat-icon {
+        color: #667eea;
+      }
+    }
+  }
+
+  .service-item {
+    margin-bottom: 12px;
+    border: 1px solid #e0e0e0;
+    box-shadow: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: #667eea;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+    }
+
+    mat-card-content {
+      padding: 16px;
+
+      mat-checkbox {
+        width: 100%;
+
+        .service-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          margin-left: 8px;
+
+          .service-name {
+            font-weight: 600;
+            font-size: 15px;
+            color: #333;
+          }
+
+          .service-price {
+            font-weight: 700;
+            font-size: 16px;
+            color: #667eea;
+          }
+        }
+
+        .service-description {
+          font-size: 13px;
+          color: #666;
+          margin-left: 8px;
+          margin-top: 4px;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// Amenities Section
+// ============================================
+.amenities-section {
+  mat-card-header {
+    margin-bottom: 16px;
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+
+      mat-icon {
+        color: #667eea;
+      }
+    }
+  }
+
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+
+    .amenity-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background-color: #f0f0ff;
+      }
+
+      mat-icon {
+        color: #667eea;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+      }
+
+      span {
+        font-size: 14px;
+        color: #555;
+      }
+    }
+  }
+}
+
+// ============================================
+// Availability Legend
+// ============================================
+.legend-container {
+  margin-top: 16px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+
+  .legend-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 12px;
+
+    mat-icon {
+      color: #667eea;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #666;
+
+      .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+
+        &.disponible {
+          background-color: #4caf50;
+        }
+
+        &.ocupada {
+          background-color: #f44336;
+        }
+
+        &.seleccionada {
+          background-color: #667eea;
+        }
+      }
+    }
+  }
+}
+
+// ============================================
+// Error/Alert Messages
+// ============================================
+.error-card,
+.warning-card,
+.info-card {
+  margin: 16px 0;
+  border-left: 4px solid;
+
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+}
+
+.error-card {
+  border-left-color: #f44336;
+  background-color: #ffebee;
+
+  mat-icon {
+    color: #f44336;
+  }
+}
+
+.warning-card {
+  border-left-color: #ff9800;
+  background-color: #fff3e0;
+
+  mat-icon {
+    color: #ff9800;
+  }
+}
+
+.info-card {
+  border-left-color: #2196f3;
+  background-color: #e3f2fd;
+
+  mat-icon {
+    color: #2196f3;
+  }
+}
+
+// ============================================
+// Material Datepicker Customization
+// ============================================
 ::ng-deep {
   .mat-form-field {
-    width: 100%;
-
     .mat-form-field-wrapper {
       padding-bottom: 0;
     }
@@ -57,7 +582,6 @@
     color: #667eea;
   }
 
-  // Personalizar el calendario
   .mat-calendar {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
@@ -67,15 +591,110 @@
     color: white;
   }
 
+  .mat-calendar-body-in-range {
+    background-color: rgba(102, 126, 234, 0.2);
+  }
+
   .mat-calendar-body-today:not(.mat-calendar-body-selected) {
     border-color: #667eea;
   }
 
-  // Fechas deshabilitadas/bloqueadas
   .mat-calendar-body-disabled {
     color: #d0d0d0;
     background-color: #f5f5f5;
     text-decoration: line-through;
     cursor: not-allowed;
+  }
+
+  // Material Chips
+  mat-chip {
+    font-size: 13px;
+  }
+}
+
+// ============================================
+// Responsive Design
+// ============================================
+@media (max-width: 1024px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-card {
+    &.sticky {
+      position: static;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .detalle-container {
+    padding: 16px 8px;
+  }
+
+  .breadcrumb-nav {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .gallery-card {
+    .gallery-container {
+      .nav-button {
+        width: 40px;
+        height: 40px;
+
+        &.prev {
+          left: 8px;
+        }
+
+        &.next {
+          right: 8px;
+        }
+
+        mat-icon {
+          font-size: 20px;
+        }
+      }
+    }
+
+    .thumbnail-strip {
+      .thumbnail {
+        width: 80px;
+        height: 56px;
+      }
+    }
+  }
+
+  .booking-card {
+    mat-card-header {
+      mat-card-title {
+        h2 {
+          font-size: 24px;
+        }
+      }
+    }
+  }
+
+  .amenities-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .booking-card {
+    .action-buttons {
+      button {
+        height: 44px;
+        font-size: 15px;
+      }
+    }
+  }
+
+  .price-row {
+    font-size: 14px;
+
+    &.total {
+      font-size: 16px;
+    }
   }
 }

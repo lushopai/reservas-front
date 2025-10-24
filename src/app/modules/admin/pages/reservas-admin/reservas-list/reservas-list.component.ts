@@ -297,6 +297,125 @@ export class ReservasListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  // ✅ Método para cancelar reserva
+  cancelarReserva(reservaDisplay: ReservaDisplay): void {
+    const titulo = reservaDisplay.esPaquete
+      ? '¿Cancelar paquete completo?'
+      : '¿Cancelar reserva?';
+
+    const texto = reservaDisplay.esPaquete
+      ? `¿Estás seguro de cancelar el paquete "${reservaDisplay.nombrePaquete}"? Se cancelarán todas las ${reservaDisplay.reservas.length} reservas incluidas. Esta acción no se puede deshacer.`
+      : `¿Estás seguro de cancelar la reserva de "${reservaDisplay.nombreRecurso}"? Esta acción no se puede deshacer.`;
+
+    Swal.fire({
+      title: titulo,
+      text: texto,
+      icon: 'warning',
+      input: 'textarea',
+      inputLabel: 'Motivo de cancelación (opcional)',
+      inputPlaceholder: 'Escribe el motivo de la cancelación...',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar',
+      cancelButtonText: 'No, mantener',
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      inputValidator: (value) => {
+        if (value && value.length > 500) {
+          return 'El motivo no puede exceder 500 caracteres';
+        }
+        return null;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.cargando = true;
+        const motivo = result.value || undefined;
+
+        if (reservaDisplay.esPaquete) {
+          // Cancelar todas las reservas del paquete
+          this.cancelarPaqueteCompleto(reservaDisplay.reservas, motivo);
+        } else {
+          // Cancelar una sola reserva
+          this.cancelarReservaIndividual(reservaDisplay.reservas[0], motivo);
+        }
+      }
+    });
+  }
+
+  private cancelarReservaIndividual(reserva: Reserva, motivo?: string): void {
+    this.reservaService.cancelarReserva(reserva.id!, motivo).subscribe({
+      next: (response) => {
+        this.cargando = false;
+        if (response.success) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Reserva cancelada',
+            text: response.message,
+            confirmButtonColor: '#3f51b5'
+          });
+          this.cargarReservas();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.message,
+            confirmButtonColor: '#dc3545'
+          });
+        }
+      },
+      error: (error) => {
+        this.cargando = false;
+        console.error('Error al cancelar reserva:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.error?.message || 'No se pudo cancelar la reserva',
+          confirmButtonColor: '#dc3545'
+        });
+      }
+    });
+  }
+
+  private cancelarPaqueteCompleto(reservas: Reserva[], motivo?: string): void {
+    // Cancelar todas las reservas del paquete secuencialmente
+    const promesas = reservas.map(r =>
+      this.reservaService.cancelarReserva(r.id!, motivo).toPromise()
+    );
+
+    Promise.all(promesas)
+      .then(responses => {
+        this.cargando = false;
+        const exitosas = responses.filter(r => r?.success).length;
+        const fallidas = responses.length - exitosas;
+
+        if (fallidas === 0) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Paquete cancelado',
+            text: `Se cancelaron exitosamente las ${exitosas} reservas del paquete`,
+            confirmButtonColor: '#3f51b5'
+          });
+        } else {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Cancelación parcial',
+            text: `Se cancelaron ${exitosas} reservas, pero ${fallidas} fallaron`,
+            confirmButtonColor: '#f39c12'
+          });
+        }
+        this.cargarReservas();
+      })
+      .catch(error => {
+        this.cargando = false;
+        console.error('Error al cancelar paquete:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo cancelar el paquete completo',
+          confirmButtonColor: '#dc3545'
+        });
+      });
+  }
+
   getEstadoChipClass(estado: string): string {
     switch (estado) {
       case EstadoReserva.PENDIENTE:

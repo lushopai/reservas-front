@@ -1,0 +1,411 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Nueva Reserva</h4>
+        </div>
+        <div class="card-body">
+          <!-- Indicador de pasos -->
+          <div class="steps-indicator mb-4">
+            <div class="step" [class.active]="paso === 1" [class.completed]="paso > 1">
+              <div class="step-number">1</div>
+              <div class="step-label">Tipo de Reserva</div>
+            </div>
+            <div class="step-line" [class.completed]="paso > 1"></div>
+            <div class="step" [class.active]="paso === 2" [class.completed]="paso > 2">
+              <div class="step-number">2</div>
+              <div class="step-label">Seleccionar y Fechas</div>
+            </div>
+            <div class="step-line" [class.completed]="paso > 2"></div>
+            <div class="step" [class.active]="paso === 3">
+              <div class="step-number">3</div>
+              <div class="step-label">Confirmar</div>
+            </div>
+          </div>
+
+          <!-- PASO 1: Selección de Tipo -->
+          <div *ngIf="paso === 1" class="paso-content">
+            <h5 class="text-center mb-4">¿Qué deseas reservar?</h5>
+            <div class="row justify-content-center">
+              <div class="col-md-5 mb-3">
+                <div class="card tipo-card h-100" (click)="seleccionarTipo('cabana')">
+                  <div class="card-body text-center">
+                    <i class="bi bi-house-door fs-1 text-primary mb-3"></i>
+                    <h5 class="card-title">Cabaña</h5>
+                    <p class="card-text text-muted">
+                      Reserva una cabaña para tu estadía
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-5 mb-3">
+                <div class="card tipo-card h-100" (click)="seleccionarTipo('servicio')">
+                  <div class="card-body text-center">
+                    <i class="bi bi-calendar-event fs-1 text-success mb-3"></i>
+                    <h5 class="card-title">Servicio</h5>
+                    <p class="card-text text-muted">
+                      Reserva un servicio de entretenimiento
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PASO 2: Formulario de Cabaña -->
+          <div *ngIf="paso === 2 && tipoReserva === 'cabana'" class="paso-content">
+            <h5 class="mb-4">Reserva de Cabaña</h5>
+            <form [formGroup]="formCabana">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="cabanaId" class="form-label">Seleccionar Cabaña *</label>
+                  <select
+                    id="cabanaId"
+                    class="form-select"
+                    formControlName="cabanaId"
+                    [class.is-invalid]="formCabana.get('cabanaId')?.invalid && formCabana.get('cabanaId')?.touched">
+                    <option value="">-- Seleccione una cabaña --</option>
+                    <option *ngFor="let cabana of cabanas" [value]="cabana.id">
+                      {{ cabana.nombre }} - Capacidad: {{ cabana.capacidadPersonas }} personas - ${{ cabana.precioPorUnidad }}/noche
+                    </option>
+                  </select>
+                  <div class="invalid-feedback">
+                    Debe seleccionar una cabaña
+                  </div>
+                </div>
+
+                <!-- Calendario Visual para seleccionar fechas -->
+                <div class="col-md-12 mb-3" *ngIf="formCabana.get('cabanaId')?.value">
+                  <label class="form-label">Seleccionar Fechas *</label>
+                  <app-calendario-disponibilidad
+                    [cabanaId]="formCabana.get('cabanaId')?.value"
+                    (rangoSeleccionado)="onRangoSeleccionado($event)">
+                  </app-calendario-disponibilidad>
+                  <div class="text-danger small mt-1" *ngIf="formCabana.get('fechaInicio')?.invalid && formCabana.get('fechaInicio')?.touched">
+                    Debe seleccionar un rango de fechas válido
+                  </div>
+                </div>
+
+                <!-- Inputs ocultos para mantener los valores en el formulario -->
+                <input type="hidden" formControlName="fechaInicio">
+                <input type="hidden" formControlName="fechaFin">
+
+                <div class="col-md-12 mb-3">
+                  <label for="observaciones" class="form-label">Observaciones</label>
+                  <textarea
+                    id="observaciones"
+                    class="form-control"
+                    rows="3"
+                    formControlName="observaciones"
+                    placeholder="Ingrese cualquier solicitud especial..."></textarea>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-secondary" (click)="volverPaso1()">
+                  <i class="bi bi-arrow-left me-2"></i>Volver
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  (click)="verificarDisponibilidad()"
+                  [disabled]="formCabana.invalid || verificandoDisponibilidad">
+                  <span *ngIf="verificandoDisponibilidad" class="spinner-border spinner-border-sm me-2"></span>
+                  {{ verificandoDisponibilidad ? 'Verificando...' : 'Verificar Disponibilidad' }}
+                  <i class="bi bi-arrow-right ms-2" *ngIf="!verificandoDisponibilidad"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- PASO 2: Formulario de Servicio -->
+          <div *ngIf="paso === 2 && tipoReserva === 'servicio'" class="paso-content">
+            <h5 class="mb-4">Reserva de Servicio</h5>
+            <form [formGroup]="formServicio">
+              <div class="row">
+                <div class="col-md-12 mb-3">
+                  <label for="servicioId" class="form-label">Seleccionar Servicio *</label>
+                  <select
+                    id="servicioId"
+                    class="form-select"
+                    formControlName="servicioId"
+                    [class.is-invalid]="formServicio.get('servicioId')?.invalid && formServicio.get('servicioId')?.touched">
+                    <option value="">-- Seleccione un servicio --</option>
+                    <option *ngFor="let servicio of servicios" [value]="servicio.id">
+                      {{ servicio.nombre }} - ${{ servicio.precioPorUnidad }}/hora
+                    </option>
+                  </select>
+                  <div class="invalid-feedback">
+                    Debe seleccionar un servicio
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="fecha" class="form-label">Fecha *</label>
+                  <input
+                    type="date"
+                    id="fecha"
+                    class="form-control"
+                    formControlName="fecha"
+                    [min]="fechaMinima"
+                    [class.is-invalid]="formServicio.get('fecha')?.invalid && formServicio.get('fecha')?.touched">
+                  <div class="invalid-feedback">
+                    La fecha es requerida y debe ser hoy o posterior
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="horaInicio" class="form-label">Hora de Inicio *</label>
+                  <input
+                    type="time"
+                    id="horaInicio"
+                    class="form-control"
+                    formControlName="horaInicio"
+                    [class.is-invalid]="formServicio.get('horaInicio')?.invalid && formServicio.get('horaInicio')?.touched">
+                  <div class="invalid-feedback">
+                    La hora de inicio es requerida
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="cantidadBloques" class="form-label">Duración (bloques de 1 hora) *</label>
+                  <input
+                    type="number"
+                    id="cantidadBloques"
+                    class="form-control"
+                    formControlName="cantidadBloques"
+                    min="1"
+                    [class.is-invalid]="formServicio.get('cantidadBloques')?.invalid && formServicio.get('cantidadBloques')?.touched">
+                  <div class="invalid-feedback">
+                    Debe especificar al menos 1 bloque
+                  </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                  <label for="cantidadPersonas" class="form-label">Cantidad de Personas *</label>
+                  <input
+                    type="number"
+                    id="cantidadPersonas"
+                    class="form-control"
+                    formControlName="cantidadPersonas"
+                    min="1"
+                    [class.is-invalid]="formServicio.get('cantidadPersonas')?.invalid && formServicio.get('cantidadPersonas')?.touched">
+                  <div class="invalid-feedback">
+                    Debe especificar al menos 1 persona
+                  </div>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                  <label for="observacionesServicio" class="form-label">Observaciones</label>
+                  <textarea
+                    id="observacionesServicio"
+                    class="form-control"
+                    rows="3"
+                    formControlName="observaciones"
+                    placeholder="Ingrese cualquier solicitud especial..."></textarea>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-secondary" (click)="volverPaso1()">
+                  <i class="bi bi-arrow-left me-2"></i>Volver
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  (click)="verificarDisponibilidad()"
+                  [disabled]="formServicio.invalid || verificandoDisponibilidad">
+                  <span *ngIf="verificandoDisponibilidad" class="spinner-border spinner-border-sm me-2"></span>
+                  {{ verificandoDisponibilidad ? 'Verificando...' : 'Verificar Disponibilidad' }}
+                  <i class="bi bi-arrow-right ms-2" *ngIf="!verificandoDisponibilidad"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- PASO 3: Confirmación -->
+          <div *ngIf="paso === 3" class="paso-content">
+            <h5 class="mb-4">Confirmar Reserva</h5>
+
+            <!-- Resumen Cabaña -->
+            <div *ngIf="tipoReserva === 'cabana'" class="card mb-3">
+              <div class="card-body">
+                <h6 class="card-title text-primary">Resumen de tu Reserva</h6>
+                <hr>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p><strong>Tipo:</strong> Cabaña</p>
+                    <p><strong>Cabaña:</strong> {{ getCabanaSeleccionada()?.nombre }}</p>
+                    <p><strong>Capacidad:</strong> {{ getCabanaSeleccionada()?.capacidadPersonas }} personas</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p><strong>Fecha Inicio:</strong> {{ formCabana.get('fechaInicio')?.value | date:'dd/MM/yyyy' }}</p>
+                    <p><strong>Fecha Fin:</strong> {{ formCabana.get('fechaFin')?.value | date:'dd/MM/yyyy' }}</p>
+                    <p><strong>Precio por Unidad:</strong> ${{ getCabanaSeleccionada()?.precioPorUnidad | number:'1.0-0' }}</p>
+                  </div>
+                </div>
+                <div *ngIf="formCabana.get('observaciones')?.value" class="mt-2">
+                  <p><strong>Observaciones:</strong></p>
+                  <p class="text-muted">{{ formCabana.get('observaciones')?.value }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Resumen Servicio -->
+            <div *ngIf="tipoReserva === 'servicio'" class="card mb-3">
+              <div class="card-body">
+                <h6 class="card-title text-success">Resumen de tu Reserva</h6>
+                <hr>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p><strong>Tipo:</strong> Servicio</p>
+                    <p><strong>Servicio:</strong> {{ getServicioSeleccionado()?.nombre }}</p>
+                    <p><strong>Fecha:</strong> {{ formServicio.get('fecha')?.value | date:'dd/MM/yyyy' }}</p>
+                    <p><strong>Hora:</strong> {{ formServicio.get('horaInicio')?.value }}</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p><strong>Duración:</strong> {{ formServicio.get('cantidadBloques')?.value }} hora(s)</p>
+                    <p><strong>Personas:</strong> {{ formServicio.get('cantidadPersonas')?.value }}</p>
+                    <p><strong>Precio por Unidad:</strong> ${{ getServicioSeleccionado()?.precioPorUnidad | number:'1.0-0' }}</p>
+                  </div>
+                </div>
+                <div *ngIf="formServicio.get('observaciones')?.value" class="mt-2">
+                  <p><strong>Observaciones:</strong></p>
+                  <p class="text-muted">{{ formServicio.get('observaciones')?.value }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sección de Items Adicionales -->
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <h6 class="mb-0">
+                  <i class="fas fa-box me-2"></i>
+                  Items Adicionales (Opcional)
+                </h6>
+              </div>
+              <div class="card-body">
+                <!-- Loading items -->
+                <div *ngIf="cargandoItems" class="text-center py-3">
+                  <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+                  <span>Cargando items disponibles...</span>
+                </div>
+
+                <!-- Sin items disponibles -->
+                <div *ngIf="!cargandoItems && itemsDisponibles.length === 0" class="text-muted text-center py-3">
+                  <i class="fas fa-info-circle me-2"></i>
+                  No hay items adicionales disponibles para este recurso
+                </div>
+
+                <!-- Lista de items disponibles -->
+                <div *ngIf="!cargandoItems && itemsDisponibles.length > 0">
+                  <p class="text-muted small mb-3">
+                    Selecciona los items que desees agregar a tu reserva
+                  </p>
+
+                  <div class="row">
+                    <div
+                      *ngFor="let item of itemsDisponibles"
+                      class="col-md-6 col-lg-4 mb-3">
+                      <div
+                        class="card item-card h-100"
+                        [class.selected]="isItemSeleccionado(item.id)"
+                        (click)="toggleItem(item)">
+                        <div class="card-body">
+                          <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                              <h6 class="card-title mb-1">
+                                <i class="fas {{ getIconoCategoria(item.categoria) }} me-2 text-primary"></i>
+                                {{ item.nombre }}
+                              </h6>
+                              <small class="badge bg-secondary">{{ item.categoria }}</small>
+                            </div>
+                            <div class="form-check">
+                              <input
+                                class="form-check-input"
+                                type="checkbox"
+                                [checked]="isItemSeleccionado(item.id)"
+                                (click)="$event.stopPropagation()">
+                            </div>
+                          </div>
+
+                          <p class="card-text small text-muted mb-2">
+                            Disponibles: {{ item.cantidadTotal }}
+                          </p>
+
+                          <div class="d-flex justify-content-between align-items-center">
+                            <strong class="text-success">{{ formatearPrecio(item.precioReserva) }}</strong>
+
+                            <!-- Selector de cantidad -->
+                            <div *ngIf="isItemSeleccionado(item.id)" class="input-group input-group-sm" style="width: 100px;">
+                              <button
+                                class="btn btn-outline-secondary"
+                                type="button"
+                                (click)="actualizarCantidadItem(item.id, getCantidadItem(item.id) - 1); $event.stopPropagation()">
+                                <i class="fas fa-minus"></i>
+                              </button>
+                              <input
+                                type="number"
+                                class="form-control text-center"
+                                [value]="getCantidadItem(item.id)"
+                                [max]="item.cantidadTotal"
+                                min="1"
+                                (click)="$event.stopPropagation()"
+                                (change)="actualizarCantidadItem(item.id, $any($event.target).value)">
+                              <button
+                                class="btn btn-outline-secondary"
+                                type="button"
+                                (click)="actualizarCantidadItem(item.id, getCantidadItem(item.id) + 1); $event.stopPropagation()">
+                                <i class="fas fa-plus"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Resumen de items seleccionados -->
+                  <div *ngIf="itemsSeleccionados.size > 0" class="alert alert-success mt-3">
+                    <h6 class="alert-heading">
+                      <i class="fas fa-check-circle me-2"></i>
+                      Items Seleccionados: {{ itemsSeleccionados.size }}
+                    </h6>
+                    <hr>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span><strong>Total Items:</strong></span>
+                      <strong class="fs-5">{{ formatearPrecio(precioTotalItems) }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="alert alert-info">
+              <i class="bi bi-info-circle me-2"></i>
+              <strong>Nota:</strong> Al confirmar la reserva, se creará con estado PENDIENTE.
+              Podrás cancelarla desde "Mis Reservas" si es necesario.
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+              <button type="button" class="btn btn-secondary" (click)="volverPaso2()">
+                <i class="bi bi-arrow-left me-2"></i>Volver
+              </button>
+              <button
+                type="button"
+                class="btn btn-success btn-lg"
+                (click)="confirmarReserva()"
+                [disabled]="creandoReserva">
+                <span *ngIf="creandoReserva" class="spinner-border spinner-border-sm me-2"></span>
+                <i class="bi bi-check-circle me-2" *ngIf="!creandoReserva"></i>
+                {{ creandoReserva ? 'Creando Reserva...' : 'Confirmar Reserva' }}
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

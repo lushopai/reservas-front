@@ -58,6 +58,7 @@ import { UsuarioDetailComponent } from './pages/usuarios/usuario-detail/usuario-
 import { UsuarioFormComponent } from './pages/usuarios/usuario-form/usuario-form.component';
 import { ReservasListComponent } from './pages/reservas-admin/reservas-list/reservas-list.component';
 import { ReservaDetailComponent } from './pages/reservas-admin/reserva-detail/reserva-detail.component';
+import { ReservaFormComponent } from './pages/reservas-admin/reserva-form/reserva-form.component';
 import { CabanasListComponent } from './pages/cabanas/cabanas-list/cabanas-list.component';
 import { CabanaFormComponent } from './pages/cabanas/cabana-form/cabana-form.component';
 import { ServiciosListComponent } from './pages/servicios/servicios-list/servicios-list.component';
@@ -82,6 +83,7 @@ import { BloquesGestionComponent } from './pages/bloques-horarios/bloques-gestio
     UsuarioFormComponent,
     ReservasListComponent,
     ReservaDetailComponent,
+    ReservaFormComponent,
     CabanasListComponent,
     CabanaFormComponent,
     ServiciosListComponent,
