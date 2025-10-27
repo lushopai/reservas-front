@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Cabana, EstadoCabana } from '../../../../../core/models/cabana.model';
+import { Cabana } from '../../../../../core/models/cabana.model';
+import { EstadoRecurso } from '../../../../../core/models/enums.model';
 import { CabanaService } from '../../../../../core/services/cabana.service';
 import Swal from 'sweetalert2';
 

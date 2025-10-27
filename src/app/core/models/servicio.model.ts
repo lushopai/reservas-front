@@ -1,11 +1,15 @@
 import { RecursoImagen } from './recurso-imagen.model';
+import { EstadoRecurso, TipoServicio } from './enums.model';
+
+// Re-exportar para compatibilidad con imports existentes
+export { EstadoRecurso, TipoServicio };
 
 export interface ServicioEntretencion {
   id?: number;
   nombre: string;
   descripcion: string;
   precioPorUnidad: number;
-  estado: EstadoServicio;
+  estado: EstadoRecurso;  // Cambiado de EstadoServicio a EstadoRecurso (unificado con backend)
   tipoServicio: TipoServicio;
   capacidadMaxima: number;
   duracionBloqueMinutos: number;
@@ -18,21 +22,11 @@ export interface ServicioEntretencion {
   imagenPrincipalUrl?: string;
 }
 
+// @deprecated Usar EstadoRecurso de enums.model.ts
 export enum EstadoServicio {
   DISPONIBLE = 'DISPONIBLE',
   MANTENIMIENTO = 'MANTENIMIENTO',
   FUERA_SERVICIO = 'FUERA_SERVICIO'
-}
-
-export enum TipoServicio {
-  CANCHA_TENIS = 'CANCHA_TENIS',
-  CANCHA_FUTBOL = 'CANCHA_FUTBOL',
-  PISCINA = 'PISCINA',
-  QUINCHO = 'QUINCHO',
-  SPA = 'SPA',
-  GIMNASIO = 'GIMNASIO',
-  SALA_JUEGOS = 'SALA_JUEGOS',
-  SALON_EVENTOS = 'SALON_EVENTOS'
 }
 
 export interface ServicioRequest {

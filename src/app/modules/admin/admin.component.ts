@@ -66,6 +66,9 @@ export class AdminComponent implements OnInit {
   }
 
   goToProfile(): void {
-    this.router.navigate(['/cliente/perfil']);
+    // Admin navega a su detalle de usuario, no a perfil de cliente
+    if (this.currentUser && this.currentUser.id) {
+      this.router.navigate(['/admin/usuarios/detalle', this.currentUser.id]);
+    }
   }
 }

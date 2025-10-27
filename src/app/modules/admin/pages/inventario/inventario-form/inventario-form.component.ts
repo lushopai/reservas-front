@@ -52,7 +52,7 @@ export class InventarioFormComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(3)]],
       categoria: ['', Validators.required],
       cantidadTotal: [1, [Validators.required, Validators.min(1)]],
-      estadoItem: [EstadoItem.DISPONIBLE, Validators.required],
+      estadoItem: [EstadoItem.BUENO, Validators.required],  // Cambiado de DISPONIBLE a BUENO (nuevo enum backend)
       esReservable: [false],
       precioReserva: [0, [Validators.required, Validators.min(0)]]
     });

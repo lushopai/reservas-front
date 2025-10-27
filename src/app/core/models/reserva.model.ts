@@ -1,19 +1,7 @@
-// Estados de Reserva
-export enum EstadoReserva {
-  BORRADOR = 'BORRADOR',
-  PENDIENTE = 'PENDIENTE',
-  CONFIRMADA = 'CONFIRMADA',
-  CONFIRMADO = 'CONFIRMADO', // Alias para compatibilidad con datos existentes
-  EN_CURSO = 'EN_CURSO',
-  COMPLETADA = 'COMPLETADA',
-  CANCELADA = 'CANCELADA'
-}
+import { EstadoReserva, EstadoPaquete, TipoReserva } from './enums.model';
 
-// Tipos de Reserva
-export enum TipoReserva {
-  CABANA_DIA = 'CABANA_DIA',
-  SERVICIO_BLOQUE = 'SERVICIO_BLOQUE'
-}
+// Re-exportar para compatibilidad con imports existentes
+export { EstadoReserva, EstadoPaquete, TipoReserva };
 
 // Item Reservado
 export interface ItemReservado {
@@ -58,26 +46,29 @@ export interface Reserva {
   recursoId: number;
   nombreRecurso?: string;
   tipoRecurso?: string;
-  recurso?: RecursoSimple; // ✅ Información completa del recurso
+  recurso?: RecursoSimple;
   fechaReserva?: string;
   fechaInicio: string;
   fechaFin: string;
   tipoReserva: TipoReserva;
-  estado: EstadoReserva;
+  estado: EstadoReserva;  // Estado de la reserva individual
   precioBase: number;
   precioItems: number;
   precioTotal: number;
   itemsReservados?: ItemReservado[];
   observaciones?: string;
+
   // Package information
   paqueteId?: number;
   nombrePaquete?: string;
-  estadoPaquete?: EstadoReserva; // Estado del paquete (si pertenece a uno)
-  // ✅ Precios del paquete completo
+  estadoPaquete?: EstadoPaquete;  // Ahora usa EstadoPaquete correcto: BORRADOR, CONFIRMADO, CANCELADO, COMPLETADO
+
+  // Precios del paquete completo
   precioTotalPaquete?: number;  // Suma de todas las reservas
   descuentoPaquete?: number;     // Descuento aplicado
   precioFinalPaquete?: number;   // Total con descuento
-  // ✅ Lista de reservas del paquete (para desglose completo)
+
+  // Lista de reservas del paquete (para desglose completo)
   reservasPaquete?: ReservaResumen[];
 }
 
@@ -117,4 +108,37 @@ export interface PagoRequest {
   fechaVencimiento?: string;
   cvv?: string;
   comprobanteTransferencia?: string;
+}
+
+// Paquete de Reserva
+export interface PaqueteReserva {
+  id?: number;
+  userId: number;
+  nombreUsuario?: string;
+  emailUsuario?: string;
+  nombrePaquete: string;
+  fechaInicio: string;
+  fechaFin: string;
+  estado: EstadoPaquete;  // Usa EstadoPaquete del backend
+  precioTotal: number;
+  descuento: number;
+  precioFinal: number;
+  observaciones?: string;
+  reservas?: Reserva[];
+}
+
+// Request para crear Paquete
+export interface PaqueteReservaRequest {
+  userId: number;
+  nombrePaquete: string;
+  fechaInicio: string;
+  fechaFin: string;
+  reservas: Array<{
+    recursoId: number;
+    fechaInicio: string;
+    fechaFin: string;
+    tipoReserva: TipoReserva;
+    itemsReservados?: ItemReservaDTO[];
+  }>;
+  observaciones?: string;
 }

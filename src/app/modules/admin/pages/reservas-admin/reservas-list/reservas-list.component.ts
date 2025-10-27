@@ -251,7 +251,7 @@ export class ReservasListComponent implements OnInit, AfterViewInit {
     this.stats = {
       total: reservas.length,
       pendientes: reservas.filter(r => r.estado === EstadoReserva.PENDIENTE).length,
-      confirmadas: reservas.filter(r => r.estado === EstadoReserva.CONFIRMADA || r.estado === 'CONFIRMADO').length,
+      confirmadas: reservas.filter(r => r.estado === EstadoReserva.CONFIRMADA).length,  // Removido alias obsoleto 'CONFIRMADO'
       completadas: reservas.filter(r => r.estado === EstadoReserva.COMPLETADA).length,
       canceladas: reservas.filter(r => r.estado === EstadoReserva.CANCELADA).length,
       ingresosTotal: reservas

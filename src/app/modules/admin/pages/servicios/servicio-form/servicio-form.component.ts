@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServicioEntretencionService } from '../../../../../core/services/servicio-entretencion.service';
-import { EstadoServicio, TipoServicio } from '../../../../../core/models/servicio.model';
+import { TipoServicio } from '../../../../../core/models/servicio.model';
+import { EstadoRecurso } from '../../../../../core/models/enums.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -18,8 +19,8 @@ export class ServicioFormComponent implements OnInit {
   loading = false;
   submitting = false;
 
-  // Enums para los selects
-  estados = Object.values(EstadoServicio);
+  // Enums para los selects - Actualizado a EstadoRecurso
+  estados = Object.values(EstadoRecurso);
   tipos = Object.values(TipoServicio);
 
   constructor(

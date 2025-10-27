@@ -155,16 +155,41 @@
                   </div>
                 </div>
 
-                <div class="col-md-6 mb-3">
-                  <label for="horaInicio" class="form-label">Hora de Inicio *</label>
-                  <input
-                    type="time"
-                    id="horaInicio"
-                    class="form-control"
-                    formControlName="horaInicio"
-                    [class.is-invalid]="formServicio.get('horaInicio')?.invalid && formServicio.get('horaInicio')?.touched">
-                  <div class="invalid-feedback">
-                    La hora de inicio es requerida
+                <!-- Selector de bloques horarios -->
+                <div class="col-md-12 mb-3" *ngIf="formServicio.get('fecha')?.value && formServicio.get('servicioId')?.value">
+                  <label class="form-label fw-bold">
+                    <i class="bi bi-clock me-2"></i>Selecciona un bloque horario disponible *
+                  </label>
+
+                  <!-- Cargando bloques -->
+                  <div *ngIf="cargandoBloques" class="text-center py-3">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status">
+                      <span class="visually-hidden">Cargando bloques...</span>
+                    </div>
+                    <span class="ms-2 text-muted">Cargando horarios disponibles...</span>
+                  </div>
+
+                  <!-- Bloques disponibles -->
+                  <div *ngIf="!cargandoBloques && bloquesDisponibles.length > 0" class="bloques-grid mt-2">
+                    <div *ngFor="let bloque of bloquesDisponibles"
+                         class="bloque-item"
+                         [class.selected]="isBloqueSeleccionado(bloque.id)"
+                         (click)="seleccionarBloque(bloque)">
+                      <i class="bi bi-clock"></i>
+                      <span>{{ bloque.horaInicio }} - {{ bloque.horaFin }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Sin bloques disponibles -->
+                  <div *ngIf="!cargandoBloques && bloquesDisponibles.length === 0" class="alert alert-warning mb-0">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    No hay horarios disponibles para esta fecha. Por favor selecciona otra fecha.
+                  </div>
+
+                  <!-- Bloque seleccionado -->
+                  <div *ngIf="bloqueSeleccionado" class="alert alert-success mt-2 mb-0">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <strong>Horario seleccionado:</strong> {{ bloqueSeleccionado.horaInicio }} - {{ bloqueSeleccionado.horaFin }}
                   </div>
                 </div>
 
@@ -180,6 +205,7 @@
                   <div class="invalid-feedback">
                     Debe especificar al menos 1 bloque
                   </div>
+                  <small class="text-muted">Cada bloque representa 1 hora de servicio</small>
                 </div>
 
                 <div class="col-md-6 mb-3">

@@ -56,11 +56,10 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
   searchControl = new FormControl('');
   estadosFiltro: Set<string> = new Set();
 
-  // Estados disponibles
+  // Estados disponibles - Removido alias CONFIRMADO obsoleto
   estadosReserva = [
     { valor: EstadoReserva.PENDIENTE, label: 'Pendiente', color: 'warn', icon: 'schedule' },
     { valor: EstadoReserva.CONFIRMADA, label: 'Confirmada', color: 'primary', icon: 'check_circle' },
-    { valor: EstadoReserva.CONFIRMADO, label: 'Confirmada', color: 'primary', icon: 'check_circle' }, // Alias
     { valor: EstadoReserva.EN_CURSO, label: 'En Curso', color: 'accent', icon: 'play_circle' },
     { valor: EstadoReserva.COMPLETADA, label: 'Completada', color: '', icon: 'done_all' },
     { valor: EstadoReserva.CANCELADA, label: 'Cancelada', color: '', icon: 'cancel' }

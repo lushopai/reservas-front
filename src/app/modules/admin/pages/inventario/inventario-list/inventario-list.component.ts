@@ -38,13 +38,12 @@ export class InventarioListComponent implements OnInit, AfterViewInit {
     fueraServicio: 0
   };
 
-  // Estados y categorías
+  // Estados y categorías - ACTUALIZADO con nuevos valores del backend
   estadosItem = [
-    { value: EstadoItem.DISPONIBLE, label: 'Disponible' },
-    { value: EstadoItem.EN_USO, label: 'En Uso' },
-    { value: EstadoItem.MANTENIMIENTO, label: 'Mantenimiento' },
-    { value: EstadoItem.DANADO, label: 'Dañado' },
-    { value: EstadoItem.FUERA_SERVICIO, label: 'Fuera de Servicio' }
+    { value: EstadoItem.NUEVO, label: 'Nuevo' },
+    { value: EstadoItem.BUENO, label: 'Bueno' },
+    { value: EstadoItem.REGULAR, label: 'Regular' },
+    { value: EstadoItem.MALO, label: 'Malo' }
   ];
 
   categorias = [
@@ -119,13 +118,14 @@ export class InventarioListComponent implements OnInit, AfterViewInit {
   }
 
   calcularEstadisticas(items: ItemInventario[]): void {
+    // Actualizado con nuevos estados del backend
     this.stats = {
       total: items.length,
-      disponible: items.filter(i => i.estadoItem === EstadoItem.DISPONIBLE).length,
-      enUso: items.filter(i => i.estadoItem === EstadoItem.EN_USO).length,
-      mantenimiento: items.filter(i => i.estadoItem === EstadoItem.MANTENIMIENTO).length,
-      danado: items.filter(i => i.estadoItem === EstadoItem.DANADO).length,
-      fueraServicio: items.filter(i => i.estadoItem === EstadoItem.FUERA_SERVICIO).length
+      disponible: items.filter(i => i.estadoItem === EstadoItem.NUEVO || i.estadoItem === EstadoItem.BUENO).length,
+      enUso: 0,  // Ya no existe EN_USO, se maneja por cantidadDisponible
+      mantenimiento: items.filter(i => i.estadoItem === EstadoItem.REGULAR).length,
+      danado: items.filter(i => i.estadoItem === EstadoItem.MALO).length,
+      fueraServicio: 0  // Ya no existe FUERA_SERVICIO
     };
   }
 
@@ -206,17 +206,16 @@ export class InventarioListComponent implements OnInit, AfterViewInit {
   }
 
   getEstadoChipClass(estado: EstadoItem): string {
+    // Actualizado con nuevos estados del backend
     switch (estado) {
-      case EstadoItem.DISPONIBLE:
-        return 'chip-disponible';
-      case EstadoItem.EN_USO:
-        return 'chip-en-uso';
-      case EstadoItem.MANTENIMIENTO:
-        return 'chip-mantenimiento';
-      case EstadoItem.DANADO:
-        return 'chip-danado';
-      case EstadoItem.FUERA_SERVICIO:
-        return 'chip-fuera-servicio';
+      case EstadoItem.NUEVO:
+        return 'chip-disponible';  // Verde
+      case EstadoItem.BUENO:
+        return 'chip-en-uso';  // Azul
+      case EstadoItem.REGULAR:
+        return 'chip-mantenimiento';  // Amarillo
+      case EstadoItem.MALO:
+        return 'chip-danado';  // Rojo
       default:
         return '';
     }

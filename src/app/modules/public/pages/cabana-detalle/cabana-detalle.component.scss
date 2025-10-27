@@ -698,3 +698,58 @@ mat-expansion-panel {
     }
   }
 }
+
+// ============================================
+// Block selector styles (for services)
+// ============================================
+.bloques-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.bloque-item {
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+
+  &:hover {
+    border-color: #667eea;
+    background: #f8f9ff;
+    transform: translateY(-2px);
+  }
+
+  &.selected {
+    border-color: #667eea;
+    background: #667eea;
+    color: white;
+
+    i {
+      color: white;
+    }
+  }
+
+  i {
+    font-size: 18px;
+    margin-right: 5px;
+    color: #667eea;
+  }
+}
+
+// Responsive for block selector
+@media (max-width: 768px) {
+  .bloques-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+  }
+
+  .bloque-item {
+    padding: 10px;
+    font-size: 14px;
+  }
+}

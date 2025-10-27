@@ -8,9 +8,11 @@ import { ReservaService } from '../../../../core/services/reserva.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { DisponibilidadService } from '../../../../core/services/disponibilidad.service';
 import { InventarioService } from '../../../../core/services/inventario.service';
+import { BloqueHorarioService } from '../../../../core/services/bloque-horario.service';
 import { Cabana } from '../../../../core/models/cabana.model';
 import { ServicioEntretencion } from '../../../../core/models/servicio.model';
-import { ItemInventario } from '../../../../core/models/inventario.model';
+import { ItemInventario, EstadoItem } from '../../../../core/models/inventario.model';
+import { BloqueHorario } from '../../../../core/models/bloque-horario.model';
 
 @Component({
   selector: 'app-nueva-reserva',
@@ -33,6 +35,11 @@ export class NuevaReservaComponent implements OnInit {
   // Items seleccionados
   itemsSeleccionados: Map<number, { item: ItemInventario, cantidad: number }> = new Map();
 
+  // Bloques horarios para servicios
+  bloquesDisponibles: BloqueHorario[] = [];
+  bloqueSeleccionado?: BloqueHorario;
+  cargandoBloques = false;
+
   cargando = false;
   verificandoDisponibilidad = false;
   disponible = false;
@@ -50,6 +57,7 @@ export class NuevaReservaComponent implements OnInit {
     private reservaService: ReservaService,
     private disponibilidadService: DisponibilidadService,
     private inventarioService: InventarioService,
+    private bloqueService: BloqueHorarioService,
     private authService: AuthService,
     private router: Router
   ) {}
@@ -69,10 +77,24 @@ export class NuevaReservaComponent implements OnInit {
     this.formServicio = this.fb.group({
       servicioId: ['', Validators.required],
       fecha: ['', Validators.required],
-      horaInicio: ['', Validators.required],
+      horaInicio: [''], // Se llenará automáticamente al seleccionar bloque
       cantidadBloques: [1, [Validators.required, Validators.min(1), Validators.max(8)]],
       cantidadPersonas: [1, [Validators.required, Validators.min(1)]],
       observaciones: ['']
+    });
+
+    // Escuchar cambios en la fecha para cargar bloques
+    this.formServicio.get('fecha')?.valueChanges.subscribe(fecha => {
+      if (fecha && this.formServicio.get('servicioId')?.value) {
+        this.cargarBloquesDisponibles();
+      }
+    });
+
+    // Escuchar cambios en el servicio para cargar bloques si ya hay fecha
+    this.formServicio.get('servicioId')?.valueChanges.subscribe(servicioId => {
+      if (servicioId && this.formServicio.get('fecha')?.value) {
+        this.cargarBloquesDisponibles();
+      }
     });
   }
 
@@ -361,9 +383,9 @@ export class NuevaReservaComponent implements OnInit {
     this.cargandoItems = true;
     this.inventarioService.obtenerPorRecurso(recursoId).subscribe({
       next: (items) => {
-        // Solo items reservables y disponibles
+        // Solo items reservables y en buen estado (NUEVO o BUENO)
         this.itemsDisponibles = items.filter(
-          item => item.esReservable && item.estadoItem === 'DISPONIBLE'
+          item => item.esReservable && (item.estadoItem === EstadoItem.NUEVO || item.estadoItem === EstadoItem.BUENO)
         );
         this.cargandoItems = false;
       },
@@ -465,5 +487,67 @@ export class NuevaReservaComponent implements OnInit {
       default:
         return 'fa-box';
     }
+  }
+
+  /**
+   * Cargar bloques disponibles cuando se selecciona fecha y servicio
+   */
+  cargarBloquesDisponibles(): void {
+    const servicioId = this.formServicio.get('servicioId')?.value;
+    const fecha = this.formServicio.get('fecha')?.value;
+
+    if (!servicioId || !fecha) return;
+
+    this.cargandoBloques = true;
+    this.bloqueSeleccionado = undefined; // Resetear selección
+    this.formServicio.patchValue({ horaInicio: '' }); // Limpiar hora
+
+    this.bloqueService.obtenerBloquesPorFecha(servicioId, fecha).subscribe({
+      next: (bloques) => {
+        // Filtrar solo bloques disponibles y que no hayan pasado
+        const ahora = new Date();
+        const fechaSeleccionada = new Date(fecha + 'T00:00:00');
+
+        this.bloquesDisponibles = bloques.filter(b => {
+          if (!b.disponible) return false;
+
+          // Si la fecha es hoy, verificar que la hora no haya pasado
+          if (fechaSeleccionada.toDateString() === ahora.toDateString()) {
+            const [horas, minutos] = b.horaInicio.split(':').map(Number);
+            const horaBloque = new Date(ahora);
+            horaBloque.setHours(horas, minutos, 0, 0);
+            return horaBloque > ahora;
+          }
+
+          // Si es una fecha futura, mostrar todos los bloques disponibles
+          return true;
+        });
+
+        this.cargandoBloques = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar bloques:', error);
+        this.cargandoBloques = false;
+        this.bloquesDisponibles = [];
+      }
+    });
+  }
+
+  /**
+   * Seleccionar un bloque horario
+   */
+  seleccionarBloque(bloque: BloqueHorario): void {
+    this.bloqueSeleccionado = bloque;
+    // Actualizar el formulario con la hora del bloque seleccionado
+    this.formServicio.patchValue({
+      horaInicio: bloque.horaInicio
+    });
+  }
+
+  /**
+   * Verificar si un bloque está seleccionado
+   */
+  isBloqueSeleccionado(bloqueId?: number): boolean {
+    return this.bloqueSeleccionado?.id === bloqueId;
   }
 }

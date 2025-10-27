@@ -10,7 +10,7 @@ import { UserService } from '../../../../../core/services/UserService.service';
 import { ReservaCabanaRequest, ReservaServicioRequest, ItemReservaDTO } from '../../../../../core/models/reserva.model';
 import { Cabana } from '../../../../../core/models/cabana.model';
 import { ServicioEntretencion } from '../../../../../core/models/servicio.model';
-import { ItemInventario } from '../../../../../core/models/inventario.model';
+import { ItemInventario, EstadoItem } from '../../../../../core/models/inventario.model';
 import { User } from '../../../../../shared/models/User';
 
 @Component({
@@ -142,10 +142,10 @@ export class ReservaFormComponent implements OnInit {
       error: (error) => console.error('Error al cargar servicios:', error)
     });
 
-    // Cargar inventario
+    // Cargar inventario - Solo items en buen estado (NUEVO o BUENO)
     this.inventarioService.obtenerTodos().subscribe({
       next: (items) => {
-        this.itemsInventario = items.filter(i => i.estadoItem === 'DISPONIBLE');
+        this.itemsInventario = items.filter(i => i.estadoItem === EstadoItem.NUEVO || i.estadoItem === EstadoItem.BUENO);
       },
       error: (error) => console.error('Error al cargar inventario:', error)
     });

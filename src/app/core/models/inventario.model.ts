@@ -1,22 +1,7 @@
-export enum CategoriaInventario {
-  MUEBLES = 'MUEBLES',
-  ELECTRODOMESTICOS = 'ELECTRODOMESTICOS',
-  ELECTRONICA = 'ELECTRONICA',
-  ROPA_CAMA = 'ROPA_CAMA',
-  MENAJE = 'MENAJE',
-  DECORACION = 'DECORACION',
-  HERRAMIENTAS = 'HERRAMIENTAS',
-  EQUIPAMIENTO_DEPORTIVO = 'EQUIPAMIENTO_DEPORTIVO',
-  OTROS = 'OTROS'
-}
+import { CategoriaInventario, EstadoItem } from './enums.model';
 
-export enum EstadoItem {
-  DISPONIBLE = 'DISPONIBLE',
-  EN_USO = 'EN_USO',
-  MANTENIMIENTO = 'MANTENIMIENTO',
-  DANADO = 'DANADO',
-  FUERA_SERVICIO = 'FUERA_SERVICIO'
-}
+// Re-exportar para compatibilidad con imports existentes
+export { CategoriaInventario, EstadoItem };
 
 export interface ItemInventario {
   id: number;
@@ -26,7 +11,7 @@ export interface ItemInventario {
   categoria: CategoriaInventario;
   cantidadTotal: number;
   cantidadDisponible?: number;
-  estadoItem: EstadoItem;
+  estadoItem: EstadoItem;  // Ahora usa: NUEVO, BUENO, REGULAR, MALO (actualizado con backend)
   esReservable: boolean;
   precioReserva: number;
 }
@@ -36,7 +21,7 @@ export interface ItemInventarioRequest {
   nombre: string;
   categoria: CategoriaInventario;
   cantidadTotal: number;
-  estadoItem: EstadoItem;
+  estadoItem: EstadoItem;  // Ahora usa: NUEVO, BUENO, REGULAR, MALO (actualizado con backend)
   esReservable: boolean;
   precioReserva: number;
 }

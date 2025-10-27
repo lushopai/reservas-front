@@ -1,11 +1,15 @@
 import { RecursoImagen } from './recurso-imagen.model';
+import { EstadoRecurso, TipoCabana } from './enums.model';
+
+// Re-exportar para compatibilidad con imports existentes
+export { EstadoRecurso, TipoCabana };
 
 export interface Cabana {
   id?: number;
   nombre: string;
   descripcion: string;
   precioPorUnidad: number;
-  estado: EstadoCabana;
+  estado: EstadoRecurso;  // Cambiado de EstadoCabana a EstadoRecurso (unificado con backend)
   capacidadPersonas: number;
   numeroHabitaciones: number;
   numeroBanos: number;
@@ -19,17 +23,11 @@ export interface Cabana {
   imagenPrincipalUrl?: string;
 }
 
+// @deprecated Usar EstadoRecurso de enums.model.ts
 export enum EstadoCabana {
   DISPONIBLE = 'DISPONIBLE',
   MANTENIMIENTO = 'MANTENIMIENTO',
   FUERA_SERVICIO = 'FUERA_SERVICIO'
-}
-
-export enum TipoCabana {
-  ECONOMICA = 'ECONOMICA',
-  STANDARD = 'STANDARD',
-  PREMIUM = 'PREMIUM',
-  DELUXE = 'DELUXE'
 }
 
 export interface CabanaRequest {

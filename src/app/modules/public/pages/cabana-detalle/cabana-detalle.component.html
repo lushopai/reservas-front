@@ -260,29 +260,66 @@
                     <div *ngIf="isServicioSeleccionado(servicio.id)" class="service-options">
                       <mat-divider></mat-divider>
 
-                      <div class="options-grid">
-                        <mat-form-field appearance="outline">
-                          <mat-label>Fecha</mat-label>
+                      <!-- Selector de fecha -->
+                      <div class="mb-3">
+                        <mat-form-field appearance="outline" class="full-width">
+                          <mat-label><i class="bi bi-calendar-event me-2"></i>Fecha</mat-label>
                           <input matInput type="date"
                                  [value]="serviciosSeleccionados.get(servicio.id)?.fecha"
                                  [min]="fechaInicio ? formatearFechaParaBackend(fechaInicio) : ''"
                                  [max]="fechaFin ? formatearFechaParaBackend(fechaFin) : ''"
-                                 (change)="actualizarServicio(servicio.id, 'fecha', $any($event.target).value)">
+                                 (change)="actualizarFechaServicio(servicio.id, $any($event.target).value)">
                         </mat-form-field>
+                      </div>
 
-                        <mat-form-field appearance="outline">
-                          <mat-label>Hora</mat-label>
-                          <input matInput type="time"
-                                 [value]="serviciosSeleccionados.get(servicio.id)?.horaInicio"
-                                 (change)="actualizarServicio(servicio.id, 'horaInicio', $any($event.target).value)">
-                        </mat-form-field>
+                      <!-- Selector de bloques horarios -->
+                      <div *ngIf="serviciosSeleccionados.get(servicio.id)?.fecha" class="mb-3">
+                        <label class="form-label fw-bold">
+                          <i class="bi bi-clock me-2"></i>Selecciona un bloque horario disponible *
+                        </label>
 
+                        <!-- Cargando bloques -->
+                        <div *ngIf="isCargandoBloquesServicio(servicio.id)" class="text-center py-3">
+                          <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Cargando bloques...</span>
+                          </div>
+                          <span class="ms-2 text-muted">Cargando horarios disponibles...</span>
+                        </div>
+
+                        <!-- Bloques disponibles -->
+                        <div *ngIf="!isCargandoBloquesServicio(servicio.id) && getBloquesServicio(servicio.id).length > 0" class="bloques-grid mt-2">
+                          <div *ngFor="let bloque of getBloquesServicio(servicio.id)"
+                               class="bloque-item"
+                               [class.selected]="isBloqueSeleccionadoServicio(servicio.id, bloque.id)"
+                               (click)="seleccionarBloqueServicio(servicio.id, bloque)">
+                            <i class="bi bi-clock"></i>
+                            <span>{{ bloque.horaInicio }} - {{ bloque.horaFin }}</span>
+                          </div>
+                        </div>
+
+                        <!-- Sin bloques disponibles -->
+                        <div *ngIf="!isCargandoBloquesServicio(servicio.id) && getBloquesServicio(servicio.id).length === 0" class="alert alert-warning mb-0">
+                          <i class="bi bi-exclamation-triangle me-2"></i>
+                          No hay horarios disponibles para esta fecha. Por favor selecciona otra fecha.
+                        </div>
+
+                        <!-- Bloque seleccionado -->
+                        <div *ngIf="serviciosSeleccionados.get(servicio.id)?.bloqueSeleccionado" class="alert alert-success mt-2 mb-0">
+                          <i class="bi bi-check-circle me-2"></i>
+                          <strong>Horario seleccionado:</strong>
+                          {{ serviciosSeleccionados.get(servicio.id)?.bloqueSeleccionado?.horaInicio }} -
+                          {{ serviciosSeleccionados.get(servicio.id)?.bloqueSeleccionado?.horaFin }}
+                        </div>
+                      </div>
+
+                      <!-- Duración (bloques) -->
+                      <div class="mb-3">
                         <mat-form-field appearance="outline" class="full-width">
-                          <mat-label>Bloques</mat-label>
+                          <mat-label><i class="bi bi-hourglass me-2"></i>Cantidad de bloques</mat-label>
                           <input matInput type="number" min="1" max="8"
                                  [value]="serviciosSeleccionados.get(servicio.id)?.duracionBloques"
                                  (change)="actualizarServicio(servicio.id, 'duracionBloques', +$any($event.target).value)">
-                          <mat-hint *ngIf="servicio.duracionBloqueMinutos">{{ servicio.duracionBloqueMinutos }}min c/u</mat-hint>
+                          <mat-hint *ngIf="servicio.duracionBloqueMinutos">1 bloque = {{ servicio.duracionBloqueMinutos }} minutos</mat-hint>
                         </mat-form-field>
                       </div>
                     </div>

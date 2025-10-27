@@ -166,7 +166,7 @@
             <td mat-cell *matCellDef="let item">
               <div class="cantidad-cell" [class.stock-bajo]="isStockBajo(item)">
                 <mat-icon *ngIf="isStockBajo(item)" class="warning-icon">warning</mat-icon>
-                <span class="cantidad-value">{{ item.cantidadDisponible || item.cantidadTotal }}</span>
+                <span class="cantidad-value">{{ item.cantidadDisponible ?? item.cantidadTotal }}</span>
               </div>
             </td>
           </ng-container>

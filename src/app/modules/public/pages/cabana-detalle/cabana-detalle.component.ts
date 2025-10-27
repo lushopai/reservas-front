@@ -5,8 +5,10 @@ import { CabanaService } from '../../../../core/services/cabana.service';
 import { DisponibilidadService } from '../../../../core/services/disponibilidad.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ServicioEntretencionService } from '../../../../core/services/servicio-entretencion.service';
+import { BloqueHorarioService } from '../../../../core/services/bloque-horario.service';
 import { Cabana } from '../../../../core/models/cabana.model';
 import { ServicioEntretencion } from '../../../../core/models/servicio.model';
+import { BloqueHorario } from '../../../../core/models/bloque-horario.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -41,6 +43,10 @@ export class CabanaDetalleComponent implements OnInit {
   serviciosSeleccionados: Map<number, any> = new Map();
   cargandoServicios = false;
   mostrarServicios = true; // Mostrar expandido por defecto
+
+  // Bloques horarios para servicios
+  bloquesDisponiblesPorServicio: Map<number, BloqueHorario[]> = new Map();
+  cargandoBloquesPorServicio: Map<number, boolean> = new Map();
 
   // Getters para acceder a las fechas del form
   get fechaInicio(): Date | null {
@@ -80,7 +86,8 @@ export class CabanaDetalleComponent implements OnInit {
     private cabanaService: CabanaService,
     private disponibilidadService: DisponibilidadService,
     private authService: AuthService,
-    private servicioService: ServicioEntretencionService
+    private servicioService: ServicioEntretencionService,
+    private bloqueService: BloqueHorarioService
   ) {}
 
   ngOnInit(): void {
@@ -167,16 +174,26 @@ export class CabanaDetalleComponent implements OnInit {
   toggleServicio(servicioId: number): void {
     if (this.serviciosSeleccionados.has(servicioId)) {
       this.serviciosSeleccionados.delete(servicioId);
+      this.bloquesDisponiblesPorServicio.delete(servicioId);
+      this.cargandoBloquesPorServicio.delete(servicioId);
     } else {
       // Valores por defecto para el servicio
       const servicio = this.serviciosDisponibles.find(s => s.id === servicioId);
+      const fechaInicio = this.fechaInicio ? this.formatearFechaParaBackend(this.fechaInicio) : '';
+
       this.serviciosSeleccionados.set(servicioId, {
         servicioId: servicioId,
-        fecha: this.formatearFechaParaBackend(this.fechaInicio!),
-        horaInicio: '10:00',
+        fecha: fechaInicio,
+        horaInicio: '', // Se llenará al seleccionar bloque
         duracionBloques: 1,
-        nombre: servicio?.nombre
+        nombre: servicio?.nombre,
+        bloqueSeleccionado: null
       });
+
+      // Cargar bloques disponibles para este servicio
+      if (fechaInicio) {
+        this.cargarBloquesServicio(servicioId, fechaInicio);
+      }
     }
   }
 
@@ -362,5 +379,92 @@ export class CabanaDetalleComponent implements OnInit {
 
   formatearPrecio(precio: number): string {
     return new Intl.NumberFormat('es-CL').format(precio);
+  }
+
+  /**
+   * Cargar bloques horarios disponibles para un servicio en una fecha específica
+   */
+  cargarBloquesServicio(servicioId: number, fecha: string): void {
+    this.cargandoBloquesPorServicio.set(servicioId, true);
+
+    this.bloqueService.obtenerBloquesPorFecha(servicioId, fecha).subscribe({
+      next: (bloques) => {
+        // Filtrar solo bloques disponibles y que no hayan pasado
+        const ahora = new Date();
+        const fechaSeleccionada = new Date(fecha + 'T00:00:00');
+
+        const bloquesDisponibles = bloques.filter(b => {
+          if (!b.disponible) return false;
+
+          // Si la fecha es hoy, verificar que la hora no haya pasado
+          if (fechaSeleccionada.toDateString() === ahora.toDateString()) {
+            const [horas, minutos] = b.horaInicio.split(':').map(Number);
+            const horaBloque = new Date(ahora);
+            horaBloque.setHours(horas, minutos, 0, 0);
+            return horaBloque > ahora;
+          }
+
+          return true;
+        });
+
+        this.bloquesDisponiblesPorServicio.set(servicioId, bloquesDisponibles);
+        this.cargandoBloquesPorServicio.set(servicioId, false);
+      },
+      error: (error) => {
+        console.error('Error al cargar bloques:', error);
+        this.cargandoBloquesPorServicio.set(servicioId, false);
+        this.bloquesDisponiblesPorServicio.set(servicioId, []);
+      }
+    });
+  }
+
+  /**
+   * Seleccionar un bloque horario para un servicio
+   */
+  seleccionarBloqueServicio(servicioId: number, bloque: BloqueHorario): void {
+    const servicio = this.serviciosSeleccionados.get(servicioId);
+    if (servicio) {
+      servicio.horaInicio = bloque.horaInicio;
+      servicio.bloqueSeleccionado = bloque;
+      this.serviciosSeleccionados.set(servicioId, servicio);
+    }
+  }
+
+  /**
+   * Verificar si un bloque está seleccionado para un servicio
+   */
+  isBloqueSeleccionadoServicio(servicioId: number, bloqueId?: number): boolean {
+    const servicio = this.serviciosSeleccionados.get(servicioId);
+    return servicio?.bloqueSeleccionado?.id === bloqueId;
+  }
+
+  /**
+   * Obtener bloques disponibles para un servicio
+   */
+  getBloquesServicio(servicioId: number): BloqueHorario[] {
+    return this.bloquesDisponiblesPorServicio.get(servicioId) || [];
+  }
+
+  /**
+   * Verificar si está cargando bloques para un servicio
+   */
+  isCargandoBloquesServicio(servicioId: number): boolean {
+    return this.cargandoBloquesPorServicio.get(servicioId) || false;
+  }
+
+  /**
+   * Actualizar fecha de servicio y recargar bloques
+   */
+  actualizarFechaServicio(servicioId: number, fecha: string): void {
+    const servicio = this.serviciosSeleccionados.get(servicioId);
+    if (servicio) {
+      servicio.fecha = fecha;
+      servicio.horaInicio = '';
+      servicio.bloqueSeleccionado = null;
+      this.serviciosSeleccionados.set(servicioId, servicio);
+
+      // Recargar bloques para la nueva fecha
+      this.cargarBloquesServicio(servicioId, fecha);
+    }
   }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CabanaService } from '../../../../../core/services/cabana.service';
-import { EstadoCabana, TipoCabana } from '../../../../../core/models/cabana.model';
+import { EstadoRecurso, TipoCabana } from '../../../../../core/models/enums.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -18,8 +18,8 @@ export class CabanaFormComponent implements OnInit {
   loading = false;
   submitting = false;
 
-  // Enums para los selects
-  estados = Object.values(EstadoCabana);
+  // Enums para los selects - Actualizado a EstadoRecurso
+  estados = Object.values(EstadoRecurso);
   tiposCabana = Object.values(TipoCabana);
 
   constructor(
