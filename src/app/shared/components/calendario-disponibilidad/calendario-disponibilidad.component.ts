@@ -34,9 +34,9 @@ export class CalendarioDisponibilidadComponent implements OnInit {
 
   diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
   meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-  constructor(private disponibilidadService: DisponibilidadService) {}
+  constructor(private disponibilidadService: DisponibilidadService) { }
 
   ngOnInit(): void {
     if (this.fechaInicio) {
@@ -108,13 +108,25 @@ export class CalendarioDisponibilidadComponent implements OnInit {
       const fechaStr = this.formatearFecha(fecha);
       const disponibilidad = disponibilidades.find(d => d.fecha === fechaStr);
 
-      const esPasado = fecha < hoy;
+      const ahora = new Date();
+      const esHoy = fecha.getTime() === hoy.getTime();
+      let esPasado = fecha < hoy;
+
+      // Si es hoy, verificar si ya pasó la hora de check-in (15:00)
+      if (esHoy) {
+        const horaCheckIn = 15; // 15:00 hrs
+        const horaActual = ahora.getHours();
+        if (horaActual >= horaCheckIn) {
+          esPasado = true; // Marcar como pasado si ya pasó la hora de check-in
+        }
+      }
+
       const disponible = disponibilidad ? disponibilidad.disponible : !esPasado;
 
       const diaCalendario: DiaCalendario = {
         fecha,
         disponible: disponible && !esPasado,
-        esHoy: fecha.getTime() === hoy.getTime(),
+        esHoy,
         esPasado,
         seleccionado: this.esFechaSeleccionada(fecha),
         esInicio: this.esFechaInicio(fecha),

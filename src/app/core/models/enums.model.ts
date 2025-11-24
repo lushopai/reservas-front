@@ -17,6 +17,7 @@ export enum EstadoRecurso {
 // ========================================
 export enum EstadoReserva {
   BORRADOR = 'BORRADOR',
+  PENDIENTE_PAGO = 'PENDIENTE_PAGO',
   PENDIENTE = 'PENDIENTE',
   CONFIRMADA = 'CONFIRMADA',
   EN_CURSO = 'EN_CURSO',
@@ -102,6 +103,8 @@ export function getEstadoReservaColor(estado: EstadoReserva): string {
   switch (estado) {
     case EstadoReserva.BORRADOR:
       return 'secondary';
+    case EstadoReserva.PENDIENTE_PAGO:
+      return 'warning';
     case EstadoReserva.PENDIENTE:
       return 'warning';
     case EstadoReserva.CONFIRMADA:
@@ -182,6 +185,7 @@ export function getEnumValues<T>(enumObj: any): T[] {
 export function getEstadoReservaLabel(estado: EstadoReserva): string {
   const labels: Record<EstadoReserva, string> = {
     [EstadoReserva.BORRADOR]: 'Borrador',
+    [EstadoReserva.PENDIENTE_PAGO]: 'Pendiente de Pago',
     [EstadoReserva.PENDIENTE]: 'Pendiente',
     [EstadoReserva.CONFIRMADA]: 'Confirmada',
     [EstadoReserva.EN_CURSO]: 'En Curso',

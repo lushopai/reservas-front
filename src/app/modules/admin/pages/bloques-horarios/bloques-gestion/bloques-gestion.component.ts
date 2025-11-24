@@ -204,8 +204,8 @@ export class BloquesGestionComponent implements OnInit {
     const valores = this.generarForm.value;
 
     // Vamos a generar día por día
-    const fechaInicio = new Date(valores.fechaInicio);
-    const fechaFin = new Date(valores.fechaFin);
+    const fechaInicio = new Date(valores.fechaInicio + 'T00:00:00');  // Forzar hora local
+    const fechaFin = new Date(valores.fechaFin + 'T00:00:00');  // Forzar hora local
     const promesas: any[] = [];
 
     let fechaActual = new Date(fechaInicio);

@@ -54,12 +54,12 @@ export interface ReservaResume {
   fechaReserva: string;
   estado: string;
   precioTotal: number;
-  // ✅ Campos para agrupamiento de paquetes
+  // Campos para agrupamiento de paquetes
   paqueteId?: number;
   nombrePaquete?: string;
   estadoPaquete?: string;
   tipoReserva?: string;
-  // ✅ Precios del paquete completo
+  // Precios del paquete completo
   precioTotalPaquete?: number;
   descuentoPaquete?: number;
   precioFinalPaquete?: number;

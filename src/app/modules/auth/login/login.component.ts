@@ -66,7 +66,7 @@ export class LoginComponent implements OnInit {
     this.authService.login(credentials).subscribe({
       next: (response) => {
         console.log('Login exitoso:', response);
-        // ⚠️ PRIMERO redirigir según el rol
+        // PRIMERO redirigir según el rol
         const user = this.authService.getCurrentUser();
         const isAdmin = user?.roles?.some(
           (role: any) => role.name === 'ROLE_ADMIN' || role === 'ROLE_ADMIN'

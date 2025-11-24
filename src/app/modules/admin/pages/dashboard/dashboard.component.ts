@@ -8,7 +8,7 @@ import { DashboardService, DashboardStats, ReservaResume } from 'src/app/core/se
 import { User } from 'src/app/shared/models/User';
 import Swal from 'sweetalert2';
 
-// ✅ Interface para agrupar reservas de paquete en dashboard
+// Interface para agrupar reservas de paquete en dashboard
 interface ReservaDisplay {
   id?: number;
   esPaquete: boolean;
@@ -89,7 +89,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         if (response.success) {
           this.stats = response.data;
 
-          // ✅ Guardar reservas originales y agrupar
+          // Guardar reservas originales y agrupar
           this.reservasOriginales = response.data.reservasRecientes || [];
           const reservasAgrupadas = this.agruparReservasPorPaquete(this.reservasOriginales);
           this.reservasDataSource.data = reservasAgrupadas;
@@ -192,7 +192,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }).format(amount);
   }
 
-  // ✅ Método para agrupar reservas por paquete
+  // Método para agrupar reservas por paquete
   private agruparReservasPorPaquete(reservas: ReservaResume[]): ReservaDisplay[] {
     const paquetes = new Map<number, ReservaResume[]>();
     const individuales: ReservaResume[] = [];
@@ -216,7 +216,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       const primera = reservasPaquete[0];
       const estadoFinal = primera.estadoPaquete || primera.estado;
 
-      // ✅ Usar precio final del paquete (con descuento) si está disponible
+      // Usar precio final del paquete (con descuento) si está disponible
       const precioTotal = primera.precioFinalPaquete !== undefined && primera.precioFinalPaquete !== null
         ? primera.precioFinalPaquete
         : reservasPaquete.reduce((sum, r) => sum + r.precioTotal, 0);

@@ -74,7 +74,20 @@ export class CabanaDetalleComponent implements OnInit {
     // No permitir fechas pasadas
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    if (date < hoy) return false;
+
+    const dateNormalized = new Date(date);
+    dateNormalized.setHours(0, 0, 0, 0);
+
+    if (dateNormalized < hoy) return false;
+
+    // Si es hoy, verificar si ya pasó la hora de check-in (15:00)
+    if (dateNormalized.getTime() === hoy.getTime()) {
+      const ahora = new Date();
+      const horaCheckIn = 15; // 15:00 hrs
+      if (ahora.getHours() >= horaCheckIn) {
+        return false; // Bloquear hoy si ya pasó la hora de check-in
+      }
+    }
 
     // Bloquear fechas ocupadas
     return !this.esFechaOcupada(date);
@@ -88,7 +101,7 @@ export class CabanaDetalleComponent implements OnInit {
     private authService: AuthService,
     private servicioService: ServicioEntretencionService,
     private bloqueService: BloqueHorarioService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -342,6 +355,8 @@ export class CabanaDetalleComponent implements OnInit {
     // Si hay servicios seleccionados, es un paquete
     if (this.serviciosSeleccionados.size > 0) {
       reservaData.servicios = serviciosArray;
+      // Extraer IDs de servicios para cargar inventario en confirmar-reserva
+      reservaData.servicioIds = serviciosArray.map((s: any) => s.servicioId);
     }
 
     sessionStorage.setItem('reserva_pendiente', JSON.stringify(reservaData));

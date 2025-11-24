@@ -60,7 +60,7 @@ export class NuevaReservaComponent implements OnInit {
     private bloqueService: BloqueHorarioService,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.inicializarFormularios();
@@ -223,9 +223,14 @@ export class NuevaReservaComponent implements OnInit {
       return;
     }
 
+    console.log('=== CONFIRMAR RESERVA ===');
+    console.log('Tipo de reserva:', this.tipoReserva);
+    console.log('Items seleccionados:', this.itemsSeleccionados);
+
     this.cargando = true;
 
     if (this.tipoReserva === 'cabana') {
+      console.log('Entrando a bloque CABAÑA');
       const request = {
         ...this.formCabana.value,
         clienteId: user.id,
@@ -258,16 +263,26 @@ export class NuevaReservaComponent implements OnInit {
         }
       });
     } else {
+      console.log("aca")
       const formValues = this.formServicio.value;
+      const equipamientoArray = this.getItemsParaReserva();
+
+      console.log('=== DEBUG RESERVA SERVICIO ===');
+      console.log('Items seleccionados (Map):', this.itemsSeleccionados);
+      console.log('Equipamiento array:', equipamientoArray);
+      console.log('Form values:', formValues);
+
       const request = {
         servicioId: formValues.servicioId,
         clienteId: user.id,
         fecha: formValues.fecha,
         horaInicio: formValues.horaInicio,
         duracionBloques: formValues.cantidadBloques, // Mapear cantidadBloques a duracionBloques
-        equipamiento: this.getItemsParaReserva(),
+        equipamiento: equipamientoArray,
         observaciones: formValues.observaciones
       };
+
+      console.log('Request completo:', request);
 
       this.reservaService.reservarServicio(request).subscribe({
         next: (response) => {

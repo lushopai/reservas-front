@@ -163,7 +163,7 @@
                 <button
                   mat-menu-item
                   (click)="pagarReserva(row)"
-                  *ngIf="row.estado === 'PENDIENTE'">
+                  *ngIf="row.estado === 'PENDIENTE_PAGO' || row.estado === 'PENDIENTE'">
                   <mat-icon>payment</mat-icon>
                   <span>Pagar</span>
                 </button>

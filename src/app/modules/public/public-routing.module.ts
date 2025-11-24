@@ -35,8 +35,8 @@ const routes: Routes = [
   },
   {
     path: 'registro',
-    component: RegistroComponent,
-    data: { title: 'Registro' }
+    redirectTo: '/auth/register',
+    pathMatch: 'full'
   }
 ];
 

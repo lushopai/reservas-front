@@ -22,7 +22,7 @@ export interface SuccessResponse<T> {
 export class ReservaService {
   private apiUrl = `${environment.apiUrl}/api/reservas`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Crear reserva de cabaña
@@ -109,5 +109,19 @@ export class ReservaService {
       motivo,
       observaciones
     });
+  }
+
+  /**
+   * Realizar Check-In
+   */
+  checkInReserva(reservaId: number): Observable<SuccessResponse<Reserva>> {
+    return this.http.post<SuccessResponse<Reserva>>(`${this.apiUrl}/${reservaId}/check-in`, {});
+  }
+
+  /**
+   * Realizar Check-Out
+   */
+  checkOutReserva(reservaId: number): Observable<SuccessResponse<Reserva>> {
+    return this.http.post<SuccessResponse<Reserva>>(`${this.apiUrl}/${reservaId}/check-out`, {});
   }
 }

@@ -58,6 +58,7 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
 
   // Estados disponibles - Removido alias CONFIRMADO obsoleto
   estadosReserva = [
+    { valor: EstadoReserva.PENDIENTE_PAGO, label: 'Pendiente de Pago', color: 'warn', icon: 'payment' },
     { valor: EstadoReserva.PENDIENTE, label: 'Pendiente', color: 'warn', icon: 'schedule' },
     { valor: EstadoReserva.CONFIRMADA, label: 'Confirmada', color: 'primary', icon: 'check_circle' },
     { valor: EstadoReserva.EN_CURSO, label: 'En Curso', color: 'accent', icon: 'play_circle' },
@@ -179,7 +180,7 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
         estadoFinal: estadoFinal
       });
 
-      // ✅ Usar precio final del paquete (con descuento) si está disponible
+      // Usar precio final del paquete (con descuento) si está disponible
       const precioTotal = primera.precioFinalPaquete !== undefined && primera.precioFinalPaquete !== null
         ? primera.precioFinalPaquete
         : reservasPaquete.reduce((sum, r) => sum + r.precioTotal, 0);
@@ -320,8 +321,8 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
                     <span class="badge bg-primary">×${item.cantidad}</span>
                   </div>
                   <div class="mt-1 d-flex justify-content-between align-items-center">
-                    <span class="text-muted" style="font-size: 0.75rem;">$${this.formatearPrecio(item.precioUnitario || 0)} c/u</span>
-                    <span class="fw-bold text-success" style="font-size: 0.85rem;">$${this.formatearPrecio(item.subtotal || 0)}</span>
+                    <span class="text-muted" style="font-size: 0.75rem;">${this.formatearPrecio(item.precioUnitario || 0)} c/u</span>
+                    <span class="fw-bold text-success" style="font-size: 0.85rem;">${this.formatearPrecio(item.subtotal || 0)}</span>
                   </div>
                 </div>
               `).join('')}
@@ -356,7 +357,7 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
             <div class="col-6">
               <div class="d-flex align-items-center">
                 <i class="bi bi-cash text-success me-2"></i>
-                <span style="font-size: 0.9rem;"><strong>Subtotal:</strong> $${this.formatearPrecio(r.precioTotal)}</span>
+                <span style="font-size: 0.9rem;"><strong>Subtotal:</strong> ${this.formatearPrecio(r.precioTotal)}</span>
               </div>
             </div>
             <div class="col-6">
@@ -392,7 +393,7 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
             <div class="alert alert-info mb-3 d-flex align-items-center" style="background: #e3f2fd; border-left: 4px solid #2196f3;">
               <div class="flex-grow-1">
                 <div class="mb-1"><strong>Estado:</strong> <span class="badge ${this.getBadgeClass(reservaDisplay.estado)}">${this.getEstadoConfig(reservaDisplay.estado).label}</span></div>
-                <div><strong>Total del Paquete:</strong> <span class="fs-5 text-success fw-bold">$${this.formatearPrecio(reservaDisplay.precioTotal)}</span></div>
+                <div><strong>Total del Paquete:</strong> <span class="fs-5 text-success fw-bold">${this.formatearPrecio(reservaDisplay.precioTotal)}</span></div>
               </div>
             </div>
 
@@ -430,8 +431,8 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
                 <span class="badge bg-primary fs-6">×${item.cantidad}</span>
               </div>
               <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
-                <small class="text-muted">$${this.formatearPrecio(item.precioUnitario || 0)} c/u</small>
-                <span class="fw-bold text-success">$${this.formatearPrecio(item.subtotal || 0)}</span>
+                <small class="text-muted">${this.formatearPrecio(item.precioUnitario || 0)} c/u</small>
+                <span class="fw-bold text-success">${this.formatearPrecio(item.subtotal || 0)}</span>
               </div>
             </div>
           `).join('')}
@@ -474,7 +475,7 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
               <div class="p-3 bg-success bg-opacity-10 rounded border border-success">
                 <div class="d-flex justify-content-between align-items-center">
                   <span class="text-muted"><i class="bi bi-cash-stack me-2"></i>Total</span>
-                  <span class="fs-4 fw-bold text-success">$${this.formatearPrecio(reserva.precioTotal)}</span>
+                  <span class="fs-4 fw-bold text-success">${this.formatearPrecio(reserva.precioTotal)}</span>
                 </div>
               </div>
             </div>
@@ -650,8 +651,8 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
 
     // Reserva individual
     const reserva = reservaDisplay.reservas[0];
-    if (reserva.estado !== EstadoReserva.PENDIENTE) {
-      Swal.fire('No disponible', 'Solo se pueden pagar reservas pendientes', 'warning');
+    if (reserva.estado !== EstadoReserva.PENDIENTE_PAGO && reserva.estado !== EstadoReserva.PENDIENTE) {
+      Swal.fire('No disponible', 'Solo se pueden pagar reservas pendientes de pago', 'warning');
       return;
     }
 
@@ -723,6 +724,7 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
 
   getBadgeClass(estado: string): string {
     switch (estado) {
+      case EstadoReserva.PENDIENTE_PAGO: return 'bg-warning';
       case EstadoReserva.PENDIENTE: return 'bg-warning';
       case EstadoReserva.CONFIRMADA: return 'bg-success';
       case EstadoReserva.CANCELADA: return 'bg-danger';

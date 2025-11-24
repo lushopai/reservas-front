@@ -120,7 +120,6 @@
       <div *ngIf="!cargando" class="table-container">
         <table mat-table [dataSource]="dataSource" matSort multiTemplateDataRows class="reservas-table">
 
-          <!-- ✅ Columna de Expansión -->
           <ng-container matColumnDef="expand">
             <th mat-header-cell *matHeaderCellDef></th>
             <td mat-cell *matCellDef="let element">
@@ -132,7 +131,6 @@
             </td>
           </ng-container>
 
-          <!-- ✅ Columna ID (Modificada para mostrar icono de paquete) -->
           <ng-container matColumnDef="id">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
             <td mat-cell *matCellDef="let element">
@@ -244,7 +242,6 @@
             </td>
           </ng-container>
 
-          <!-- ✅ Columna de Detalle Expandible (para mostrar reservas del paquete) -->
           <ng-container matColumnDef="expandedDetail">
             <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
               <div class="element-detail" [@detailExpand]="element.expandido ? 'expanded' : 'collapsed'">
@@ -280,7 +277,6 @@
             </td>
           </ng-container>
 
-          <!-- ✅ Filas de la tabla con soporte para expansión -->
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row
               *matRowDef="let row; columns: displayedColumns"

@@ -29,7 +29,7 @@ export class RegisterComponent implements OnInit {
     private userService: UserService, // CAMBIADO: ClienteService -> UserService
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.initForm();
@@ -63,10 +63,12 @@ export class RegisterComponent implements OnInit {
           '',
           [
             Validators.required,
-            Validators.pattern(/^\+?[0-9]{9,15}$/), // Formato internacional
+            Validators.pattern(/^[0-9]{9}$/), // 9 dígitos para Chile
+            Validators.minLength(9),
+            Validators.maxLength(9)
           ],
         ],
-        documento: ['', [Validators.required, Validators.minLength(7)]],
+        documento: ['', [Validators.required, this.rutValidator]],
         tipoDocumento: ['RUT', Validators.required],
         aceptaTerminos: [false, [Validators.requiredTrue]],
       },
@@ -127,7 +129,7 @@ export class RegisterComponent implements OnInit {
       tipoDocumento: this.registerForm.value.tipoDocumento,
     };
 
-    console.log('📤 Enviando datos de registro:', {
+    console.log('Enviando datos de registro:', {
       ...registerData,
       password: '***', // No loguear la contraseña real
     });
@@ -136,7 +138,6 @@ export class RegisterComponent implements OnInit {
     this.userService.register(registerData).subscribe({
       next: (response) => {
         this.loading = false;
-        console.log('✅ Respuesta exitosa del servidor:', response);
 
         if (response.success) {
           this.registerForm.reset();
@@ -165,8 +166,8 @@ export class RegisterComponent implements OnInit {
         }
       },
       error: (error) => {
-         this.loading = false;
-        console.error('❌ Error en el registro:', error);
+        this.loading = false;
+        console.error('Error en el registro:', error);
         console.error('Error completo:', {
           status: error.status,
           statusText: error.statusText,
@@ -211,5 +212,50 @@ export class RegisterComponent implements OnInit {
 
   goToLogin(): void {
     this.router.navigate(['/auth/login']);
+  }
+
+  /**
+   * Validador de RUT chileno
+   */
+  rutValidator(control: any): { [key: string]: boolean } | null {
+    if (!control.value) return null;
+
+    const rut = control.value.replace(/[^0-9kK]/g, ''); // Remover formato
+    if (rut.length < 8) return { rutInvalido: true };
+
+    const cuerpo = rut.slice(0, -1);
+    const dv = rut.slice(-1).toUpperCase();
+
+    // Calcular dígito verificador
+    let suma = 0;
+    let multiplo = 2;
+
+    for (let i = cuerpo.length - 1; i >= 0; i--) {
+      suma += parseInt(cuerpo[i]) * multiplo;
+      multiplo = multiplo === 7 ? 2 : multiplo + 1;
+    }
+
+    const dvEsperado = 11 - (suma % 11);
+    const dvCalculado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : dvEsperado.toString();
+
+    return dv === dvCalculado ? null : { rutInvalido: true };
+  }
+
+  /**
+   * Formatear RUT mientras el usuario escribe
+   */
+  formatearRUT(event: any): void {
+    let valor = event.target.value.replace(/[^0-9kK]/g, ''); // Solo números y K
+
+    if (valor.length > 1) {
+      const cuerpo = valor.slice(0, -1);
+      const dv = valor.slice(-1);
+
+      // Formatear con puntos y guión
+      const cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      valor = `${cuerpoFormateado}-${dv}`;
+    }
+
+    this.registerForm.patchValue({ documento: valor }, { emitEvent: false });
   }
 }

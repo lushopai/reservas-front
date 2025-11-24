@@ -15,10 +15,7 @@
         <mat-form-field appearance="outline" class="filter-field-large">
           <mat-label>Buscar</mat-label>
           <mat-icon matPrefix>search</mat-icon>
-          <input
-            matInput
-            [(ngModel)]="filtroBusqueda"
-            (ngModelChange)="aplicarFiltros()"
+          <input matInput [(ngModel)]="filtroBusqueda" (ngModelChange)="aplicarFiltros()"
             placeholder="Nombre o descripción...">
         </mat-form-field>
 
@@ -26,9 +23,7 @@
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>Ordenar por</mat-label>
           <mat-icon matPrefix>sort</mat-icon>
-          <mat-select
-            [(ngModel)]="ordenarPor"
-            (ngModelChange)="aplicarFiltros()">
+          <mat-select [(ngModel)]="ordenarPor" (ngModelChange)="aplicarFiltros()">
             <mat-option value="nombre">Nombre</mat-option>
             <mat-option value="precio-asc">Precio: Menor a Mayor</mat-option>
             <mat-option value="precio-desc">Precio: Mayor a Menor</mat-option>
@@ -37,11 +32,7 @@
         </mat-form-field>
 
         <!-- Limpiar -->
-        <button
-          mat-stroked-button
-          color="primary"
-          class="clear-button"
-          (click)="limpiarFiltros()">
+        <button mat-stroked-button color="primary" class="clear-button" (click)="limpiarFiltros()">
           <mat-icon>clear_all</mat-icon>
           Limpiar
         </button>
@@ -76,10 +67,8 @@
     <mat-card *ngFor="let servicio of serviciosPaginados" class="servicio-card" matRipple>
       <!-- Imagen -->
       <div class="card-image-container">
-        <img *ngIf="obtenerImagenPrincipal(servicio)"
-             [src]="obtenerImagenPrincipal(servicio)"
-             [alt]="servicio.nombre"
-             class="card-image">
+        <img *ngIf="obtenerImagenPrincipal(servicio)" [src]="obtenerImagenPrincipal(servicio)" [alt]="servicio.nombre"
+          class="card-image">
         <div *ngIf="!obtenerImagenPrincipal(servicio)" class="card-image-placeholder">
           <mat-icon class="placeholder-icon">stars</mat-icon>
         </div>
@@ -124,10 +113,6 @@
           <mat-icon>visibility</mat-icon>
           Ver Detalles
         </button>
-        <button mat-raised-button color="primary" class="action-button" (click)="reservar(servicio)">
-          <mat-icon>event_available</mat-icon>
-          Reservar
-        </button>
       </mat-card-actions>
     </mat-card>
   </div>
@@ -135,27 +120,18 @@
   <!-- Paginación Material -->
   <mat-card *ngIf="totalPaginas > 1" class="pagination-card">
     <mat-card-content class="pagination-content">
-      <button
-        mat-icon-button
-        [disabled]="paginaActual === 1"
-        (click)="cambiarPagina(paginaActual - 1)">
+      <button mat-icon-button [disabled]="paginaActual === 1" (click)="cambiarPagina(paginaActual - 1)">
         <mat-icon>chevron_left</mat-icon>
       </button>
 
       <div class="page-numbers">
-        <button
-          *ngFor="let pagina of [].constructor(totalPaginas); let i = index"
-          mat-button
-          [class.active-page]="paginaActual === i + 1"
-          (click)="cambiarPagina(i + 1)">
+        <button *ngFor="let pagina of [].constructor(totalPaginas); let i = index" mat-button
+          [class.active-page]="paginaActual === i + 1" (click)="cambiarPagina(i + 1)">
           {{ i + 1 }}
         </button>
       </div>
 
-      <button
-        mat-icon-button
-        [disabled]="paginaActual === totalPaginas"
-        (click)="cambiarPagina(paginaActual + 1)">
+      <button mat-icon-button [disabled]="paginaActual === totalPaginas" (click)="cambiarPagina(paginaActual + 1)">
         <mat-icon>chevron_right</mat-icon>
       </button>
     </mat-card-content>

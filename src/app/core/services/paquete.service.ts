@@ -8,7 +8,7 @@ export interface ServicioReservaDTO {
   fecha: string;
   horaInicio: string;
   duracionBloques: number;
-  equipamiento?: ItemReservaDTO[];
+  // equipamiento removed
 }
 
 export interface ItemReservaDTO {
@@ -18,12 +18,13 @@ export interface ItemReservaDTO {
 
 export interface PaqueteReservaRequest {
   clienteId: number;
-  nombre: string; // Backend espera 'nombre', no 'nombrePaquete'
+  nombre: string;
   fechaInicio: string;
   fechaFin: string;
   cabanaId?: number;
-  itemsCabana?: ItemReservaDTO[]; // Backend espera 'itemsCabana', no 'itemsAdicionales'
-  servicios?: ServicioReservaDTO[];
+  servicioIds?: number[]; // For backward compatibility
+  servicios?: ServicioReservaDTO[]; // Full service details
+  itemsAdicionales?: ItemReservaDTO[]; // Unified items at package level
   notasEspeciales?: string;
 }
 
@@ -53,7 +54,7 @@ export interface SuccessResponse<T> {
 export class PaqueteService {
   private apiUrl = `${API_CONFIG.baseUrl}/api/paquetes`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Crear paquete de reserva (cabaña + servicios)

@@ -22,12 +22,7 @@
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>Nombres *</mat-label>
               <mat-icon matPrefix>person</mat-icon>
-              <input
-                matInput
-                type="text"
-                formControlName="nombres"
-                placeholder="Juan Carlos"
-                autocomplete="given-name">
+              <input matInput type="text" formControlName="nombres" placeholder="Juan Carlos" autocomplete="given-name">
               <mat-error *ngIf="f['nombres'].hasError('required')">
                 Los nombres son obligatorios
               </mat-error>
@@ -42,11 +37,7 @@
             <mat-form-field appearance="outline" class="half-width">
               <mat-label>Apellidos *</mat-label>
               <mat-icon matPrefix>person</mat-icon>
-              <input
-                matInput
-                type="text"
-                formControlName="apellidos"
-                placeholder="Pérez González"
+              <input matInput type="text" formControlName="apellidos" placeholder="Pérez González"
                 autocomplete="family-name">
               <mat-error *ngIf="f['apellidos'].hasError('required')">
                 Los apellidos son obligatorios
@@ -61,12 +52,7 @@
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Correo Electrónico *</mat-label>
             <mat-icon matPrefix>email</mat-icon>
-            <input
-              matInput
-              type="email"
-              formControlName="email"
-              placeholder="ejemplo@correo.com"
-              autocomplete="email">
+            <input matInput type="email" formControlName="email" placeholder="ejemplo@correo.com" autocomplete="email">
             <mat-error *ngIf="f['email'].hasError('required')">
               El correo es obligatorio
             </mat-error>
@@ -79,18 +65,15 @@
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Teléfono *</mat-label>
             <mat-icon matPrefix>phone</mat-icon>
-            <input
-              matInput
-              type="tel"
-              formControlName="telefono"
-              placeholder="+56912345678"
+            <input matInput type="tel" formControlName="telefono" placeholder="912345678" maxlength="9"
               autocomplete="tel">
-            <mat-hint>Formato: +56912345678 (con código de país)</mat-hint>
+            <mat-hint>9 dígitos (ej: 912345678)</mat-hint>
             <mat-error *ngIf="f['telefono'].hasError('required')">
               El teléfono es obligatorio
             </mat-error>
-            <mat-error *ngIf="f['telefono'].hasError('pattern')">
-              Formato inválido (ej: +56912345678)
+            <mat-error
+              *ngIf="f['telefono'].hasError('pattern') || f['telefono'].hasError('minlength') || f['telefono'].hasError('maxlength')">
+              Debe tener exactamente 9 dígitos
             </mat-error>
           </mat-form-field>
 
@@ -108,16 +91,14 @@
 
             <mat-form-field appearance="outline" class="large-width">
               <mat-label>Número de Documento *</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="documento"
-                placeholder="12345678-9">
+              <input matInput type="text" formControlName="documento" placeholder="12.345.678-9"
+                (input)="formatearRUT($event)" maxlength="12">
+              <mat-hint *ngIf="f['tipoDocumento'].value === 'RUT'">Formato: XX.XXX.XXX-X</mat-hint>
               <mat-error *ngIf="f['documento'].hasError('required')">
                 El documento es obligatorio
               </mat-error>
-              <mat-error *ngIf="f['documento'].hasError('minlength')">
-                Mínimo 7 caracteres
+              <mat-error *ngIf="f['documento'].hasError('rutInvalido')">
+                RUT inválido
               </mat-error>
             </mat-form-field>
           </div>
@@ -128,17 +109,9 @@
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Contraseña *</mat-label>
             <mat-icon matPrefix>lock</mat-icon>
-            <input
-              matInput
-              [type]="showPassword ? 'text' : 'password'"
-              formControlName="password"
-              placeholder="••••••••"
-              autocomplete="new-password">
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="togglePassword()">
+            <input matInput [type]="showPassword ? 'text' : 'password'" formControlName="password"
+              placeholder="••••••••" autocomplete="new-password">
+            <button mat-icon-button matSuffix type="button" (click)="togglePassword()">
               <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             <mat-hint>Mínimo 6 caracteres</mat-hint>
@@ -154,17 +127,9 @@
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Confirmar Contraseña *</mat-label>
             <mat-icon matPrefix>lock</mat-icon>
-            <input
-              matInput
-              [type]="showConfirmPassword ? 'text' : 'password'"
-              formControlName="confirmPassword"
-              placeholder="••••••••"
-              autocomplete="new-password">
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="toggleConfirmPassword()">
+            <input matInput [type]="showConfirmPassword ? 'text' : 'password'" formControlName="confirmPassword"
+              placeholder="••••••••" autocomplete="new-password">
+            <button mat-icon-button matSuffix type="button" (click)="toggleConfirmPassword()">
               <mat-icon>{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
             </button>
             <mat-error *ngIf="f['confirmPassword'].hasError('required')">
@@ -189,12 +154,7 @@
           </div>
 
           <!-- Botón Registrar -->
-          <button
-            mat-raised-button
-            color="primary"
-            type="submit"
-            class="register-button"
-            [disabled]="loading">
+          <button mat-raised-button color="primary" type="submit" class="register-button" [disabled]="loading">
             <ng-container *ngIf="!loading">
               <mat-icon>person_add</mat-icon>
               Crear Cuenta

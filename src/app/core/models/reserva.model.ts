@@ -1,7 +1,9 @@
 import { EstadoReserva, EstadoPaquete, TipoReserva } from './enums.model';
+import { ItemReservaDTO } from '../services/paquete.service'; // Import ItemReservaDTO from paquete.service
 
 // Re-exportar para compatibilidad con imports existentes
 export { EstadoReserva, EstadoPaquete, TipoReserva };
+export { ItemReservaDTO };
 
 // Item Reservado
 export interface ItemReservado {
@@ -93,52 +95,34 @@ export interface ReservaServicioRequest {
   observaciones?: string;
 }
 
-// DTO para items
-export interface ItemReservaDTO {
-  itemId: number;
-  cantidad: number;
-}
-
-// Request de Pago
+// Pago Request
 export interface PagoRequest {
-  metodoPago: string; // TARJETA, TRANSFERENCIA, EFECTIVO
+  reservaId: number;
   monto: number;
-  numeroTarjeta?: string;
-  nombreTitular?: string;
-  fechaVencimiento?: string;
-  cvv?: string;
-  comprobanteTransferencia?: string;
+  metodoPago: string; // 'TARJETA', 'TRANSFERENCIA', 'EFECTIVO'
+  referencia?: string;
 }
 
-// Paquete de Reserva
-export interface PaqueteReserva {
-  id?: number;
-  userId: number;
-  nombreUsuario?: string;
-  emailUsuario?: string;
-  nombrePaquete: string;
-  fechaInicio: string;
-  fechaFin: string;
-  estado: EstadoPaquete;  // Usa EstadoPaquete del backend
-  precioTotal: number;
-  descuento: number;
-  precioFinal: number;
-  observaciones?: string;
-  reservas?: Reserva[];
-}
+// Paquete de Reserva - No change needed here, as PaqueteReservaRequest is gone
 
-// Request para crear Paquete
-export interface PaqueteReservaRequest {
-  userId: number;
-  nombrePaquete: string;
-  fechaInicio: string;
-  fechaFin: string;
-  reservas: Array<{
-    recursoId: number;
-    fechaInicio: string;
-    fechaFin: string;
-    tipoReserva: TipoReserva;
-    itemsReservados?: ItemReservaDTO[];
-  }>;
-  observaciones?: string;
-}
+// No longer needed here
+// export interface ItemReservaDTO {
+//   itemId: number;
+//   cantidad: number;
+// }
+
+// No longer needed here
+// export interface PaqueteReservaRequest {
+//   userId: number;
+//   nombrePaquete: string;
+//   fechaInicio: string;
+//   fechaFin: string;
+//   reservas: Array<{
+//     recursoId: number;
+//     fechaInicio: string;
+//     fechaFin: string;
+//     tipoReserva: TipoReserva;
+//     itemsReservados?: ItemReservaDTO[];
+//   }>;
+//   observaciones?: string;
+// }

@@ -6,11 +6,13 @@ import { NuevaReservaComponent } from './pages/nueva-reserva/nueva-reserva.compo
 import { ConfirmarPagoComponent } from './pages/confirmar-pago/confirmar-pago.component';
 import { ConfirmarReservaComponent } from './pages/confirmar-reserva/confirmar-reserva.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
+import { AuthGuard } from '../../core/guards/auth.guard';
 
 const routes: Routes = [
   {
     path: '',
     component: ClienteComponent,
+    canActivate: [AuthGuard],
     children: [
       {
         path: '',
