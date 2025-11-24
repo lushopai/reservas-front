@@ -47,8 +47,8 @@ export class UsuarioFormComponent implements OnInit {
       telefono: ['', [Validators.pattern(/^[0-9]{9,15}$/)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
-      documento: ['', [Validators.required]],
-      tipoDocumento: ['', [Validators.required]],
+      documento: ['', [Validators.required, this.rutValidator]],
+      tipoDocumento: ['RUT', [Validators.required]],
       enabled: [true]
     }, {
       validators: this.passwordMatchValidator
@@ -286,7 +286,53 @@ export class UsuarioFormComponent implements OnInit {
       return 'Formato inválido';
     }
     if (errors['passwordMismatch']) return 'Las contraseñas no coinciden';
+    if (errors['rutInvalido']) return 'RUT inválido';
 
     return 'Error de validación';
+  }
+
+  /**
+   * Validador de RUT chileno
+   */
+  rutValidator(control: any): { [key: string]: boolean } | null {
+    if (!control.value) return null;
+
+    const rut = control.value.replace(/[^0-9kK]/g, ''); // Remover formato
+    if (rut.length < 8) return { rutInvalido: true };
+
+    const cuerpo = rut.slice(0, -1);
+    const dv = rut.slice(-1).toUpperCase();
+
+    // Calcular dígito verificador
+    let suma = 0;
+    let multiplo = 2;
+
+    for (let i = cuerpo.length - 1; i >= 0; i--) {
+      suma += parseInt(cuerpo[i]) * multiplo;
+      multiplo = multiplo === 7 ? 2 : multiplo + 1;
+    }
+
+    const dvEsperado = 11 - (suma % 11);
+    const dvCalculado = dvEsperado === 11 ? '0' : dvEsperado === 10 ? 'K' : dvEsperado.toString();
+
+    return dv === dvCalculado ? null : { rutInvalido: true };
+  }
+
+  /**
+   * Formatear RUT mientras el usuario escribe
+   */
+  formatearRUT(event: any): void {
+    let valor = event.target.value.replace(/[^0-9kK]/g, ''); // Solo números y K
+
+    if (valor.length > 1) {
+      const cuerpo = valor.slice(0, -1);
+      const dv = valor.slice(-1);
+
+      // Formatear con puntos y guión
+      const cuerpoFormateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+      valor = `${cuerpoFormateado}-${dv}`;
+    }
+
+    this.usuarioForm.patchValue({ documento: valor }, { emitEvent: false });
   }
 }

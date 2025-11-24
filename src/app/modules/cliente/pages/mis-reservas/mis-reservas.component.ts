@@ -11,6 +11,7 @@ import { ReservaService } from '../../../../core/services/reserva.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { PagoService, PagoRequest } from '../../../../core/services/pago.service';
 import { Reserva, EstadoReserva } from '../../../../core/models/reserva.model';
+import { EstadoPaquete } from '../../../../core/models/enums.model';
 
 // Interface para agrupar reservas de paquete
 interface ReservaDisplay {
@@ -172,10 +173,11 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
     // Agregar paquetes agrupados
     paquetes.forEach((reservasPaquete, paqueteId) => {
       const primera = reservasPaquete[0];
-      const estadoFinal = (primera.estadoPaquete || primera.estado) as EstadoReserva;
+      // Use the status of the first reservation (individual) for the package display
+      const estadoFinal = primera.estado;
 
       console.log(`Paquete ${paqueteId}:`, {
-        estadoPaquete: primera.estadoPaquete,
+        // estadoPaquete: primera.estadoPaquete, // original package status (ignored for UI)
         estadoReserva: primera.estado,
         estadoFinal: estadoFinal
       });
@@ -723,13 +725,42 @@ export class MisReservasComponent implements OnInit, AfterViewInit {
   }
 
   getBadgeClass(estado: string): string {
+    // Handle both EstadoReserva and EstadoPaquete values
     switch (estado) {
-      case EstadoReserva.PENDIENTE_PAGO: return 'bg-warning';
-      case EstadoReserva.PENDIENTE: return 'bg-warning';
-      case EstadoReserva.CONFIRMADA: return 'bg-success';
-      case EstadoReserva.CANCELADA: return 'bg-danger';
-      case EstadoReserva.COMPLETADA: return 'bg-info';
-      default: return 'bg-secondary';
+      case EstadoReserva.PENDIENTE_PAGO:
+      case EstadoPaquete.PENDIENTE:
+        return 'bg-warning';
+      case EstadoReserva.CONFIRMADA:
+      case EstadoPaquete.ACTIVO:
+        return 'bg-success';
+      case EstadoReserva.CANCELADA:
+      case EstadoPaquete.CANCELADO:
+        return 'bg-danger';
+      case EstadoReserva.COMPLETADA:
+      case EstadoPaquete.COMPLETADO:
+        return 'bg-info';
+      default:
+        return 'bg-secondary';
+    }
+  }
+
+  /**
+   * Maps a EstadoPaquete value to the corresponding EstadoReserva value for UI purposes.
+   * Returns undefined if the input is undefined or not a recognized EstadoPaquete.
+   */
+  private mapEstadoPaqueteToEstadoReserva(estadoPaquete?: EstadoPaquete): EstadoReserva | undefined {
+    if (!estadoPaquete) return undefined;
+    switch (estadoPaquete) {
+      case EstadoPaquete.PENDIENTE:
+        return EstadoReserva.PENDIENTE;
+      case EstadoPaquete.ACTIVO:
+        return EstadoReserva.CONFIRMADA;
+      case EstadoPaquete.CANCELADO:
+        return EstadoReserva.CANCELADA;
+      case EstadoPaquete.COMPLETADO:
+        return EstadoReserva.COMPLETADA;
+      default:
+        return undefined;
     }
   }
 

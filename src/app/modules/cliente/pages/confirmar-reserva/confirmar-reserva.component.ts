@@ -64,9 +64,10 @@ export class ConfirmarReservaComponent implements OnInit {
     this.cargandoItems = true;
     this.cabanaService.obtenerItemsAdicionales(cabanaId).subscribe({
       next: (items) => {
-        this.itemsDisponibles = items;
+        // Solo mostrar items con stock disponible
+        this.itemsDisponibles = items.filter(item => (item.cantidadDisponible ?? 0) > 0);
         this.cargandoItems = false;
-        console.log('Items adicionales cargados:', items.length);
+        console.log('Items adicionales cargados:', this.itemsDisponibles.length);
       },
       error: (error) => {
         console.error('Error al cargar items adicionales:', error);
@@ -80,8 +81,8 @@ export class ConfirmarReservaComponent implements OnInit {
     this.cargandoItems = true;
     this.inventarioService.obtenerPorRecurso(servicioId).subscribe({
       next: (items) => {
-        // Solo items reservables
-        this.itemsDisponibles = items.filter(item => item.esReservable);
+        // Solo items reservables y con stock disponible
+        this.itemsDisponibles = items.filter(item => item.esReservable && (item.cantidadDisponible ?? 0) > 0);
         this.cargandoItems = false;
         console.log('Items de servicio cargados:', this.itemsDisponibles.length);
       },
@@ -126,9 +127,11 @@ export class ConfirmarReservaComponent implements OnInit {
 
         todosLosItems.forEach(item => {
           // ✅ VALIDACIÓN CRÍTICA: Solo agregar items que pertenezcan a los recursos del paquete
+          // Y que tengan stock disponible
           if (item.esReservable &&
             item.recursoId &&
             recursosIds.includes(item.recursoId) &&
+            (item.cantidadDisponible ?? 0) > 0 &&
             !itemsUnicos.has(item.id)) {
             itemsUnicos.set(item.id, item);
           }

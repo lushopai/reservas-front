@@ -1,0 +1,960 @@
+// ==========================================
+// ESTILOS PARA DISEÑO MEJORADO (reserva-detail-styles.scss)
+// ==========================================
+
+// Variables y Mixins
+$primary-color: #3f51b5;
+$success-color: #43a047;
+$warning-color: #ff9800;
+$danger-color: #f44336;
+$text-primary: #1e293b;
+$text-secondary: #64748b;
+$bg-light: #f8fafc;
+$border-radius-lg: 20px;
+$border-radius-md: 16px;
+$border-radius-sm: 12px;
+
+@mixin card-shadow {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+@mixin hover-lift {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+}
+
+// Contenedor Principal
+.reserva-detail-container {
+    padding: 2rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+// Header Mejorado
+.page-header-new {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: $border-radius-md;
+    @include card-shadow;
+    animation: fadeIn 0.5s ease;
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+
+        .back-button {
+            background-color: $bg-light;
+            color: $text-secondary;
+            transition: all 0.2s;
+
+            &:hover {
+                background-color: darken($bg-light, 5%);
+                color: $primary-color;
+            }
+        }
+
+        .header-info {
+            .page-title {
+                font-size: 1.75rem;
+                font-weight: 800;
+                color: $text-primary;
+                margin: 0 0 0.25rem 0;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+
+                mat-icon {
+                    font-size: 1.75rem;
+                    width: 1.75rem;
+                    height: 1.75rem;
+                    color: $primary-color;
+                }
+            }
+
+            .page-subtitle {
+                font-size: 0.95rem;
+                color: $text-secondary;
+                margin: 0;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+
+                .paquete-badge {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.25rem;
+                    background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+                    color: #7b1fa2;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: $border-radius-sm;
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+
+                    mat-icon {
+                        font-size: 14px;
+                        width: 14px;
+                        height: 14px;
+                    }
+                }
+            }
+        }
+    }
+
+    .header-right {
+        .estado-chip-header {
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            height: auto;
+            font-weight: 700;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            mat-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+            }
+        }
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 1.25rem;
+
+        .header-right {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+        }
+    }
+}
+
+// Hero Card
+.hero-card {
+    border-radius: $border-radius-lg;
+    @include card-shadow;
+    border: none;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    background: white;
+    animation: slideIn 0.5s ease;
+
+    ::ng-deep .mat-mdc-card-content {
+        padding: 0;
+    }
+
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1fr; // Single column layout as per previous fix
+        gap: 0;
+
+        .hero-info {
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+
+            .resource-header {
+                display: flex;
+                align-items: flex-start;
+                gap: 1.5rem;
+
+                .resource-icon {
+                    font-size: 56px;
+                    width: 56px;
+                    height: 56px;
+                    color: $primary-color;
+                    background: rgba($primary-color, 0.1);
+                    padding: 12px;
+                    border-radius: 16px;
+                }
+
+                .resource-name {
+                    font-size: 2rem;
+                    font-weight: 800;
+                    color: $text-primary;
+                    margin: 0 0 0.5rem 0;
+                    line-height: 1.2;
+                }
+
+                .resource-type {
+                    font-size: 1rem;
+                    color: $text-secondary;
+                    margin: 0;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                }
+            }
+
+            .hero-details {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 2rem;
+                background: $bg-light;
+                padding: 1.5rem;
+                border-radius: $border-radius-md;
+
+                .detail-item {
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 1rem;
+
+                    mat-icon {
+                        color: $primary-color;
+                        font-size: 24px;
+                        width: 24px;
+                        height: 24px;
+                        margin-top: 2px;
+                    }
+
+                    label {
+                        display: block;
+                        font-size: 0.75rem;
+                        color: $text-secondary;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                        margin-bottom: 0.25rem;
+                    }
+
+                    p {
+                        font-size: 1.1rem;
+                        color: $text-primary;
+                        font-weight: 600;
+                        margin: 0;
+                    }
+                }
+            }
+
+            .hero-price {
+                background: linear-gradient(135deg, $success-color 0%, darken($success-color, 10%) 100%);
+                padding: 2rem;
+                border-radius: $border-radius-md;
+                text-align: center;
+                color: white;
+                box-shadow: 0 10px 20px rgba($success-color, 0.2);
+
+                label {
+                    display: block;
+                    font-size: 0.9rem;
+                    color: rgba(255, 255, 255, 0.9);
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
+                    margin-bottom: 0.5rem;
+                }
+
+                .price-amount {
+                    font-size: 3rem;
+                    font-weight: 900;
+                    margin: 0;
+                    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+            }
+        }
+    }
+}
+
+// Content Grid Layout
+.content-grid-new {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+    align-items: start;
+
+    @media (max-width: 1200px) {
+        grid-template-columns: 1fr;
+    }
+
+    // Main Column (Tabs)
+    .main-column {
+        mat-card {
+            border-radius: $border-radius-md;
+            @include card-shadow;
+            border: none;
+            overflow: hidden;
+
+            ::ng-deep {
+                .mat-mdc-tab-group {
+                    .mat-mdc-tab-header {
+                        background: $bg-light;
+                        border-bottom: 1px solid #e2e8f0;
+                    }
+
+                    .mat-mdc-tab-labels {
+                        padding: 0 1rem;
+                    }
+
+                    .mat-mdc-tab {
+                        height: 60px;
+                        font-weight: 600;
+                        color: $text-secondary;
+                        opacity: 0.8;
+
+                        &.mdc-tab--active {
+                            color: $primary-color;
+                            opacity: 1;
+
+                            .mdc-tab__text-label {
+                                color: $primary-color;
+                            }
+                        }
+
+                        .tab-icon {
+                            margin-right: 0.5rem;
+                        }
+                    }
+
+                    .mat-mdc-tab-body-wrapper {
+                        background: white;
+                    }
+                }
+            }
+
+            .tab-content {
+                padding: 2.5rem;
+                min-height: 400px;
+
+                .section {
+                    margin-bottom: 3rem;
+
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+
+                    .section-title {
+                        font-size: 1.4rem;
+                        font-weight: 800;
+                        color: $text-primary;
+                        margin: 0 0 1rem 0;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.75rem;
+                        padding-bottom: 0.75rem;
+                        border-bottom: 2px solid $bg-light;
+                    }
+
+                    .section-subtitle {
+                        font-size: 1rem;
+                        color: $text-secondary;
+                        margin: -0.5rem 0 1.5rem 0;
+                    }
+                }
+
+                .info-grid-compact {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 2rem;
+
+                    .info-item-compact {
+                        label {
+                            display: block;
+                            font-size: 0.8rem;
+                            color: $text-secondary;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                            margin-bottom: 0.5rem;
+                        }
+
+                        p {
+                            font-size: 1.1rem;
+                            color: $text-primary;
+                            font-weight: 600;
+                            margin: 0;
+                        }
+                    }
+                }
+
+                .resource-description {
+                    color: $text-secondary;
+                    line-height: 1.8;
+                    margin: 0 0 1.5rem 0;
+                    font-size: 1.05rem;
+                }
+
+                .resource-meta {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.75rem;
+
+                    .meta-chip {
+                        background-color: $bg-light !important;
+                        color: $text-primary !important;
+                        font-weight: 600;
+                        border: 1px solid #e2e8f0;
+                    }
+                }
+
+                .observaciones-box {
+                    background: #f0f4ff;
+                    padding: 1.5rem;
+                    border-radius: $border-radius-sm;
+                    border-left: 5px solid $primary-color;
+                    display: flex;
+                    gap: 1.5rem;
+                    align-items: flex-start;
+
+                    mat-icon {
+                        color: $primary-color;
+                        font-size: 28px;
+                        width: 28px;
+                        height: 28px;
+                    }
+
+                    p {
+                        margin: 0;
+                        color: $text-primary;
+                        line-height: 1.7;
+                        white-space: pre-wrap;
+                        flex: 1;
+                        font-style: italic;
+                    }
+                }
+
+                // Paquete Items
+                .paquete-items {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+
+                    .paquete-item {
+                        background: white;
+                        border: 1px solid #e2e8f0;
+                        border-radius: $border-radius-md;
+                        padding: 1.5rem;
+                        @include hover-lift;
+
+                        &.current-item {
+                            background: linear-gradient(to right, #fff9c4, #fffde7);
+                            border-color: #fbc02d;
+                            position: relative;
+
+                            &::before {
+                                content: '';
+                                position: absolute;
+                                left: 0;
+                                top: 0;
+                                bottom: 0;
+                                width: 6px;
+                                background: #fbc02d;
+                                border-radius: $border-radius-md 0 0 $border-radius-md;
+                            }
+                        }
+
+                        .paquete-item-header {
+                            display: flex;
+                            align-items: flex-start;
+                            gap: 1.5rem;
+                            margin-bottom: 1.5rem;
+
+                            .item-type-icon {
+                                font-size: 40px;
+                                width: 40px;
+                                height: 40px;
+                                color: $primary-color;
+                                background: $bg-light;
+                                padding: 8px;
+                                border-radius: 50%;
+                            }
+
+                            .item-info {
+                                flex: 1;
+
+                                h4 {
+                                    font-size: 1.2rem;
+                                    font-weight: 700;
+                                    color: $text-primary;
+                                    margin: 0 0 0.5rem 0;
+                                }
+
+                                .item-type-badge {
+                                    display: inline-block;
+                                    padding: 0.35rem 0.85rem;
+                                    border-radius: 50px;
+                                    font-size: 0.75rem;
+                                    font-weight: 700;
+                                    text-transform: uppercase;
+                                    background-color: #e3f2fd;
+                                    color: #1976d2;
+                                    margin-right: 0.75rem;
+
+                                    &.tipo-cabana {
+                                        background-color: #e8f5e9;
+                                        color: #2e7d32;
+                                    }
+                                }
+
+                                .chip-current {
+                                    background-color: #fff8e1 !important;
+                                    color: #f57f17 !important;
+                                    font-weight: 700;
+                                    border: 1px solid #fbc02d;
+                                }
+                            }
+
+                            .item-price {
+                                text-align: right;
+
+                                .price-label {
+                                    display: block;
+                                    font-size: 0.75rem;
+                                    color: $text-secondary;
+                                    font-weight: 700;
+                                    text-transform: uppercase;
+                                    margin-bottom: 0.25rem;
+                                }
+
+                                .price-value {
+                                    font-size: 1.4rem;
+                                    font-weight: 800;
+                                    color: $success-color;
+                                }
+                            }
+                        }
+
+                        .paquete-item-details {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 0.75rem;
+                            padding-left: 4rem;
+                            border-top: 1px solid #f1f5f9;
+                            padding-top: 1rem;
+
+                            .detail-row {
+                                display: flex;
+                                align-items: center;
+                                gap: 0.75rem;
+                                font-size: 0.95rem;
+                                color: $text-secondary;
+                                font-weight: 500;
+
+                                mat-icon {
+                                    font-size: 20px;
+                                    width: 20px;
+                                    height: 20px;
+                                    color: $primary-color;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Items Table Modern
+                .items-table-modern {
+                    width: 100%;
+                    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+                    border-radius: $border-radius-md;
+                    overflow: hidden;
+                    background: white;
+
+                    th.mat-mdc-header-cell {
+                        background: $bg-light;
+                        color: $text-secondary;
+                        font-weight: 700;
+                        text-transform: uppercase;
+                        font-size: 0.8rem;
+                        padding: 1.25rem 1rem;
+                    }
+
+                    td.mat-mdc-cell {
+                        padding: 1.25rem 1rem;
+                        font-size: 0.95rem;
+                        color: $text-primary;
+                        border-bottom-color: #f1f5f9;
+
+                        &.text-bold {
+                            font-weight: 700;
+                            color: $primary-color;
+                        }
+                    }
+
+                    .item-cell {
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+
+                        .item-icon {
+                            color: $primary-color;
+                            background: $bg-light;
+                            padding: 8px;
+                            border-radius: 8px;
+                            width: 36px;
+                            height: 36px;
+                            font-size: 20px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        .item-nombre {
+                            font-weight: 600;
+                            font-size: 1rem;
+                        }
+
+                        .item-categoria {
+                            font-size: 0.8rem;
+                            color: $text-secondary;
+                        }
+                    }
+
+                    .cantidad-badge {
+                        background: $primary-color;
+                        color: white;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: 50px;
+                        font-weight: 700;
+                        font-size: 0.85rem;
+                    }
+                }
+            }
+        }
+    }
+
+    // Sidebar
+    .sidebar-column {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+
+        .sidebar-card {
+            border-radius: $border-radius-md;
+            @include card-shadow;
+            border: none;
+            background: white;
+            overflow: hidden;
+
+            ::ng-deep {
+                .mat-mdc-card-header {
+                    padding: 1.5rem;
+                    background: white;
+                    border-bottom: 1px solid #f1f5f9;
+
+                    .mat-mdc-card-title {
+                        font-size: 1.1rem;
+                        font-weight: 700;
+                        color: $text-primary;
+                    }
+                }
+
+                .mat-mdc-card-content {
+                    padding: 1.5rem;
+                }
+            }
+
+            .card-icon-sidebar {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                background: linear-gradient(135deg, $primary-color 0%, darken($primary-color, 10%) 100%);
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-right: 1rem;
+
+                &.green {
+                    background: linear-gradient(135deg, $success-color 0%, darken($success-color, 10%) 100%);
+                }
+
+                &.teal {
+                    background: linear-gradient(135deg, #009688 0%, #00796b 100%);
+                }
+
+                mat-icon {
+                    font-size: 22px;
+                    width: 22px;
+                    height: 22px;
+                }
+            }
+
+            // Estado Actual
+            .estado-actual-sidebar {
+                text-align: center;
+                margin-bottom: 1.5rem;
+
+                label {
+                    display: block;
+                    font-size: 0.75rem;
+                    color: $text-secondary;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 1rem;
+                }
+
+                .estado-chip-large {
+                    font-size: 1.1rem;
+                    padding: 1rem 2rem;
+                    border-radius: 50px;
+                    font-weight: 800;
+                    width: 100%;
+                    justify-content: center;
+
+                    mat-icon {
+                        margin-right: 0.5rem;
+                    }
+                }
+            }
+
+            .cambios-estado {
+                label {
+                    display: block;
+                    font-size: 0.75rem;
+                    color: $text-secondary;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    margin-bottom: 1rem;
+                }
+
+                .estado-buttons {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.75rem;
+
+                    .estado-button {
+                        padding: 1.25rem;
+                        font-weight: 600;
+                        border-radius: $border-radius-sm;
+                        justify-content: flex-start;
+
+                        mat-icon {
+                            margin-right: 0.75rem;
+                        }
+                    }
+                }
+            }
+
+            .cancel-button-full {
+                width: 100%;
+                border-radius: $border-radius-sm;
+                padding: 1rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-top: 1rem;
+            }
+
+            // Price Breakdown
+            .price-breakdown-sidebar {
+                .price-item {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 0.85rem 0;
+                    font-size: 1rem;
+                    color: $text-secondary;
+                    border-bottom: 1px dashed #e2e8f0;
+
+                    &:last-child {
+                        border-bottom: none;
+                    }
+
+                    &.total {
+                        padding-top: 1.5rem;
+                        margin-top: 0.5rem;
+                        border-bottom: none;
+                        border-top: 2px solid $text-primary;
+                        font-size: 1.2rem;
+                        font-weight: 800;
+                        color: $text-primary;
+
+                        .total-amount {
+                            font-size: 1.8rem;
+                            font-weight: 900;
+                            color: $success-color;
+                        }
+                    }
+                }
+            }
+
+            .package-info {
+                margin-top: 1.5rem;
+
+                .package-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-size: 0.85rem;
+                    color: $text-secondary;
+                    font-weight: 700;
+                    margin-bottom: 0.75rem;
+                    text-transform: uppercase;
+
+                    mat-icon {
+                        font-size: 18px;
+                        width: 18px;
+                        height: 18px;
+                        color: #7b1fa2;
+                    }
+                }
+
+                .package-total {
+                    font-size: 1.5rem;
+                    font-weight: 900;
+                    color: $primary-color;
+                    text-align: center;
+                    padding: 1.25rem;
+                    background: linear-gradient(135deg, #f8f9ff 0%, #e8ebff 100%);
+                    border-radius: $border-radius-sm;
+                    border: 1px solid #c5cae9;
+                }
+            }
+
+            // Cliente Info
+            .cliente-info {
+                display: flex;
+                align-items: center;
+                gap: 1.25rem;
+
+                .cliente-avatar {
+                    width: 60px;
+                    height: 60px;
+                    background: #e0f2f1;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #009688;
+
+                    mat-icon {
+                        font-size: 32px;
+                        width: 32px;
+                        height: 32px;
+                    }
+                }
+
+                .cliente-details {
+                    flex: 1;
+
+                    h4 {
+                        font-size: 1.2rem;
+                        font-weight: 700;
+                        color: $text-primary;
+                        margin: 0 0 0.25rem 0;
+                    }
+
+                    p {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        font-size: 0.95rem;
+                        color: $text-secondary;
+                        margin: 0;
+
+                        mat-icon {
+                            font-size: 16px;
+                            width: 16px;
+                            height: 16px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Animations
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Chips Colors
+::ng-deep {
+    .mat-mdc-chip {
+        &.chip-pendiente {
+            background-color: #fff3e0 !important;
+            color: #e65100 !important;
+        }
+
+        &.chip-confirmada {
+            background-color: #e8f5e9 !important;
+            color: #2e7d32 !important;
+        }
+
+        &.chip-en-curso {
+            background-color: #e1f5fe !important;
+            color: #0277bd !important;
+        }
+
+        &.chip-completada {
+            background-color: #e8eaf6 !important;
+            color: #3f51b5 !important;
+        }
+
+        &.chip-cancelada {
+            background-color: #ffebee !important;
+            color: #c62828 !important;
+        }
+    }
+}
+
+// Processing Overlay
+.processing-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+
+    .processing-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        background: white;
+        padding: 3rem;
+        border-radius: $border-radius-lg;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+
+        p {
+            color: $text-primary;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+    }
+}

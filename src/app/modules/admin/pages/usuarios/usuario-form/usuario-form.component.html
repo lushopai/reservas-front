@@ -120,8 +120,11 @@
                   matInput
                   formControlName="documento"
                   placeholder="Ingresa el documento"
+                  (input)="formatearRUT($event)"
+                  maxlength="12"
                   required>
                 <mat-icon matPrefix>credit_card</mat-icon>
+                <mat-hint *ngIf="usuarioForm.get('tipoDocumento')?.value === 'RUT'">Formato: XX.XXX.XXX-X</mat-hint>
                 <mat-error *ngIf="isFieldInvalid('documento')">
                   {{ getErrorMessage('documento') }}
                 </mat-error>

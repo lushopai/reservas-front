@@ -18,7 +18,6 @@ import { DisponibilidadCabanasComponent } from './pages/disponibilidad/disponibi
 import { DisponibilidadServiciosComponent } from './pages/disponibilidad/disponibilidad-servicios/disponibilidad-servicios.component';
 import { PagosListComponent } from './pages/pagos/pagos-list/pagos-list.component';
 import { MovimientosListComponent } from './pages/movimientos-inventario/movimientos-list/movimientos-list.component';
-import { BloquesGestionComponent } from './pages/bloques-horarios/bloques-gestion/bloques-gestion.component';
 
 const routes: Routes = [
   {
@@ -156,7 +155,7 @@ const routes: Routes = [
           {
             path: 'servicios',
             component: DisponibilidadServiciosComponent,
-            data: { title: 'Bloques Horarios de Servicios' },
+            data: { title: 'Disponibilidad de Servicios' },
           },
         ],
       },
@@ -169,11 +168,6 @@ const routes: Routes = [
         path: 'movimientos',
         component: MovimientosListComponent,
         data: { title: 'Movimientos de Inventario' },
-      },
-      {
-        path: 'bloques-horarios',
-        component: BloquesGestionComponent,
-        data: { title: 'Gestión de Bloques Horarios' },
       },
     ],
   },

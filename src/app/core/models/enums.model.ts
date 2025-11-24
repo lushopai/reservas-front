@@ -30,9 +30,11 @@ export enum EstadoReserva {
 // ========================================
 export enum EstadoPaquete {
   BORRADOR = 'BORRADOR',
-  CONFIRMADO = 'CONFIRMADO',
-  CANCELADO = 'CANCELADO',
-  COMPLETADO = 'COMPLETADO'
+  PENDIENTE = 'PENDIENTE',
+  ACTIVO = 'ACTIVO',
+  EN_CURSO = 'EN_CURSO',
+  COMPLETADO = 'COMPLETADO',
+  CANCELADO = 'CANCELADO'
 }
 
 // ========================================
@@ -127,12 +129,16 @@ export function getEstadoPaqueteColor(estado: EstadoPaquete): string {
   switch (estado) {
     case EstadoPaquete.BORRADOR:
       return 'secondary';
-    case EstadoPaquete.CONFIRMADO:
+    case EstadoPaquete.PENDIENTE:
+      return 'warning';
+    case EstadoPaquete.ACTIVO:
       return 'success';
-    case EstadoPaquete.CANCELADO:
-      return 'danger';
+    case EstadoPaquete.EN_CURSO:
+      return 'info';
     case EstadoPaquete.COMPLETADO:
       return 'primary';
+    case EstadoPaquete.CANCELADO:
+      return 'danger';
     default:
       return 'secondary';
   }
@@ -201,9 +207,11 @@ export function getEstadoReservaLabel(estado: EstadoReserva): string {
 export function getEstadoPaqueteLabel(estado: EstadoPaquete): string {
   const labels: Record<EstadoPaquete, string> = {
     [EstadoPaquete.BORRADOR]: 'Borrador',
-    [EstadoPaquete.CONFIRMADO]: 'Confirmado',
-    [EstadoPaquete.CANCELADO]: 'Cancelado',
-    [EstadoPaquete.COMPLETADO]: 'Completado'
+    [EstadoPaquete.PENDIENTE]: 'Pendiente de Pago',
+    [EstadoPaquete.ACTIVO]: 'Confirmado',
+    [EstadoPaquete.EN_CURSO]: 'En Curso',
+    [EstadoPaquete.COMPLETADO]: 'Completado',
+    [EstadoPaquete.CANCELADO]: 'Cancelado'
   };
   return labels[estado] || estado;
 }

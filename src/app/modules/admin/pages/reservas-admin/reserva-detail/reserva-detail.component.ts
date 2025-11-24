@@ -13,6 +13,7 @@ export class ReservaDetailComponent implements OnInit {
   reserva!: Reserva;
   cargando = false;
   procesando = false;
+  selectedTabIndex = 0; // Control de tabs
 
   // Estados disponibles según estado actual
   estadosDisponibles: { value: string; label: string; color: string }[] = [];
@@ -44,10 +45,16 @@ export class ReservaDetailComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = this.route.snapshot.params['id'];
-    if (id) {
-      this.cargarReserva(+id);
-    }
+    this.route.params.subscribe(params => {
+      const id = params['id'];
+      if (id) {
+        this.cargarReserva(+id);
+      }
+    });
+  }
+
+  verReserva(id: number): void {
+    this.router.navigate(['/admin/reservas', id]);
   }
 
   cargarReserva(id: number): void {

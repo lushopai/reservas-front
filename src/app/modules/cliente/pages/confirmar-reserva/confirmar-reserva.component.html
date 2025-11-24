@@ -132,13 +132,11 @@
                           <i class="bi bi-dash"></i>
                         </button>
                         <input
-                          type="number"
+                          type="text"
                           class="form-control form-control-sm text-center"
                           [value]="getCantidadSeleccionada(item.id)"
-                          [max]="item.cantidadDisponible"
-                          min="0"
-                          (change)="toggleItem(item.id, +$any($event.target).value)"
-                          style="max-width: 50px;">
+                          readonly
+                          style="width: 50px; flex: 0 0 50px; background-color: white; color: #000; font-weight: 600;">
                         <button
                           class="btn btn-outline-secondary btn-sm"
                           type="button"

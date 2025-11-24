@@ -85,7 +85,9 @@
   }
 
   // Info Cards
-  .info-card, .action-card, .price-card {
+  .info-card,
+  .action-card,
+  .price-card {
     border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     border: none;
@@ -829,7 +831,9 @@
       border-radius: 12px;
     }
 
-    .info-card, .action-card, .price-card {
+    .info-card,
+    .action-card,
+    .price-card {
       ::ng-deep {
         .mat-mdc-card-header {
           padding: 1rem;
@@ -848,18 +852,11 @@
   from {
     opacity: 0;
   }
-  to {
-    opacity: 1;
-  }
-}
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
+@import './reserva-detail-styles.scss';

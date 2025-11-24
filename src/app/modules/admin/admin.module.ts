@@ -69,7 +69,6 @@ import { DisponibilidadCabanasComponent } from './pages/disponibilidad/disponibi
 import { DisponibilidadServiciosComponent } from './pages/disponibilidad/disponibilidad-servicios/disponibilidad-servicios.component';
 import { PagosListComponent } from './pages/pagos/pagos-list/pagos-list.component';
 import { MovimientosListComponent } from './pages/movimientos-inventario/movimientos-list/movimientos-list.component';
-import { BloquesGestionComponent } from './pages/bloques-horarios/bloques-gestion/bloques-gestion.component';
 
 
 @NgModule({
@@ -93,8 +92,7 @@ import { BloquesGestionComponent } from './pages/bloques-horarios/bloques-gestio
     DisponibilidadCabanasComponent,
     DisponibilidadServiciosComponent,
     PagosListComponent,
-    MovimientosListComponent,
-    BloquesGestionComponent
+    MovimientosListComponent
   ],
   imports: [
     CommonModule,
