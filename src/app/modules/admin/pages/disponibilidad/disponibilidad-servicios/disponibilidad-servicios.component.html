@@ -53,7 +53,7 @@
                     </mat-form-field>
                   </div>
                   <div class="col-md-2">
-                    <button mat-raised-button color="primary" 
+                    <button mat-raised-button color="primary"
                             (click)="cargarBloques()"
                             [disabled]="!servicioSeleccionado || !generarForm.value.fechaInicio || !generarForm.value.fechaFin"
                             class="w-100">
@@ -151,15 +151,15 @@
                       {{ getEstadoIcon(bloque) }}
                     </mat-icon>
                     <span class="status-text">
-                      {{ bloque.disponible ? 'Disponible' : (bloque.reservaId ? 'Ocupado' : 'Bloqueado') }}
+                      {{ bloque.disponible ? 'Disponible' : (bloque.motivoNoDisponible === 'RESERVADO' ? 'Ocupado' : 'Bloqueado') }}
                     </span>
                   </div>
 
                   <div class="bloque-info" *ngIf="!bloque.disponible">
-                    <small class="text-muted" *ngIf="bloque.reservaId">
-                      Reserva #{{ bloque.reservaId }}
+                    <small class="text-muted" *ngIf="bloque.motivoNoDisponible === 'RESERVADO'">
+                      Bloque Reservado
                     </small>
-                    <small class="text-muted" *ngIf="bloque.motivoNoDisponible && !bloque.reservaId">
+                    <small class="text-muted" *ngIf="bloque.motivoNoDisponible && bloque.motivoNoDisponible !== 'RESERVADO'">
                       {{ bloque.motivoNoDisponible }}
                     </small>
                   </div>
@@ -173,7 +173,7 @@
                     <mat-icon>block</mat-icon>
                   </button>
                   <button mat-icon-button
-                          *ngIf="!bloque.disponible && !bloque.reservaId"
+                          *ngIf="!bloque.disponible && bloque.motivoNoDisponible !== 'RESERVADO'"
                           (click)="desbloquearBloque(bloque)"
                           matTooltip="Desbloquear"
                           color="primary">

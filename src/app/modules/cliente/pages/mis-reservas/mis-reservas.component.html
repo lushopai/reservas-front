@@ -192,8 +192,8 @@
                       <div class="reserva-header">
                         <span class="reserva-number">#{{ i + 1 }}</span>
                         <strong>{{ reserva.nombreRecurso }}</strong>
-                        <mat-chip [color]="getEstadoConfig(reserva.estadoPaquete || reserva.estado).color || ''" class="mini-chip">
-                          {{ getEstadoConfig(reserva.estadoPaquete || reserva.estado).label }}
+                        <mat-chip [color]="getEstadoConfig(mapEstadoPaqueteToEstadoReserva(reserva.estadoPaquete) || reserva.estado).color || ''" class="mini-chip">
+                          {{ getEstadoConfig(mapEstadoPaqueteToEstadoReserva(reserva.estadoPaquete) || reserva.estado).label }}
                         </mat-chip>
                       </div>
                       <div class="reserva-info-grid">

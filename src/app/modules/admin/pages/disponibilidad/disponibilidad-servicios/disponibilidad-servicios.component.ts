@@ -300,8 +300,8 @@ export class DisponibilidadServiciosComponent implements OnInit {
   calcularEstadisticas(): void {
     this.stats.totalBloques = this.bloques.length;
     this.stats.disponibles = this.bloques.filter(b => b.disponible).length;
-    this.stats.ocupados = this.bloques.filter(b => !b.disponible && b.reservaId).length;
-    this.stats.bloqueados = this.bloques.filter(b => !b.disponible && !b.reservaId).length;
+    this.stats.ocupados = this.bloques.filter(b => !b.disponible && b.motivoNoDisponible === 'RESERVADO').length;
+    this.stats.bloqueados = this.bloques.filter(b => !b.disponible && b.motivoNoDisponible !== 'RESERVADO').length;
     this.stats.porcentajeOcupacion = this.stats.totalBloques > 0
       ? Math.round((this.stats.ocupados / this.stats.totalBloques) * 100)
       : 0;
@@ -358,7 +358,7 @@ export class DisponibilidadServiciosComponent implements OnInit {
   }
 
   desbloquearBloque(bloque: BloqueHorario): void {
-    if (bloque.reservaId) {
+    if (bloque.motivoNoDisponible === 'RESERVADO') {
       Swal.fire({
         icon: 'warning',
         title: 'Bloque reservado',
@@ -419,13 +419,13 @@ export class DisponibilidadServiciosComponent implements OnInit {
 
   getEstadoClass(bloque: BloqueHorario): string {
     if (bloque.disponible) return 'disponible';
-    if (bloque.reservaId) return 'ocupado';
+    if (bloque.motivoNoDisponible === 'RESERVADO') return 'ocupado';
     return 'bloqueado';
   }
 
   getEstadoIcon(bloque: BloqueHorario): string {
     if (bloque.disponible) return 'check_circle';
-    if (bloque.reservaId) return 'event_busy';
+    if (bloque.motivoNoDisponible === 'RESERVADO') return 'event_busy';
     return 'block';
   }
 

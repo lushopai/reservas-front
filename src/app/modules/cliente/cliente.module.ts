@@ -21,6 +21,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSelectModule } from '@angular/material/select';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { ClienteRoutingModule } from './cliente-routing.module';
 import { ClienteComponent } from './cliente.component';
@@ -30,6 +33,7 @@ import { ConfirmarPagoComponent } from './pages/confirmar-pago/confirmar-pago.co
 import { SharedModule } from '../../shared/shared.module';
 import { ConfirmarReservaComponent } from './pages/confirmar-reserva/confirmar-reserva.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
+import { DetalleReservaDialogComponent } from './pages/mis-reservas/detalle-reserva-dialog/detalle-reserva-dialog.component';
 
 
 @NgModule({
@@ -39,7 +43,8 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
     NuevaReservaComponent,
     ConfirmarPagoComponent,
     ConfirmarReservaComponent,
-    PerfilComponent
+    PerfilComponent,
+    DetalleReservaDialogComponent
   ],
   imports: [
     CommonModule,
@@ -65,7 +70,10 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
     MatMenuModule,
     MatDividerModule,
     MatSelectModule,
-    MatToolbarModule
+    MatToolbarModule,
+    MatListModule,
+    MatExpansionModule,
+    MatCheckboxModule
   ]
 })
 export class ClienteModule { }

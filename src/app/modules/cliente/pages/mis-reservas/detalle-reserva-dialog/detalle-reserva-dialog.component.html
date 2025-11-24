@@ -1,0 +1,228 @@
+<div class="detalle-reserva-dialog">
+  <!-- Contenido del Diálogo -->
+  <mat-dialog-content class="dialog-content">
+    <!-- Header Title -->
+    <div class="dialog-header mb-4">
+      <div class="header-title d-flex align-items-center gap-3">
+        <mat-icon [color]="data.esPaquete ? 'primary' : 'accent'" class="title-icon">
+          {{ data.esPaquete ? 'inventory_2' : 'bookmark' }}
+        </mat-icon>
+        <h2 class="mb-0">{{ data.esPaquete ? 'Detalle del Paquete' : 'Detalle de Reserva' }}</h2>
+      </div>
+    </div>
+
+    <!-- Header Info Card -->
+    <mat-card class="info-card mb-4">
+      <mat-card-header>
+        <div class="info-header d-flex justify-content-between align-items-center">
+          <div class="info-title">
+            <h3 class="mb-0">{{ data.esPaquete ? data.nombrePaquete : data.nombreRecurso }}</h3>
+            <p class="text-muted mb-0">
+              {{ data.esPaquete ? 'Paquete #' + data.paqueteId : 'Reserva #' + data.id }}
+            </p>
+          </div>
+          <mat-chip [color]="getEstadoColor(data.estado)" selected>
+            {{ getEstadoLabel(data.estado) }}
+          </mat-chip>
+        </div>
+      </mat-card-header>
+    </mat-card>
+
+    <!-- Información del Paquete (solo para paquetes) -->
+    <div *ngIf="data.esPaquete" class="paquete-info mb-4">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon class="mr-2">info</mat-icon>
+            Información del Paquete
+          </mat-panel-title>
+          <mat-panel-description>
+            {{ data.reservas.length }} reserva(s) incluida(s)
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <mat-list>
+          <mat-list-item>
+            <mat-icon matListItemIcon>event</mat-icon>
+            <div matListItemTitle>Fecha de Inicio</div>
+            <div matListItemLine>{{ formatearFecha(data.fechaInicio) }}</div>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            <mat-icon matListItemIcon>event_available</mat-icon>
+            <div matListItemTitle>Fecha de Fin</div>
+            <div matListItemLine>{{ formatearFecha(data.fechaFin) }}</div>
+          </mat-list-item>
+          <mat-divider></mat-divider>
+          <mat-list-item>
+            <mat-icon matListItemIcon>attach_money</mat-icon>
+            <div matListItemTitle>Total del Paquete</div>
+            <div matListItemLine class="fw-bold text-success">{{ formatearPrecio(data.precioTotal) }}</div>
+          </mat-list-item>
+        </mat-list>
+      </mat-expansion-panel>
+    </div>
+
+    <!-- Reservas del Paquete (solo para paquetes) -->
+    <div *ngIf="data.esPaquete" class="reservas-list mb-4">
+      <h4 class="mb-3">
+        <mat-icon class="me-2">list</mat-icon>
+        Reservas Incluidas
+      </h4>
+
+      <mat-accordion class="reservas-accordion">
+        <mat-expansion-panel *ngFor="let reserva of data.reservas; let i = index">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <span class="reserva-number me-2">{{ i + 1 }}.</span>
+              <strong>{{ reserva.nombreRecurso }}</strong>
+            </mat-panel-title>
+            <mat-panel-description>
+              <mat-chip size="small" [color]="getEstadoColor(mapEstadoPaqueteToEstadoReserva(reserva.estadoPaquete) || reserva.estado)">
+                {{ getEstadoLabel(mapEstadoPaqueteToEstadoReserva(reserva.estadoPaquete) || reserva.estado) }}
+              </mat-chip>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <mat-list>
+            <mat-list-item>
+              <mat-icon matListItemIcon>bookmark</mat-icon>
+              <div matListItemTitle>ID de Reserva</div>
+              <div matListItemLine>#{{ reserva.id }}</div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+
+            <mat-list-item>
+              <mat-icon matListItemIcon>category</mat-icon>
+              <div matListItemTitle>Tipo</div>
+              <div matListItemLine>{{ formatearTipo(reserva.tipoReserva) }}</div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+
+            <mat-list-item>
+              <mat-icon matListItemIcon>event</mat-icon>
+              <div matListItemTitle>Inicio</div>
+              <div matListItemLine>{{ formatearFecha(reserva.fechaInicio) }}</div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+
+            <mat-list-item>
+              <mat-icon matListItemIcon>event_available</mat-icon>
+              <div matListItemTitle>Fin</div>
+              <div matListItemLine>{{ formatearFecha(reserva.fechaFin) }}</div>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+
+            <mat-list-item>
+              <mat-icon matListItemIcon>attach_money</mat-icon>
+              <div matListItemTitle>Subtotal</div>
+              <div matListItemLine class="fw-bold text-success">{{ formatearPrecio(reserva.precioTotal) }}</div>
+            </mat-list-item>
+          </mat-list>
+
+          <!-- Items Adicionales -->
+          <div *ngIf="reserva.itemsReservados && reserva.itemsReservados.length > 0" class="mt-3 pt-3 border-top">
+            <h6 class="mb-3">
+              <mat-icon class="me-2">shopping_cart</mat-icon>
+              Items Adicionales
+            </h6>
+            <mat-list>
+              <mat-list-item *ngFor="let item of reserva.itemsReservados">
+                <mat-icon matListItemIcon>inventory_2</mat-icon>
+                <div matListItemTitle>{{ item.nombreItem }}</div>
+                <div matListItemLine>
+                  {{ item.categoria }} - Cantidad: {{ item.cantidad }}
+                </div>
+                <div matListItemMeta class="text-success fw-bold">
+                  {{ formatearPrecio(item.subtotal || 0) }}
+                </div>
+              </mat-list-item>
+            </mat-list>
+          </div>
+
+          <!-- Observaciones -->
+          <div *ngIf="reserva.observaciones" class="mt-3 pt-3 border-top">
+            <h6 class="mb-2">
+              <mat-icon class="me-2">notes</mat-icon>
+              Observaciones
+            </h6>
+            <p class="mb-0 text-muted">{{ reserva.observaciones }}</p>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+
+    <!-- Detalle de Reserva Individual (no paquete) -->
+    <div *ngIf="!data.esPaquete" class="reserva-individual mb-4">
+      <mat-list>
+        <mat-list-item>
+          <mat-icon matListItemIcon>bookmark</mat-icon>
+          <div matListItemTitle>Recurso</div>
+          <div matListItemLine>{{ data.reservas[0].nombreRecurso }}</div>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <mat-icon matListItemIcon>category</mat-icon>
+          <div matListItemTitle>Tipo</div>
+          <div matListItemLine>{{ formatearTipo(data.reservas[0].tipoReserva) }}</div>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <mat-icon matListItemIcon>event</mat-icon>
+          <div matListItemTitle>Fecha de Inicio</div>
+          <div matListItemLine>{{ formatearFecha(data.reservas[0].fechaInicio) }}</div>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <mat-icon matListItemIcon>event_available</mat-icon>
+          <div matListItemTitle>Fecha de Fin</div>
+          <div matListItemLine>{{ formatearFecha(data.reservas[0].fechaFin) }}</div>
+        </mat-list-item>
+        <mat-divider></mat-divider>
+
+        <mat-list-item>
+          <mat-icon matListItemIcon>attach_money</mat-icon>
+          <div matListItemTitle>Total</div>
+          <div matListItemLine class="fw-bold text-success">{{ formatearPrecio(data.reservas[0].precioTotal) }}</div>
+        </mat-list-item>
+      </mat-list>
+
+      <!-- Items Adicionales -->
+      <div *ngIf="data.reservas[0].itemsReservados && data.reservas[0].itemsReservados.length > 0" class="mt-4">
+        <h5 class="mb-3">
+          <mat-icon class="me-2">shopping_cart</mat-icon>
+          Items Adicionales
+        </h5>
+        <mat-list>
+          <mat-list-item *ngFor="let item of data.reservas[0].itemsReservados">
+            <mat-icon matListItemIcon>inventory_2</mat-icon>
+            <div matListItemTitle>{{ item.nombreItem }}</div>
+            <div matListItemLine>
+              {{ item.categoria }} - Cantidad: {{ item.cantidad }}
+            </div>
+            <div matListItemMeta class="text-success fw-bold">
+              {{ formatearPrecio(item.subtotal || 0) }}
+            </div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+
+      <!-- Observaciones -->
+      <div *ngIf="data.reservas[0].observaciones" class="mt-4">
+        <h6 class="mb-2">
+          <mat-icon class="me-2">notes</mat-icon>
+          Observaciones
+        </h6>
+        <p class="mb-0 text-muted">{{ data.reservas[0].observaciones }}</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <!-- Footer con botón Cerrar -->
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cerrar</button>
+  </mat-dialog-actions>
+</div>

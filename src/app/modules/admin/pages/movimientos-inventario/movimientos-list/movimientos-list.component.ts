@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -10,7 +10,7 @@ import { MovimientoInventarioService } from 'src/app/core/services/movimiento-in
   templateUrl: './movimientos-list.component.html',
   styleUrls: ['./movimientos-list.component.scss']
 })
-export class MovimientosListComponent implements OnInit {
+export class MovimientosListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 

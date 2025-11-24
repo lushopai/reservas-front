@@ -1,0 +1,181 @@
+.detalle-reserva-dialog {
+  .dialog-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: 18px;
+
+    .title-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .info-card {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: none;
+
+    .info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+
+      .info-title {
+        h3 {
+          color: #1a1a2e;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+
+        .text-muted {
+          color: #666;
+          font-size: 12px;
+        }
+      }
+
+      mat-chip {
+        min-width: 120px;
+        justify-content: center;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .paquete-info,
+  .reserva-individual {
+    mat-expansion-panel {
+      margin-bottom: 16px;
+
+      mat-list-item {
+        height: auto;
+        padding: 12px 0;
+
+        .mat-icon {
+          margin-right: 16px;
+        }
+      }
+
+      .reserva-detail {
+        padding: 24px;
+      }
+    }
+  }
+
+  .reservas-list {
+    margin-top: 24px;
+
+    h4 {
+      color: #1a1a2e;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    .reservas-accordion {
+      .reserva-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        background-color: #f0f0f0;
+        border-radius: 50%;
+        font-size: 12px;
+        font-weight: 600;
+        margin-right: 8px;
+      }
+    }
+  }
+
+  .mb-3 {
+    margin-bottom: 16px;
+  }
+
+  .mb-2 {
+    margin-bottom: 8px;
+  }
+
+  .mb-0 {
+    margin-bottom: 0;
+  }
+
+  .mt-3 {
+    margin-top: 16px;
+  }
+
+  .mt-4 {
+    margin-top: 24px;
+  }
+
+  .me-2 {
+    margin-right: 8px;
+  }
+
+  .mx-2 {
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .mr-2 {
+    margin-right: 8px;
+  }
+
+  .text-success {
+    color: #4caf50;
+  }
+
+  .text-muted {
+    color: #999;
+  }
+
+  .fw-bold {
+    font-weight: 600;
+  }
+
+  .bg-light {
+    background-color: #f8f9fa;
+  }
+
+  .border-start {
+    border-left: 4px solid #2196f3;
+    padding-left: 16px;
+  }
+
+  .border-4 {
+    border-width: 4px;
+  }
+
+  .border-info {
+    border-color: #2196f3;
+  }
+
+  .p-3 {
+    padding: 16px;
+  }
+
+  .rounded {
+    border-radius: 4px;
+  }
+
+  // Responsive adjustments
+  @media (max-width: 600px) {
+    .info-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+
+      mat-chip {
+        align-self: flex-start;
+      }
+    }
+  }
+}
