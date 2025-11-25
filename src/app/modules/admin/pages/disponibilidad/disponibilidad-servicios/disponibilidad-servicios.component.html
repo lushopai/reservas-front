@@ -1,16 +1,19 @@
 <div class="bloques-container">
-  <!-- Header -->
+  <!-- Page Header -->
   <div class="page-header">
-    <h1>
-      <mat-icon>schedule</mat-icon>
-      Disponibilidad de Servicios
-    </h1>
-    <p class="subtitle">Visualiza y administra los bloques horarios disponibles para reservas de servicios</p>
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>schedule</mat-icon>
+        Disponibilidad de Servicios
+      </h1>
+      <p class="page-subtitle">Visualiza y administra los bloques horarios disponibles para reservas</p>
+    </div>
   </div>
 
   <!-- Tabs para cambiar de vista -->
   <mat-tab-group [(selectedIndex)]="selectedTabIndex"
-                 (selectedIndexChange)="cambiarVista($event)">
+                 (selectedIndexChange)="cambiarVista($event)"
+                 class="tabs-container">
 
     <!-- TAB 1: CALENDARIO DE BLOQUES -->
     <mat-tab>
@@ -25,43 +28,38 @@
         <div class="selector-section" *ngIf="servicios.length > 0">
           <mat-card class="selector-card">
             <mat-card-content>
-              <form [formGroup]="generarForm">
-                <div class="row align-items-end">
-                  <div class="col-md-4">
-                    <mat-form-field appearance="outline" class="w-100">
-                      <mat-label>Servicio</mat-label>
-                      <mat-select formControlName="servicioId">
-                        <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
-                          {{ servicio.nombre }}
-                        </mat-option>
-                      </mat-select>
-                      <mat-icon matPrefix>celebration</mat-icon>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-md-3">
-                    <mat-form-field appearance="outline" class="w-100">
-                      <mat-label>Fecha Inicio</mat-label>
-                      <input matInput type="date" formControlName="fechaInicio" [min]="fechaMinima">
-                      <mat-icon matPrefix>event</mat-icon>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-md-3">
-                    <mat-form-field appearance="outline" class="w-100">
-                      <mat-label>Fecha Fin</mat-label>
-                      <input matInput type="date" formControlName="fechaFin" [min]="generarForm.value.fechaInicio || fechaMinima">
-                      <mat-icon matPrefix>event</mat-icon>
-                    </mat-form-field>
-                  </div>
-                  <div class="col-md-2">
-                    <button mat-raised-button color="primary"
-                            (click)="cargarBloques()"
-                            [disabled]="!servicioSeleccionado || !generarForm.value.fechaInicio || !generarForm.value.fechaFin"
-                            class="w-100">
-                      <mat-icon>search</mat-icon>
-                      Buscar
-                    </button>
-                  </div>
-                </div>
+              <form [formGroup]="generarForm" class="search-grid">
+                <mat-form-field appearance="outline">
+                  <mat-label>Servicio</mat-label>
+                  <mat-select formControlName="servicioId">
+                    <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
+                      {{ servicio.nombre }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-icon matPrefix>celebration</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Fecha Inicio</mat-label>
+                  <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio" [min]="fechaMinima">
+                  <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerInicio></mat-datepicker>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Fecha Fin</mat-label>
+                  <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin" [min]="generarForm.value.fechaInicio || fechaMinima">
+                  <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerFin></mat-datepicker>
+                </mat-form-field>
+
+                <button mat-raised-button color="accent"
+                        (click)="cargarBloques()"
+                        [disabled]="!servicioSeleccionado || !generarForm.value.fechaInicio || !generarForm.value.fechaFin"
+                        class="search-button">
+                  <mat-icon>search</mat-icon>
+                  Buscar
+                </button>
               </form>
             </mat-card-content>
           </mat-card>
@@ -120,7 +118,7 @@
 
         <!-- Loading state -->
         <div class="loading-container" *ngIf="cargando">
-          <mat-spinner diameter="50"></mat-spinner>
+          <mat-spinner></mat-spinner>
           <p>Cargando bloques...</p>
         </div>
 
@@ -191,7 +189,7 @@
           <mat-icon>event_available</mat-icon>
           <h3>No hay bloques en este rango</h3>
           <p>Selecciona un servicio y rango de fechas, o genera bloques desde la pestaña "Generar Bloques"</p>
-          <button mat-raised-button color="primary" (click)="cambiarVista(1)">
+          <button mat-raised-button color="accent" (click)="cambiarVista(1)">
             <mat-icon>add_circle</mat-icon>
             Generar Bloques
           </button>
@@ -215,20 +213,23 @@
       </ng-template>
 
       <div class="tab-content">
-        <div class="row">
+        <div class="generate-grid">
           <!-- Formulario de generación -->
-          <div class="col-lg-6">
+          <div class="form-section">
             <mat-card class="form-card">
               <mat-card-header>
-                <mat-card-title>Configuración de Bloques</mat-card-title>
+                <mat-card-title>
+                  <mat-icon>settings</mat-icon>
+                  Configuración de Bloques
+                </mat-card-title>
                 <mat-card-subtitle>Define los parámetros para generar bloques masivamente</mat-card-subtitle>
               </mat-card-header>
 
               <mat-card-content>
-                <form [formGroup]="generarForm">
+                <form [formGroup]="generarForm" class="form-fields">
 
                   <!-- Servicio -->
-                  <mat-form-field appearance="outline" class="w-100">
+                  <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Servicio</mat-label>
                     <mat-select formControlName="servicioId">
                       <mat-option *ngFor="let servicio of servicios" [value]="servicio.id">
@@ -242,43 +243,39 @@
                   </mat-form-field>
 
                   <!-- Rango de fechas -->
-                  <div class="row">
-                    <div class="col-md-6">
-                      <mat-form-field appearance="outline" class="w-100">
-                        <mat-label>Fecha Inicio</mat-label>
-                        <input matInput type="date" formControlName="fechaInicio" [min]="fechaMinima">
-                        <mat-icon matPrefix>event</mat-icon>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-6">
-                      <mat-form-field appearance="outline" class="w-100">
-                        <mat-label>Fecha Fin</mat-label>
-                        <input matInput type="date" formControlName="fechaFin" [min]="generarForm.value.fechaInicio || fechaMinima">
-                        <mat-icon matPrefix>event</mat-icon>
-                      </mat-form-field>
-                    </div>
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Fecha Inicio</mat-label>
+                      <input matInput [matDatepicker]="pickerFechaInicio" formControlName="fechaInicio" [min]="fechaMinima">
+                      <mat-datepicker-toggle matSuffix [for]="pickerFechaInicio"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerFechaInicio></mat-datepicker>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>Fecha Fin</mat-label>
+                      <input matInput [matDatepicker]="pickerFechaFin" formControlName="fechaFin" [min]="generarForm.value.fechaInicio || fechaMinima">
+                      <mat-datepicker-toggle matSuffix [for]="pickerFechaFin"></mat-datepicker-toggle>
+                      <mat-datepicker #pickerFechaFin></mat-datepicker>
+                    </mat-form-field>
                   </div>
 
                   <!-- Horario de operación -->
-                  <div class="row">
-                    <div class="col-md-6">
-                      <mat-form-field appearance="outline" class="w-100">
-                        <mat-label>Hora Apertura</mat-label>
-                        <input matInput type="time" formControlName="horaApertura">
-                        <mat-icon matPrefix>schedule</mat-icon>
-                      </mat-form-field>
-                    </div>
-                    <div class="col-md-6">
-                      <mat-form-field appearance="outline" class="w-100">
-                        <mat-label>Hora Cierre</mat-label>
-                        <input matInput type="time" formControlName="horaCierre">
-                        <mat-icon matPrefix>schedule</mat-icon>
-                      </mat-form-field>
-                    </div>
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Hora Apertura</mat-label>
+                      <input matInput type="time" formControlName="horaApertura">
+                      <mat-icon matPrefix>schedule</mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Hora Cierre</mat-label>
+                      <input matInput type="time" formControlName="horaCierre">
+                      <mat-icon matPrefix>schedule</mat-icon>
+                    </mat-form-field>
                   </div>
 
                   <!-- Duración del bloque -->
-                  <mat-form-field appearance="outline" class="w-100">
+                  <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Duración por bloque (minutos)</mat-label>
                     <input matInput type="number" formControlName="duracionBloqueMinutos" [min]="15" [step]="15">
                     <mat-icon matPrefix>timer</mat-icon>
@@ -302,24 +299,25 @@
               </mat-card-content>
 
               <mat-card-actions align="end">
-                <button mat-raised-button color="primary"
+                <button mat-raised-button color="accent"
                         [disabled]="!generarForm.valid || generando"
                         (click)="generarBloques()">
-                  <span *ngIf="!generando">➕ Generar Bloques</span>
-                  <span *ngIf="generando">
-                    <mat-spinner diameter="20" style="display: inline-block; vertical-align: middle; margin-right: 8px;"></mat-spinner>
-                    Generando...
-                  </span>
+                  <mat-icon *ngIf="!generando">add_circle</mat-icon>
+                  <mat-spinner *ngIf="generando" diameter="20" class="button-spinner"></mat-spinner>
+                  {{ generando ? 'Generando...' : 'Generar Bloques' }}
                 </button>
               </mat-card-actions>
             </mat-card>
           </div>
 
           <!-- Preview y resumen -->
-          <div class="col-lg-6">
+          <div class="preview-section">
             <mat-card class="preview-card">
               <mat-card-header>
-                <mat-card-title>Resumen de Generación</mat-card-title>
+                <mat-card-title>
+                  <mat-icon>preview</mat-icon>
+                  Resumen de Generación
+                </mat-card-title>
                 <mat-card-subtitle>Vista previa de los bloques a crear</mat-card-subtitle>
               </mat-card-header>
 

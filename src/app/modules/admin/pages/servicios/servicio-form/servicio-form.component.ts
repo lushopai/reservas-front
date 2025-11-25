@@ -44,7 +44,9 @@ export class ServicioFormComponent implements OnInit {
       tipoServicio: ['PISCINA', Validators.required],
       capacidadMaxima: ['', [Validators.required, Validators.min(1)]],
       duracionBloqueMinutos: [60, [Validators.required, Validators.min(15)]],
-      requiereSupervision: [false, Validators.required]
+      horaApertura: ['09:00'],  // Hora de apertura del servicio
+      horaCierre: ['18:00'],    // Hora de cierre del servicio
+      requiereSupervision: [false] // Valor por defecto - se envía al guardar
     });
   }
 
@@ -71,7 +73,9 @@ export class ServicioFormComponent implements OnInit {
           tipoServicio: servicio.tipoServicio,
           capacidadMaxima: servicio.capacidadMaxima,
           duracionBloqueMinutos: servicio.duracionBloqueMinutos,
-          requiereSupervision: servicio.requiereSupervision
+          horaApertura: servicio.horaApertura || '09:00',
+          horaCierre: servicio.horaCierre || '18:00',
+          requiereSupervision: servicio.requiereSupervision || false
         });
         this.loading = false;
       },

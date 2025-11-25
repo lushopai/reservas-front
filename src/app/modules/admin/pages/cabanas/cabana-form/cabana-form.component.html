@@ -1,230 +1,227 @@
-<div class="container-fluid py-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <!-- Header -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 class="mb-0">{{ isEditMode ? 'Editar Cabaña' : 'Nueva Cabaña' }}</h2>
-          <p class="text-muted">Complete el formulario con la información de la cabaña</p>
-        </div>
-        <button class="btn btn-outline-secondary" (click)="volver()">
-          <i class="fas fa-arrow-left me-2"></i>Volver
-        </button>
-      </div>
-
-      <!-- Loading spinner -->
-      <div *ngIf="loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando...</span>
-        </div>
-      </div>
-
-      <!-- Formulario -->
-      <form *ngIf="!loading" [formGroup]="cabanaForm" (ngSubmit)="onSubmit()">
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">Información General</h5>
-          </div>
-          <div class="card-body">
-            <div class="row g-3">
-              <!-- Nombre -->
-              <div class="col-md-6">
-                <label class="form-label">Nombre <span class="text-danger">*</span></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  formControlName="nombre"
-                  [class.is-invalid]="cabanaForm.get('nombre')?.invalid && cabanaForm.get('nombre')?.touched"
-                  placeholder="Ej: Cabaña El Roble"
-                />
-                <div class="invalid-feedback">El nombre es obligatorio</div>
-              </div>
-
-              <!-- Tipo -->
-              <div class="col-md-6">
-                <label class="form-label">Tipo <span class="text-danger">*</span></label>
-                <select
-                  class="form-select"
-                  formControlName="tipoCabana"
-                  [class.is-invalid]="cabanaForm.get('tipoCabana')?.invalid && cabanaForm.get('tipoCabana')?.touched"
-                >
-                  <option *ngFor="let tipo of tiposCabana" [value]="tipo">
-                    {{ getTipoCabanaLabel(tipo) }}
-                  </option>
-                </select>
-                <div class="invalid-feedback">El tipo es obligatorio</div>
-              </div>
-
-              <!-- Descripción -->
-              <div class="col-12">
-                <label class="form-label">Descripción <span class="text-danger">*</span></label>
-                <textarea
-                  class="form-control"
-                  formControlName="descripcion"
-                  rows="3"
-                  [class.is-invalid]="cabanaForm.get('descripcion')?.invalid && cabanaForm.get('descripcion')?.touched"
-                  placeholder="Describe las características principales de la cabaña..."
-                ></textarea>
-                <div class="invalid-feedback">La descripción es obligatoria</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">Características</h5>
-          </div>
-          <div class="card-body">
-            <div class="row g-3">
-              <!-- Capacidad -->
-              <div class="col-md-3">
-                <label class="form-label">Capacidad <span class="text-danger">*</span></label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="capacidadPersonas"
-                  [class.is-invalid]="cabanaForm.get('capacidadPersonas')?.invalid && cabanaForm.get('capacidadPersonas')?.touched"
-                  placeholder="6"
-                  min="1"
-                />
-                <small class="text-muted">Personas</small>
-                <div class="invalid-feedback">Ingrese la capacidad</div>
-              </div>
-
-              <!-- Habitaciones -->
-              <div class="col-md-3">
-                <label class="form-label">Habitaciones <span class="text-danger">*</span></label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="numeroHabitaciones"
-                  [class.is-invalid]="cabanaForm.get('numeroHabitaciones')?.invalid && cabanaForm.get('numeroHabitaciones')?.touched"
-                  placeholder="3"
-                  min="1"
-                />
-                <div class="invalid-feedback">Ingrese cantidad</div>
-              </div>
-
-              <!-- Baños -->
-              <div class="col-md-3">
-                <label class="form-label">Baños <span class="text-danger">*</span></label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="numeroBanos"
-                  [class.is-invalid]="cabanaForm.get('numeroBanos')?.invalid && cabanaForm.get('numeroBanos')?.touched"
-                  placeholder="2"
-                  min="1"
-                />
-                <div class="invalid-feedback">Ingrese cantidad</div>
-              </div>
-
-              <!-- Metros cuadrados -->
-              <div class="col-md-3">
-                <label class="form-label">Metros² <span class="text-danger">*</span></label>
-                <input
-                  type="number"
-                  class="form-control"
-                  formControlName="metrosCuadrados"
-                  [class.is-invalid]="cabanaForm.get('metrosCuadrados')?.invalid && cabanaForm.get('metrosCuadrados')?.touched"
-                  placeholder="80.5"
-                  step="0.1"
-                  min="1"
-                />
-                <div class="invalid-feedback">Ingrese los m²</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">Precio y Estado</h5>
-          </div>
-          <div class="card-body">
-            <div class="row g-3">
-              <!-- Precio -->
-              <div class="col-md-6">
-                <label class="form-label">Precio por Día <span class="text-danger">*</span></label>
-                <div class="input-group">
-                  <span class="input-group-text">$</span>
-                  <input
-                    type="number"
-                    class="form-control"
-                    formControlName="precioPorUnidad"
-                    [class.is-invalid]="cabanaForm.get('precioPorUnidad')?.invalid && cabanaForm.get('precioPorUnidad')?.touched"
-                    placeholder="50000"
-                    min="1"
-                  />
-                  <div class="invalid-feedback">El precio es obligatorio</div>
-                </div>
-              </div>
-
-              <!-- Estado -->
-              <div class="col-md-6">
-                <label class="form-label">Estado <span class="text-danger">*</span></label>
-                <select
-                  class="form-select"
-                  formControlName="estado"
-                  [class.is-invalid]="cabanaForm.get('estado')?.invalid && cabanaForm.get('estado')?.touched"
-                >
-                  <option *ngFor="let estado of estados" [value]="estado">
-                    {{ estado }}
-                  </option>
-                </select>
-                <div class="invalid-feedback">El estado es obligatorio</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card mb-4">
-          <div class="card-header">
-            <h5 class="mb-0">Servicios Incluidos</h5>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-12">
-                <label class="form-label">Servicios y Amenidades</label>
-                <textarea
-                  class="form-control"
-                  formControlName="serviciosIncluidos"
-                  rows="4"
-                  placeholder="Ej: WiFi, TV Cable, Cocina equipada, Calefacción, Parrilla, Estacionamiento..."
-                ></textarea>
-                <small class="text-muted">Opcional: Describe los servicios incluidos separados por comas</small>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Galería de Imágenes (solo en modo edición) -->
-        <div *ngIf="isEditMode && cabanaId">
-          <app-recurso-image-gallery [recursoId]="cabanaId"></app-recurso-image-gallery>
-        </div>
-
-        <!-- Botones -->
-        <div class="d-flex justify-content-end gap-2 mb-4">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            (click)="volver()"
-            [disabled]="submitting"
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            [disabled]="submitting"
-          >
-            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
-            <i *ngIf="!submitting" class="fas fa-save me-2"></i>
-            {{ isEditMode ? 'Actualizar' : 'Crear' }} Cabaña
-          </button>
-        </div>
-      </form>
+<div class="cabana-form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <div>
+      <h2 class="form-title">{{ isEditMode ? 'Editar Cabaña' : 'Nueva Cabaña' }}</h2>
+      <p class="form-subtitle">Complete el formulario con la información de la cabaña</p>
     </div>
+    <button mat-icon-button (click)="volver()" matTooltip="Volver">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
   </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Formulario -->
+  <form *ngIf="!loading" [formGroup]="cabanaForm" (ngSubmit)="onSubmit()" class="form-content">
+    <!-- Información General -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">info</mat-icon>
+          Información General
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid">
+          <!-- Nombre -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Nombre <span class="required">*</span></mat-label>
+            <input matInput formControlName="nombre" placeholder="Ej: Cabaña El Roble" />
+            <mat-error *ngIf="cabanaForm.get('nombre')?.hasError('required')">
+              El nombre es obligatorio
+            </mat-error>
+            <mat-error *ngIf="cabanaForm.get('nombre')?.hasError('maxlength')">
+              Máximo 100 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Tipo -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Tipo <span class="required">*</span></mat-label>
+            <mat-select formControlName="tipoCabana">
+              <mat-option *ngFor="let tipo of tiposCabana" [value]="tipo">
+                {{ getTipoCabanaLabel(tipo) }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="cabanaForm.get('tipoCabana')?.hasError('required')">
+              El tipo es obligatorio
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Descripción -->
+        <mat-form-field appearance="outline" class="form-field full-width">
+          <mat-label>Descripción <span class="required">*</span></mat-label>
+          <textarea
+            matInput
+            formControlName="descripcion"
+            rows="3"
+            placeholder="Describe las características principales de la cabaña..."
+          ></textarea>
+          <mat-hint align="end">{{ cabanaForm.get('descripcion')?.value?.length || 0 }}/1000</mat-hint>
+          <mat-error *ngIf="cabanaForm.get('descripcion')?.hasError('required')">
+            La descripción es obligatoria
+          </mat-error>
+          <mat-error *ngIf="cabanaForm.get('descripcion')?.hasError('maxlength')">
+            Máximo 1000 caracteres
+          </mat-error>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Características -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">home</mat-icon>
+          Características
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid-4">
+          <!-- Capacidad -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Capacidad <span class="required">*</span></mat-label>
+            <input matInput type="number" formControlName="capacidadPersonas" placeholder="6" min="1" />
+            <mat-hint>Personas</mat-hint>
+            <mat-error *ngIf="cabanaForm.get('capacidadPersonas')?.hasError('required')">
+              Ingrese la capacidad
+            </mat-error>
+            <mat-error *ngIf="cabanaForm.get('capacidadPersonas')?.hasError('min')">
+              Mínimo 1
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Habitaciones -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Habitaciones <span class="required">*</span></mat-label>
+            <input matInput type="number" formControlName="numeroHabitaciones" placeholder="3" min="1" />
+            <mat-error *ngIf="cabanaForm.get('numeroHabitaciones')?.hasError('required')">
+              Ingrese cantidad
+            </mat-error>
+            <mat-error *ngIf="cabanaForm.get('numeroHabitaciones')?.hasError('min')">
+              Mínimo 1
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Baños -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Baños <span class="required">*</span></mat-label>
+            <input matInput type="number" formControlName="numeroBanos" placeholder="2" min="1" />
+            <mat-error *ngIf="cabanaForm.get('numeroBanos')?.hasError('required')">
+              Ingrese cantidad
+            </mat-error>
+            <mat-error *ngIf="cabanaForm.get('numeroBanos')?.hasError('min')">
+              Mínimo 1
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Metros cuadrados -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Metros² <span class="required">*</span></mat-label>
+            <input matInput type="number" formControlName="metrosCuadrados" placeholder="80.5" step="0.1" min="1" />
+            <mat-error *ngIf="cabanaForm.get('metrosCuadrados')?.hasError('required')">
+              Ingrese los m²
+            </mat-error>
+            <mat-error *ngIf="cabanaForm.get('metrosCuadrados')?.hasError('min')">
+              Mínimo 1
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Precio y Estado -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">payments</mat-icon>
+          Precio y Estado
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid">
+          <!-- Precio -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Precio por Día <span class="required">*</span></mat-label>
+            <span matPrefix>$&nbsp;</span>
+            <input matInput type="number" formControlName="precioPorUnidad" placeholder="50000" min="1" />
+            <mat-error *ngIf="cabanaForm.get('precioPorUnidad')?.hasError('required')">
+              El precio es obligatorio
+            </mat-error>
+            <mat-error *ngIf="cabanaForm.get('precioPorUnidad')?.hasError('min')">
+              Mínimo $1
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Estado -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Estado <span class="required">*</span></mat-label>
+            <mat-select formControlName="estado">
+              <mat-option *ngFor="let estado of estados" [value]="estado">
+                {{ estado }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="cabanaForm.get('estado')?.hasError('required')">
+              El estado es obligatorio
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Servicios Incluidos -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">local_offer</mat-icon>
+          Servicios Incluidos
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="form-field full-width">
+          <mat-label>Servicios y Amenidades</mat-label>
+          <textarea
+            matInput
+            formControlName="serviciosIncluidos"
+            rows="4"
+            placeholder="Ej: WiFi, TV Cable, Cocina equipada, Calefacción, Parrilla, Estacionamiento..."
+          ></textarea>
+          <mat-hint align="end">{{ cabanaForm.get('serviciosIncluidos')?.value?.length || 0 }}/2000</mat-hint>
+          <mat-hint>Opcional: Describe los servicios incluidos</mat-hint>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Galería de Imágenes (solo en modo edición) -->
+    <div *ngIf="isEditMode && cabanaId" class="form-section">
+      <app-recurso-image-gallery [recursoId]="cabanaId"></app-recurso-image-gallery>
+    </div>
+
+    <!-- Botones -->
+    <div class="form-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="volver()"
+        [disabled]="submitting"
+      >
+        Cancelar
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="submitting"
+      >
+        <mat-icon *ngIf="!submitting" class="me-2">save</mat-icon>
+        <mat-spinner diameter="20" *ngIf="submitting" class="me-2"></mat-spinner>
+        {{ isEditMode ? 'Actualizar' : 'Crear' }} Cabaña
+      </button>
+    </div>
+  </form>
 </div>

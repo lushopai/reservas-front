@@ -1,8 +1,6 @@
 <div class="admin-layout">
-
   <!-- NAVBAR HORIZONTAL -->
   <mat-toolbar color="primary" class="admin-navbar">
-
     <!-- Logo & Brand -->
     <div class="navbar-brand" routerLink="/admin/dashboard">
       <mat-icon class="brand-icon">cottage</mat-icon>
@@ -11,9 +9,13 @@
 
     <!-- Navigation Menu (Desktop) -->
     <div class="navbar-menu desktop-menu">
-
       <!-- Dashboard -->
-      <a mat-button routerLink="/admin/dashboard" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+      <a
+        mat-button
+        routerLink="/admin/dashboard"
+        routerLinkActive="active-link"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
         <mat-icon>dashboard</mat-icon>
         <span>Dashboard</span>
       </a>
@@ -53,7 +55,11 @@
       </mat-menu>
 
       <!-- Servicios -->
-      <button mat-button [matMenuTriggerFor]="serviciosMenu" class="menu-button">
+      <button
+        mat-button
+        [matMenuTriggerFor]="serviciosMenu"
+        class="menu-button"
+      >
         <mat-icon>star</mat-icon>
         <span>Servicios</span>
         <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
@@ -76,7 +82,11 @@
       </a>
 
       <!-- Inventario -->
-      <button mat-button [matMenuTriggerFor]="inventarioMenu" class="menu-button">
+      <button
+        mat-button
+        [matMenuTriggerFor]="inventarioMenu"
+        class="menu-button"
+      >
         <mat-icon>inventory</mat-icon>
         <span>Inventario</span>
         <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
@@ -91,10 +101,10 @@
           <span>Nuevo Item</span>
         </a>
         <mat-divider></mat-divider>
-        <!-- <a mat-menu-item routerLink="/admin/movimientos">
+        <a mat-menu-item routerLink="/admin/movimientos">
           <mat-icon>history</mat-icon>
           <span>Movimientos</span>
-        </a> -->
+        </a>
       </mat-menu>
 
       <!-- Pagos -->
@@ -104,7 +114,11 @@
       </a>
 
       <!-- Disponibilidad -->
-      <button mat-button [matMenuTriggerFor]="disponibilidadMenu" class="menu-button">
+      <button
+        mat-button
+        [matMenuTriggerFor]="disponibilidadMenu"
+        class="menu-button"
+      >
         <mat-icon>calendar_month</mat-icon>
         <span>Disponibilidad</span>
         <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
@@ -119,7 +133,6 @@
           <span>Servicios</span>
         </a>
       </mat-menu>
-
     </div>
 
     <!-- Spacer -->
@@ -127,15 +140,22 @@
 
     <!-- Right Actions -->
     <div class="navbar-actions">
-
       <!-- Search -->
       <button mat-icon-button (click)="toggleSearchBar()" matTooltip="Buscar">
         <mat-icon>search</mat-icon>
       </button>
 
       <!-- Notifications -->
-      <button mat-icon-button [matMenuTriggerFor]="notificationsMenu" matTooltip="Notificaciones">
-        <mat-icon [matBadge]="unreadNotificationsCount" matBadgeColor="warn" [matBadgeHidden]="unreadNotificationsCount === 0">
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="notificationsMenu"
+        matTooltip="Notificaciones"
+      >
+        <mat-icon
+          [matBadge]="unreadNotificationsCount"
+          matBadgeColor="warn"
+          [matBadgeHidden]="unreadNotificationsCount === 0"
+        >
           notifications
         </mat-icon>
       </button>
@@ -143,15 +163,22 @@
       <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
         <div class="notifications-header" (click)="$event.stopPropagation()">
           <h3>Notificaciones</h3>
-          <button mat-button (click)="markAllAsRead()" *ngIf="unreadNotificationsCount > 0">
+          <button
+            mat-button
+            (click)="markAllAsRead()"
+            *ngIf="unreadNotificationsCount > 0"
+          >
             Marcar todas
           </button>
         </div>
         <mat-divider></mat-divider>
         <div class="notifications-list">
-          <button mat-menu-item *ngFor="let notification of notifications"
-                  (click)="markNotificationAsRead(notification)"
-                  [class.unread]="!notification.read">
+          <button
+            mat-menu-item
+            *ngFor="let notification of notifications"
+            (click)="markNotificationAsRead(notification)"
+            [class.unread]="!notification.read"
+          >
             <mat-icon>{{ notification.icon }}</mat-icon>
             <div class="notification-content">
               <p class="notification-message">{{ notification.message }}</p>
@@ -164,7 +191,7 @@
       <!-- User Menu -->
       <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
         <mat-icon>account_circle</mat-icon>
-        <span class="user-name">{{ currentUser?.username || 'Admin' }}</span>
+        <span class="user-name">{{ currentUser?.username || "Admin" }}</span>
         <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
       </button>
 
@@ -172,8 +199,12 @@
         <div class="user-menu-header" (click)="$event.stopPropagation()">
           <mat-icon class="user-icon-large">account_circle</mat-icon>
           <div class="user-details">
-            <p class="user-full-name">{{ currentUser?.username || 'Administrador' }}</p>
-            <p class="user-email">{{ currentUser?.email || 'admin@sistema.com' }}</p>
+            <p class="user-full-name">
+              {{ currentUser?.username || "Administrador" }}
+            </p>
+            <p class="user-email">
+              {{ currentUser?.email || "admin@sistema.com" }}
+            </p>
           </div>
         </div>
         <mat-divider></mat-divider>
@@ -193,19 +224,25 @@
       </mat-menu>
 
       <!-- Mobile Menu Toggle -->
-      <button mat-icon-button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+      <button
+        mat-icon-button
+        class="mobile-menu-toggle"
+        (click)="toggleMobileMenu()"
+      >
         <mat-icon>menu</mat-icon>
       </button>
-
     </div>
-
   </mat-toolbar>
 
   <!-- Search Bar Expandible -->
   <div class="search-bar-container" *ngIf="showSearchBar">
     <mat-form-field appearance="outline" class="search-field">
       <mat-icon matPrefix>search</mat-icon>
-      <input matInput placeholder="Buscar usuarios, cabañas, reservas..." autocomplete="off">
+      <input
+        matInput
+        placeholder="Buscar usuarios, cabañas, reservas..."
+        autocomplete="off"
+      />
       <button mat-icon-button matSuffix (click)="toggleSearchBar()">
         <mat-icon>close</mat-icon>
       </button>
@@ -215,7 +252,11 @@
   <!-- Mobile Menu -->
   <div class="mobile-menu" [class.open]="isMobileMenuOpen">
     <mat-nav-list>
-      <a mat-list-item routerLink="/admin/dashboard" (click)="closeMobileMenu()">
+      <a
+        mat-list-item
+        routerLink="/admin/dashboard"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon matListItemIcon>dashboard</mat-icon>
         <span matListItemTitle>Dashboard</span>
       </a>
@@ -226,7 +267,11 @@
         <mat-icon matListItemIcon>list</mat-icon>
         <span matListItemTitle>Lista de Usuarios</span>
       </a>
-      <a mat-list-item routerLink="/admin/usuarios/nuevo" (click)="closeMobileMenu()">
+      <a
+        mat-list-item
+        routerLink="/admin/usuarios/nuevo"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon matListItemIcon>person_add</mat-icon>
         <span matListItemTitle>Nuevo Usuario</span>
       </a>
@@ -237,18 +282,30 @@
         <mat-icon matListItemIcon>list</mat-icon>
         <span matListItemTitle>Lista de Cabañas</span>
       </a>
-      <a mat-list-item routerLink="/admin/cabanas/nueva" (click)="closeMobileMenu()">
+      <a
+        mat-list-item
+        routerLink="/admin/cabanas/nueva"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon matListItemIcon>add_circle</mat-icon>
         <span matListItemTitle>Nueva Cabaña</span>
       </a>
 
       <mat-divider></mat-divider>
       <h3 mat-subheader>Servicios</h3>
-      <a mat-list-item routerLink="/admin/servicios" (click)="closeMobileMenu()">
+      <a
+        mat-list-item
+        routerLink="/admin/servicios"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon matListItemIcon>list</mat-icon>
         <span matListItemTitle>Lista de Servicios</span>
       </a>
-      <a mat-list-item routerLink="/admin/servicios/nuevo" (click)="closeMobileMenu()">
+      <a
+        mat-list-item
+        routerLink="/admin/servicios/nuevo"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon matListItemIcon>add_circle</mat-icon>
         <span matListItemTitle>Nuevo Servicio</span>
       </a>
@@ -261,15 +318,27 @@
 
       <mat-divider></mat-divider>
       <h3 mat-subheader>Inventario</h3>
-      <a mat-list-item routerLink="/admin/inventario" (click)="closeMobileMenu()">
+      <a
+        mat-list-item
+        routerLink="/admin/inventario"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon matListItemIcon>list</mat-icon>
         <span matListItemTitle>Lista de Items</span>
       </a>
-      <a mat-list-item routerLink="/admin/inventario/nuevo" (click)="closeMobileMenu()">
+      <a
+        mat-list-item
+        routerLink="/admin/inventario/nuevo"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon matListItemIcon>add_circle</mat-icon>
         <span matListItemTitle>Nuevo Item</span>
       </a>
-      <a mat-list-item routerLink="/admin/movimientos" (click)="closeMobileMenu()">
+      <a
+        mat-list-item
+        routerLink="/admin/movimientos"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon matListItemIcon>history</mat-icon>
         <span matListItemTitle>Movimientos</span>
       </a>
@@ -282,11 +351,19 @@
 
       <mat-divider></mat-divider>
       <h3 mat-subheader>Disponibilidad</h3>
-      <a mat-list-item routerLink="/admin/disponibilidad/cabanas" (click)="closeMobileMenu()">
+      <a
+        mat-list-item
+        routerLink="/admin/disponibilidad/cabanas"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon matListItemIcon>cottage</mat-icon>
         <span matListItemTitle>Cabañas</span>
       </a>
-      <a mat-list-item routerLink="/admin/disponibilidad/servicios" (click)="closeMobileMenu()">
+      <a
+        mat-list-item
+        routerLink="/admin/disponibilidad/servicios"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon matListItemIcon>star</mat-icon>
         <span matListItemTitle>Servicios</span>
       </a>
@@ -294,11 +371,14 @@
   </div>
 
   <!-- Mobile Menu Backdrop -->
-  <div class="mobile-backdrop" [class.visible]="isMobileMenuOpen" (click)="closeMobileMenu()"></div>
+  <div
+    class="mobile-backdrop"
+    [class.visible]="isMobileMenuOpen"
+    (click)="closeMobileMenu()"
+  ></div>
 
   <!-- PAGE CONTENT -->
   <div class="page-content">
     <router-outlet></router-outlet>
   </div>
-
 </div>

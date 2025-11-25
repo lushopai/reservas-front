@@ -1,73 +1,95 @@
-<div class="container-fluid py-4">
-  <div class="card shadow">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 class="mb-0">
-        <i class="bi bi-calendar3"></i> Disponibilidad de Cabañas
-      </h5>
-      <button class="btn btn-primary" (click)="abrirFormBloqueo()" *ngIf="cabanaSeleccionada">
-        <i class="bi bi-lock"></i> Bloquear Fechas
-      </button>
+<div class="disponibilidad-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>calendar_month</mat-icon>
+        Disponibilidad de Cabañas
+      </h1>
+      <p class="page-subtitle">Gestiona la disponibilidad y bloqueos de fechas</p>
     </div>
+    <button 
+      mat-raised-button 
+      color="accent" 
+      (click)="abrirFormBloqueo()" 
+      *ngIf="cabanaSeleccionada"
+      class="header-action"
+    >
+      <mat-icon>lock</mat-icon>
+      Bloquear Fechas
+    </button>
+  </div>
 
-    <div class="card-body">
+  <!-- Main Card -->
+  <mat-card class="calendario-card">
+    <mat-card-content>
       <!-- Selector de Cabaña -->
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <label class="form-label fw-bold">Seleccionar Cabaña:</label>
-          <select
-            class="form-select"
+      <div class="selector-section">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Seleccionar Cabaña</mat-label>
+          <mat-select 
             [(ngModel)]="cabanaSeleccionada"
             (ngModelChange)="seleccionarCabana($event)"
           >
-            <option *ngFor="let cabana of cabanas" [ngValue]="cabana">
+            <mat-option *ngFor="let cabana of cabanas" [value]="cabana">
               {{ cabana.nombre }} ({{ cabana.tipoCabana }})
-            </option>
-          </select>
-        </div>
+            </mat-option>
+          </mat-select>
+          <mat-icon matPrefix>home</mat-icon>
+        </mat-form-field>
       </div>
 
-      <!-- Navegación del Calendario -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <button class="btn btn-outline-secondary" (click)="mesAnterior()">
-          <i class="bi bi-chevron-left"></i> Anterior
+      <!-- Navigation & Month Display -->
+      <div class="navigation-section">
+        <button 
+          mat-icon-button 
+          (click)="mesAnterior()"
+          class="nav-button"
+          matTooltip="Mes anterior"
+        >
+          <mat-icon>chevron_left</mat-icon>
         </button>
-        <h4 class="mb-0 text-capitalize">{{ getNombreMes() }}</h4>
-        <button class="btn btn-outline-secondary" (click)="mesSiguiente()">
-          Siguiente <i class="bi bi-chevron-right"></i>
+        <h2 class="current-month">{{ getNombreMes() | titlecase }}</h2>
+        <button 
+          mat-icon-button 
+          (click)="mesSiguiente()"
+          class="nav-button"
+          matTooltip="Mes siguiente"
+        >
+          <mat-icon>chevron_right</mat-icon>
         </button>
       </div>
 
-      <!-- Leyenda -->
-      <div class="d-flex gap-3 mb-3 flex-wrap">
-        <div class="d-flex align-items-center">
-          <div class="leyenda-cuadro bg-success"></div>
-          <span class="ms-2">Disponible</span>
+      <!-- Legend -->
+      <div class="legend-section">
+        <div class="legend-item">
+          <div class="legend-color disponible"></div>
+          <span>Disponible</span>
         </div>
-        <div class="d-flex align-items-center">
-          <div class="leyenda-cuadro bg-danger"></div>
-          <span class="ms-2">Bloqueado</span>
+        <div class="legend-item">
+          <div class="legend-color bloqueado"></div>
+          <span>Bloqueado</span>
         </div>
-        <div class="d-flex align-items-center">
-          <div class="leyenda-cuadro bg-primary"></div>
-          <span class="ms-2">Hoy</span>
+        <div class="legend-item">
+          <div class="legend-color hoy"></div>
+          <span>Hoy</span>
         </div>
-        <div class="d-flex align-items-center">
-          <div class="leyenda-cuadro bg-secondary"></div>
-          <span class="ms-2">Pasado</span>
-        </div>
-      </div>
-
-      <!-- Spinner -->
-      <div *ngIf="cargando" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando...</span>
+        <div class="legend-item">
+          <div class="legend-color pasado"></div>
+          <span>Pasado</span>
         </div>
       </div>
 
-      <!-- Calendario -->
-      <div *ngIf="!cargando && cabanaSeleccionada" class="calendario">
-        <!-- Cabecera días de la semana -->
-        <div class="calendario-grid">
+      <!-- Loading Spinner -->
+      <div *ngIf="cargando" class="loading-container">
+        <mat-spinner></mat-spinner>
+        <p>Cargando calendario...</p>
+      </div>
+
+      <!-- Calendar Grid -->
+      <div *ngIf="!cargando && cabanaSeleccionada" class="calendar-wrapper">
+        <!-- Day Headers -->
+        <div class="calendario-grid header">
           <div class="dia-semana">Dom</div>
           <div class="dia-semana">Lun</div>
           <div class="dia-semana">Mar</div>
@@ -77,77 +99,119 @@
           <div class="dia-semana">Sáb</div>
         </div>
 
-        <!-- Días del mes -->
-        <div class="calendario-grid">
+        <!-- Calendar Days -->
+        <div class="calendario-grid days">
           <div
-            *ngFor="let dia of diasCalendario"
+            *ngFor="let dia of diasCalendario; let i = index"
             [class]="getClaseDia(dia)"
             (click)="desbloquearDia(dia)"
             [title]="dia.motivo || ''"
+            class="dia-item"
           >
             <div class="dia-numero">{{ dia.fecha.getDate() }}</div>
             <div class="dia-info" *ngIf="dia.motivo && !dia.disponible">
+              <mat-icon class="info-icon">info</mat-icon>
               <small class="text-truncate">{{ dia.motivo }}</small>
             </div>
             <div class="dia-precio" *ngIf="dia.precioEspecial">
-              <small>{{ dia.precioEspecial | currency: 'CLP' : 'symbol-narrow' }}</small>
+              <small class="precio-text">{{ dia.precioEspecial | currency: 'CLP' : 'symbol-narrow' }}</small>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Mensaje sin cabaña -->
-      <div *ngIf="!cargando && !cabanaSeleccionada" class="alert alert-info">
-        <i class="bi bi-info-circle"></i> Selecciona una cabaña para ver su disponibilidad
+      <!-- No Cabin Selected Message -->
+      <div *ngIf="!cargando && !cabanaSeleccionada" class="empty-state">
+        <mat-icon>info</mat-icon>
+        <p>Selecciona una cabaña para ver su disponibilidad</p>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Modal Dialog for Blocking Dates -->
+  <div 
+    class="modal-overlay" 
+    [class.show]="mostrarFormBloqueo" 
+    (click)="cerrarFormBloqueo()"
+  ></div>
+  
+  <div 
+    class="modal-dialog-custom" 
+    [class.show]="mostrarFormBloqueo"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          <mat-icon>lock</mat-icon>
+          Bloquear Fechas - {{ cabanaSeleccionada?.nombre }}
+        </h2>
+        <button mat-icon-button (click)="cerrarFormBloqueo()" class="close-button">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="formBloqueo" class="bloqueo-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Fecha Inicio</mat-label>
+            <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio" />
+            <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+            <mat-datepicker #pickerInicio></mat-datepicker>
+            <mat-error *ngIf="formBloqueo.get('fechaInicio')?.hasError('required')">
+              La fecha de inicio es requerida
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Fecha Fin</mat-label>
+            <input matInput [matDatepicker]="pickerFin" formControlName="fechaFin" />
+            <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFin></mat-datepicker>
+            <mat-error *ngIf="formBloqueo.get('fechaFin')?.hasError('required')">
+              La fecha de fin es requerida
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Motivo del Bloqueo</mat-label>
+            <mat-select formControlName="motivo">
+              <mat-option value="MANTENIMIENTO">Mantenimiento</mat-option>
+              <mat-option value="RENOVACION">Renovación</mat-option>
+              <mat-option value="EVENTO_PRIVADO">Evento Privado</mat-option>
+              <mat-option value="OTRO">Otro</mat-option>
+            </mat-select>
+            <mat-icon matPrefix>lock</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Precio Especial (Opcional)</mat-label>
+            <input matInput type="number" formControlName="precioEspecial" placeholder="Dejar vacío para precio normal" />
+            <mat-icon matPrefix>attach_money</mat-icon>
+            <mat-hint>Deja vacío para usar el precio normal de la cabaña</mat-hint>
+          </mat-form-field>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button 
+          mat-stroked-button 
+          (click)="cerrarFormBloqueo()"
+          class="btn-cancel"
+        >
+          Cancelar
+        </button>
+        <button 
+          mat-raised-button 
+          color="accent"
+          (click)="bloquearFechas()" 
+          [disabled]="cargando || formBloqueo.invalid"
+          class="btn-submit"
+        >
+          <mat-spinner *ngIf="cargando" diameter="20" class="button-spinner"></mat-spinner>
+          <mat-icon *ngIf="!cargando">lock</mat-icon>
+          {{ cargando ? 'Bloqueando...' : 'Bloquear Fechas' }}
+        </button>
       </div>
     </div>
   </div>
-
-  <!-- Modal Bloquear Fechas -->
-  <div class="modal" [class.show]="mostrarFormBloqueo" [style.display]="mostrarFormBloqueo ? 'block' : 'none'">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Bloquear Fechas - {{ cabanaSeleccionada?.nombre }}</h5>
-          <button type="button" class="btn-close" (click)="cerrarFormBloqueo()"></button>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="formBloqueo">
-            <div class="mb-3">
-              <label class="form-label">Fecha Inicio</label>
-              <input type="date" class="form-control" formControlName="fechaInicio" />
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Fecha Fin</label>
-              <input type="date" class="form-control" formControlName="fechaFin" />
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Motivo</label>
-              <select class="form-select" formControlName="motivo">
-                <option value="MANTENIMIENTO">Mantenimiento</option>
-                <option value="RENOVACION">Renovación</option>
-                <option value="EVENTO_PRIVADO">Evento Privado</option>
-                <option value="OTRO">Otro</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Precio Especial (opcional)</label>
-              <input type="number" class="form-control" formControlName="precioEspecial" placeholder="Dejar vacío para precio normal" />
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="cerrarFormBloqueo()">Cancelar</button>
-          <button type="button" class="btn btn-primary" (click)="bloquearFechas()" [disabled]="cargando">
-            <span *ngIf="cargando" class="spinner-border spinner-border-sm me-1"></span>
-            Bloquear
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="modal-backdrop fade" [class.show]="mostrarFormBloqueo" *ngIf="mostrarFormBloqueo"></div>
 </div>

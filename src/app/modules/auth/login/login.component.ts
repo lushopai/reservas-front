@@ -66,37 +66,27 @@ export class LoginComponent implements OnInit {
     this.authService.login(credentials).subscribe({
       next: (response) => {
         console.log('Login exitoso:', response);
+        this.loading = false;
         // PRIMERO redirigir según el rol
         const user = this.authService.getCurrentUser();
         const isAdmin = user?.roles?.some(
           (role: any) => role.name === 'ROLE_ADMIN' || role === 'ROLE_ADMIN'
         );
 
-        Swal.fire({
-          icon: 'success',
-          title: '¡Bienvenido!',
-          text: 'Inicio de sesión exitoso',
-          timer: 1500,
-          showConfirmButton: false,
-        }).then(() => {
-          this.loading = false; //Detener el loading despues del msg
-          // Redirigir después del modal
-
-          // Si hay returnUrl, usarlo (para flujo de reservas)
-          if (this.returnUrl && this.returnUrl !== '/dashboard') {
-            console.log('Redirigiendo a returnUrl:', this.returnUrl);
-            this.router.navigate([this.returnUrl]);
+        // Si hay returnUrl, usarlo (para flujo de reservas)
+        if (this.returnUrl && this.returnUrl !== '/dashboard') {
+          console.log('Redirigiendo a returnUrl:', this.returnUrl);
+          this.router.navigate([this.returnUrl]);
+        } else {
+          // Caso por defecto: redirigir según rol
+          if (isAdmin) {
+            console.log('se va por admin');
+            this.router.navigate(['/admin/dashboard']);
           } else {
-            // Caso por defecto: redirigir según rol
-            if (isAdmin) {
-              console.log('se va por admin');
-              this.router.navigate(['/admin/dashboard']);
-            } else {
-              console.log('se va por cliente');
-              this.router.navigate(['/cliente/mis-reservas']);
-            }
+            console.log('se va por cliente');
+            this.router.navigate(['/cliente/mis-reservas']);
           }
-        });
+        }
       },
       error: (error) => {
         console.error('Error en login:', error);

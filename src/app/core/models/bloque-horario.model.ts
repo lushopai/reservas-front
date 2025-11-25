@@ -16,7 +16,18 @@ export interface GenerarBloquesRequest {
   horaApertura: string;
   horaCierre: string;
   duracionBloqueMinutos: number;
-  diasSemana?: number[]; // 0=Domingo, 1=Lunes, ..., 6=S�bado
+  diasSemana?: number[]; // 0=Domingo, 1=Lunes, ..., 6=Sábado
+}
+
+export interface GenerarBloquesResponse {
+  bloquesCreados: number;        // Cantidad de bloques nuevos creados
+  bloquesDuplicados: number;     // Cantidad de bloques que ya existían
+  bloquesTotalesGenerados: number; // Total de intentos de creación
+  mensaje: string;               // Mensaje descriptivo para el usuario
+  exitoso: boolean;              // Si la operación fue exitosa
+  detalles?: string;             // Detalles adicionales
+  horaAperturaReal?: string;     // Hora de apertura real utilizada (respetando horarios del servicio)
+  horaCierreReal?: string;       // Hora de cierre real utilizada (respetando horarios del servicio)
 }
 
 export interface BloqueoBloqueRequest {

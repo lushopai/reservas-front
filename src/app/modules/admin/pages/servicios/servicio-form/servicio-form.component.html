@@ -1,103 +1,191 @@
-<div class="container-fluid py-4">
-  <div class="row justify-content-center">
-    <div class="col-lg-10">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 class="mb-0">{{ isEditMode ? 'Editar Servicio' : 'Nuevo Servicio' }}</h2>
-          <p class="text-muted">Complete el formulario con la información del servicio</p>
-        </div>
-        <button class="btn btn-outline-secondary" (click)="volver()">
-          <i class="fas fa-arrow-left me-2"></i>Volver
-        </button>
-      </div>
-
-      <div *ngIf="loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status"></div>
-      </div>
-
-      <form *ngIf="!loading" [formGroup]="servicioForm" (ngSubmit)="onSubmit()">
-        <div class="card mb-4">
-          <div class="card-header"><h5 class="mb-0">Información General</h5></div>
-          <div class="card-body">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label">Nombre <span class="text-danger">*</span></label>
-                <input type="text" class="form-control" formControlName="nombre"
-                  [class.is-invalid]="servicioForm.get('nombre')?.invalid && servicioForm.get('nombre')?.touched"/>
-                <div class="invalid-feedback">El nombre es obligatorio</div>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Tipo <span class="text-danger">*</span></label>
-                <select class="form-select" formControlName="tipoServicio">
-                  <option *ngFor="let tipo of tipos" [value]="tipo">{{ getTipoServicioLabel(tipo) }}</option>
-                </select>
-              </div>
-              <div class="col-12">
-                <label class="form-label">Descripción <span class="text-danger">*</span></label>
-                <textarea class="form-control" formControlName="descripcion" rows="3"
-                  [class.is-invalid]="servicioForm.get('descripcion')?.invalid && servicioForm.get('descripcion')?.touched"></textarea>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card mb-4">
-          <div class="card-header"><h5 class="mb-0">Configuración</h5></div>
-          <div class="card-body">
-            <div class="row g-3">
-              <div class="col-md-4">
-                <label class="form-label">Capacidad Máxima <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" formControlName="capacidadMaxima" min="1"/>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Duración Bloque (minutos) <span class="text-danger">*</span></label>
-                <select class="form-select" formControlName="duracionBloqueMinutos">
-                  <option [value]="30">30 minutos</option>
-                  <option [value]="60">1 hora</option>
-                  <option [value]="90">1.5 horas</option>
-                  <option [value]="120">2 horas</option>
-                  <option [value]="180">3 horas</option>
-                </select>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Precio por Bloque <span class="text-danger">*</span></label>
-                <div class="input-group">
-                  <span class="input-group-text">$</span>
-                  <input type="number" class="form-control" formControlName="precioPorUnidad" min="1"/>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Estado <span class="text-danger">*</span></label>
-                <select class="form-select" formControlName="estado">
-                  <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
-                </select>
-              </div>
-              <div class="col-md-6 d-flex align-items-center">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" formControlName="requiereSupervision" id="supervision">
-                  <label class="form-check-label" for="supervision">
-                    <i class="fas fa-user-shield me-2"></i>Requiere Supervisión
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Galería de Imágenes (solo en modo edición) -->
-        <div *ngIf="isEditMode && servicioId">
-          <app-recurso-image-gallery [recursoId]="servicioId"></app-recurso-image-gallery>
-        </div>
-
-        <div class="d-flex justify-content-end gap-2 mb-4">
-          <button type="button" class="btn btn-secondary" (click)="volver()" [disabled]="submitting">Cancelar</button>
-          <button type="submit" class="btn btn-primary" [disabled]="submitting">
-            <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
-            <i *ngIf="!submitting" class="fas fa-save me-2"></i>
-            {{ isEditMode ? 'Actualizar' : 'Crear' }} Servicio
-          </button>
-        </div>
-      </form>
+<div class="servicio-form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <div>
+      <h2 class="form-title">{{ isEditMode ? 'Editar Servicio' : 'Nuevo Servicio' }}</h2>
+      <p class="form-subtitle">Complete el formulario con la información del servicio</p>
     </div>
+    <button mat-icon-button (click)="volver()" matTooltip="Volver">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
   </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Formulario -->
+  <form *ngIf="!loading" [formGroup]="servicioForm" (ngSubmit)="onSubmit()" class="form-content">
+    <!-- Información General -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">info</mat-icon>
+          Información General
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid">
+          <!-- Nombre -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Nombre <span class="required">*</span></mat-label>
+            <input matInput formControlName="nombre" placeholder="Ej: Piscina Olímpica" />
+            <mat-error *ngIf="servicioForm.get('nombre')?.hasError('required')">
+              El nombre es obligatorio
+            </mat-error>
+            <mat-error *ngIf="servicioForm.get('nombre')?.hasError('maxlength')">
+              Máximo 100 caracteres
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Tipo -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Tipo <span class="required">*</span></mat-label>
+            <mat-select formControlName="tipoServicio">
+              <mat-option *ngFor="let tipo of tipos" [value]="tipo">
+                {{ getTipoServicioLabel(tipo) }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="servicioForm.get('tipoServicio')?.hasError('required')">
+              El tipo es obligatorio
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Descripción -->
+        <mat-form-field appearance="outline" class="form-field full-width">
+          <mat-label>Descripción <span class="required">*</span></mat-label>
+          <textarea
+            matInput
+            formControlName="descripcion"
+            rows="3"
+            placeholder="Describe el servicio, características, reglas, etc..."
+          ></textarea>
+          <mat-hint align="end">{{ servicioForm.get('descripcion')?.value?.length || 0 }}/1000</mat-hint>
+          <mat-error *ngIf="servicioForm.get('descripcion')?.hasError('required')">
+            La descripción es obligatoria
+          </mat-error>
+          <mat-error *ngIf="servicioForm.get('descripcion')?.hasError('maxlength')">
+            Máximo 1000 caracteres
+          </mat-error>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Configuración -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">tune</mat-icon>
+          Configuración
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid-3">
+          <!-- Capacidad Máxima -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Capacidad Máxima <span class="required">*</span></mat-label>
+            <input matInput type="number" formControlName="capacidadMaxima" placeholder="10" min="1" />
+            <mat-hint>Personas</mat-hint>
+            <mat-error *ngIf="servicioForm.get('capacidadMaxima')?.hasError('required')">
+              La capacidad es obligatoria
+            </mat-error>
+            <mat-error *ngIf="servicioForm.get('capacidadMaxima')?.hasError('min')">
+              Mínimo 1
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Duración Bloque -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Duración Bloque <span class="required">*</span></mat-label>
+            <mat-select formControlName="duracionBloqueMinutos">
+              <mat-option [value]="30">30 minutos</mat-option>
+              <mat-option [value]="60">1 hora</mat-option>
+              <mat-option [value]="90">1.5 horas</mat-option>
+              <mat-option [value]="120">2 horas</mat-option>
+              <mat-option [value]="180">3 horas</mat-option>
+            </mat-select>
+            <mat-error *ngIf="servicioForm.get('duracionBloqueMinutos')?.hasError('required')">
+              La duración es obligatoria
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Precio por Bloque -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Precio por Bloque <span class="required">*</span></mat-label>
+            <span matPrefix>$&nbsp;</span>
+            <input matInput type="number" formControlName="precioPorUnidad" placeholder="30000" min="1" />
+            <mat-error *ngIf="servicioForm.get('precioPorUnidad')?.hasError('required')">
+              El precio es obligatorio
+            </mat-error>
+            <mat-error *ngIf="servicioForm.get('precioPorUnidad')?.hasError('min')">
+              Mínimo $1
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- Horarios de Operación -->
+        <div class="form-grid">
+          <!-- Hora de Apertura -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Hora de Apertura</mat-label>
+            <mat-icon matPrefix>schedule</mat-icon>
+            <input matInput type="time" formControlName="horaApertura" />
+            <mat-hint>Cuando el servicio abre</mat-hint>
+          </mat-form-field>
+
+          <!-- Hora de Cierre -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Hora de Cierre</mat-label>
+            <mat-icon matPrefix>schedule</mat-icon>
+            <input matInput type="time" formControlName="horaCierre" />
+            <mat-hint>Cuando el servicio cierra</mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="form-grid">
+          <!-- Estado -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Estado <span class="required">*</span></mat-label>
+            <mat-select formControlName="estado">
+              <mat-option *ngFor="let estado of estados" [value]="estado">
+                {{ estado }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="servicioForm.get('estado')?.hasError('required')">
+              El estado es obligatorio
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Galería de Imágenes (solo en modo edición) -->
+    <div *ngIf="isEditMode && servicioId" class="form-section">
+      <app-recurso-image-gallery [recursoId]="servicioId"></app-recurso-image-gallery>
+    </div>
+
+    <!-- Botones -->
+    <div class="form-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="volver()"
+        [disabled]="submitting"
+      >
+        Cancelar
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="submitting"
+      >
+        <mat-icon *ngIf="!submitting" class="me-2">save</mat-icon>
+        <mat-spinner diameter="20" *ngIf="submitting" class="me-2"></mat-spinner>
+        {{ isEditMode ? 'Actualizar' : 'Crear' }} Servicio
+      </button>
+    </div>
+  </form>
 </div>

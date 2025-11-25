@@ -12,7 +12,7 @@ import {
   providedIn: 'root'
 })
 export class MovimientoInventarioService {
-  private apiUrl = `${environment.apiUrl}/movimientos-inventario`;
+  private apiUrl = `${environment.apiUrl}/api/movimientos-inventario`;
 
   constructor(private http: HttpClient) { }
 

@@ -176,22 +176,47 @@ export class DisponibilidadServiciosComponent implements OnInit {
 
     const bloquesEstimados = this.calcularBloquesEstimados();
 
+    // Validar si hay bloques existentes en la fecha seleccionada
+    const fechaInicio = new Date(valores.fechaInicio + 'T00:00:00');
+    const fechaFin = new Date(valores.fechaFin + 'T00:00:00');
+    
+    // Verificar si la fecha inicio ya tiene bloques
+    let hayBloquesExistentes = false;
+    let bloquesExistentesCuenta = 0;
+    
+    if (this.bloques.length > 0) {
+      const bloquesEnFecha = this.bloques.filter(b => b.fecha === valores.fechaInicio);
+      hayBloquesExistentes = bloquesEnFecha.length > 0;
+      bloquesExistentesCuenta = bloquesEnFecha.length;
+    }
+
+    let mensajeAdvertencia = '';
+    if (hayBloquesExistentes) {
+      mensajeAdvertencia = `<p style="color: #f97316; font-weight: 600; margin-bottom: 12px;">⚠️ ADVERTENCIA: Ya existen ${bloquesExistentesCuenta} bloques en ${valores.fechaInicio}</p>`;
+    }
+
     Swal.fire({
       title: '¿Generar bloques horarios?',
       html: `
+        ${mensajeAdvertencia}
         <p>Se generarán aproximadamente <strong>${bloquesEstimados} bloques</strong></p>
-        <ul class="text-start" style="list-style: none; padding-left: 0;">
-          <li>📅 Período: ${valores.fechaInicio} a ${valores.fechaFin}</li>
-          <li>⏰ Horario: ${valores.horaApertura} - ${valores.horaCierre}</li>
-          <li>⏱️ Duración: ${valores.duracionBloqueMinutos} minutos</li>
-          <li>📆 Días: ${this.diasSemana.filter(d => d.seleccionado).map(d => d.nombre.substring(0, 3)).join(', ')}</li>
-        </ul>
+        <div style="text-align: left; background: #f5f5f5; padding: 15px; border-radius: 8px; margin: 10px 0;">
+          <ul style="list-style: none; padding-left: 0; margin: 0;">
+            <li style="margin-bottom: 8px;">📅 Período: ${valores.fechaInicio} a ${valores.fechaFin}</li>
+            <li style="margin-bottom: 8px;">⏰ Horario: ${valores.horaApertura} - ${valores.horaCierre}</li>
+            <li style="margin-bottom: 8px;">⏱️ Duración: ${valores.duracionBloqueMinutos} minutos</li>
+            <li>📆 Días: ${this.diasSemana.filter(d => d.seleccionado).map(d => d.nombre.substring(0, 3)).join(', ')}</li>
+          </ul>
+        </div>
+        <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 4px; text-align: left; margin-top: 12px; font-size: 13px;">
+          <strong>ℹ️ Nota:</strong> Los bloques duplicados serán ignorados automáticamente. Se omitirán fechas que ya tengan bloques generados.
+        </div>
       `,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: 'Generar',
+      confirmButtonText: hayBloquesExistentes ? 'Generar de todos modos' : 'Generar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#3f51b5'
+      confirmButtonColor: hayBloquesExistentes ? '#f97316' : '#3f51b5'
     }).then((result) => {
       if (result.isConfirmed) {
         this.ejecutarGeneracion(diasSeleccionados);
@@ -203,45 +228,142 @@ export class DisponibilidadServiciosComponent implements OnInit {
     this.generando = true;
     const valores = this.generarForm.value;
 
-    // Vamos a generar día por día
-    const fechaInicio = new Date(valores.fechaInicio + 'T00:00:00');  // Forzar hora local
-    const fechaFin = new Date(valores.fechaFin + 'T00:00:00');  // Forzar hora local
+    // Convertir fechas correctamente - pueden ser Date objects o strings
+    const fechaInicioStr = this.formatearFechaParaAPI(valores.fechaInicio);
+    const fechaFinStr = this.formatearFechaParaAPI(valores.fechaFin);
+
+    // Ahora crear los Date objects con las fechas correctas
+    const fechaInicio = new Date(fechaInicioStr + 'T00:00:00');
+    const fechaFin = new Date(fechaFinStr + 'T00:00:00');
     const promesas: any[] = [];
+    const diasProcesar: string[] = [];
 
     let fechaActual = new Date(fechaInicio);
+    const estadisticas = {
+      diasProcesados: 0,
+      bloquesCreados: 0,
+      bloquesDuplicados: 0,
+      bloquesTotales: 0,
+      horaAperturaReal: '',
+      horaCierreReal: ''
+    };
+
+    console.log('Generador de bloques iniciado - Rango:', fechaInicioStr, 'a', fechaFinStr);
+
     while (fechaActual <= fechaFin) {
       const diaSemana = fechaActual.getDay();
+      const fechaStr = fechaActual.toISOString().split('T')[0];
 
       // Solo generar si el día está seleccionado
       if (diasSeleccionados.includes(diaSemana)) {
+        diasProcesar.push(fechaStr);
         const request = {
-          fecha: fechaActual.toISOString().split('T')[0],
+          fecha: fechaStr,
           horaApertura: valores.horaApertura,
           horaCierre: valores.horaCierre,
           duracionBloqueMinutos: valores.duracionBloqueMinutos
         };
 
+        console.log('Generando bloques para:', fechaStr);
+
         promesas.push(
           this.bloqueService.generarBloques(valores.servicioId, request).toPromise()
+            .then((respuesta: any) => {
+              console.log('✓', fechaStr, ':', respuesta.bloquesCreados, 'creados,', respuesta.bloquesDuplicados, 'duplicados');
+              // Acumular estadísticas
+              estadisticas.diasProcesados++;
+              estadisticas.bloquesCreados += respuesta.bloquesCreados || 0;
+              estadisticas.bloquesDuplicados += respuesta.bloquesDuplicados || 0;
+              estadisticas.bloquesTotales += respuesta.bloquesTotalesGenerados || 0;
+              // Capturar las horas reales (serán iguales en todos los días del mismo servicio)
+              if (respuesta.horaAperturaReal) {
+                estadisticas.horaAperturaReal = respuesta.horaAperturaReal;
+              }
+              if (respuesta.horaCierreReal) {
+                estadisticas.horaCierreReal = respuesta.horaCierreReal;
+              }
+              return respuesta;
+            })
+            .catch((error) => {
+              console.error('❌ Error en', request.fecha, ':', error);
+              throw error;
+            })
         );
       }
 
       fechaActual.setDate(fechaActual.getDate() + 1);
     }
 
+    console.log(`✓ Total promesas a ejecutar: ${promesas.length}`);
+
+    if (promesas.length === 0) {
+      this.generando = false;
+      Swal.fire({
+        icon: 'warning',
+        title: '⚠️ No hay días a procesar',
+        html: `
+          <div style="text-align: left;">
+            <p><strong>No se encontraron días de la semana que coincidan con el rango seleccionado.</strong></p>
+            <p style="margin-top: 16px;"><strong>Rango de fechas:</strong> ${fechaInicioStr} a ${fechaFinStr}</p>
+            <p><strong>Días seleccionados:</strong> ${this.diasSemana.filter(d => d.seleccionado).map(d => d.nombre).join(', ') || 'Ninguno'}</p>
+            <p style="margin-top: 16px; font-size: 12px; color: #666;">
+              💡 Consejo: Verifica que los días de la semana seleccionados correspondan con las fechas del rango.
+            </p>
+          </div>
+        `,
+        confirmButtonColor: '#3f51b5'
+      });
+      return;
+    }
+
     Promise.all(promesas)
       .then(() => {
         this.generando = false;
+        console.log('✓ Generación completada');
+
+        // Mostrar alert personalizado según resultados
+        let tipoAlerta: 'success' | 'info' | 'warning' | 'error' = 'success';
+        let titulo = '✓ Bloques generados';
+        let htmlMensaje = `
+          <div style="text-align: left;">
+            <p><strong>📊 Resumen de Generación</strong></p>
+            <ul style="list-style: none; padding-left: 0;">
+              <li>📅 Días procesados: <strong>${estadisticas.diasProcesados}</strong></li>
+              <li>✅ Bloques creados: <strong>${estadisticas.bloquesCreados}</strong></li>
+              ${estadisticas.bloquesDuplicados > 0 ? `<li>⚠️ Bloques duplicados (omitidos): <strong>${estadisticas.bloquesDuplicados}</strong></li>` : ''}
+              <li>📈 Total de bloques: <strong>${estadisticas.bloquesTotales}</strong></li>
+              ${estadisticas.horaAperturaReal ? `<li>🏢 Horario real del servicio: <strong>${estadisticas.horaAperturaReal} - ${estadisticas.horaCierreReal}</strong></li>` : ''}
+            </ul>
+          </div>
+        `;
+
+        if (estadisticas.bloquesCreados === 0 && estadisticas.bloquesDuplicados > 0) {
+          tipoAlerta = 'info';
+          titulo = 'ℹ Información';
+          htmlMensaje = `
+            <div style="text-align: left;">
+              <p><strong>No se crearon bloques nuevos</strong></p>
+              <p>Todos los horarios para las fechas seleccionadas ya existían en el sistema.</p>
+              <ul style="list-style: none; padding-left: 0;">
+                <li>📅 Días procesados: <strong>${estadisticas.diasProcesados}</strong></li>
+                <li>⚠️ Bloques duplicados: <strong>${estadisticas.bloquesDuplicados}</strong></li>
+                ${estadisticas.horaAperturaReal ? `<li>🏢 Horario del servicio: <strong>${estadisticas.horaAperturaReal} - ${estadisticas.horaCierreReal}</strong></li>` : ''}
+              </ul>
+            </div>
+          `;
+        }
+
         Swal.fire({
-          icon: 'success',
-          title: 'Bloques generados',
-          text: `Se generaron bloques para ${promesas.length} días exitosamente`,
+          icon: tipoAlerta,
+          title: titulo,
+          html: htmlMensaje,
           timer: 3000,
           showConfirmButton: false
         });
 
         // Cambiar a vista de calendario
         this.vistaActual = 'calendario';
+        this.selectedTabIndex = 0;
         this.cargarBloques();
       })
       .catch((error) => {
@@ -250,7 +372,7 @@ export class DisponibilidadServiciosComponent implements OnInit {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Ocurrió un error al generar los bloques',
+          text: 'Ocurrió un error al generar los bloques. Verifique que los datos sean correctos.',
           confirmButtonColor: '#dc3545'
         });
       });
@@ -263,10 +385,14 @@ export class DisponibilidadServiciosComponent implements OnInit {
     if (!valores.fechaInicio || !valores.fechaFin) return;
 
     this.cargando = true;
+    // Convertir fechas a formato YYYY-MM-DD si vienen como Date objects
+    const fechaInicio = this.formatearFechaParaAPI(valores.fechaInicio);
+    const fechaFin = this.formatearFechaParaAPI(valores.fechaFin);
+
     this.bloqueService.obtenerBloquesPorRango(
       valores.servicioId,
-      valores.fechaInicio,
-      valores.fechaFin
+      fechaInicio,
+      fechaFin
     ).subscribe({
       next: (bloques) => {
         this.bloques = bloques;
@@ -442,5 +568,31 @@ export class DisponibilidadServiciosComponent implements OnInit {
       .filter(d => d.seleccionado)
       .map(d => d.nombre.substring(0, 3));
     return dias.length > 0 ? dias.join(', ') : 'Ninguno';
+  }
+
+  /**
+   * Convierte una fecha a formato YYYY-MM-DD
+   * Soporta strings, objetos Date y Date objects del datepicker
+   */
+  formatearFechaParaAPI(fecha: any): string {
+    if (typeof fecha === 'string') {
+      // Si ya es string, verificar si está en formato correcto
+      if (fecha.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return fecha;
+      }
+      // Si es un string de fecha larga, extraer la fecha
+      try {
+        const date = new Date(fecha);
+        return date.toISOString().split('T')[0];
+      } catch {
+        return fecha;
+      }
+    }
+    
+    if (fecha instanceof Date) {
+      return fecha.toISOString().split('T')[0];
+    }
+    
+    return fecha;
   }
 }

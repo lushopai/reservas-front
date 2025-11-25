@@ -1,17 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserResponse } from 'src/app/shared/models/UserResponse';
+import { Reserva } from 'src/app/core/models/reserva.model';
 import Swal from 'sweetalert2';
 import { UserService } from '../../../../../core/services/UserService.service';
-
-interface Reserva {
-  id: number;
-  recurso: string;
-  fechaInicio: Date;
-  fechaFin: Date;
-  estado: string;
-  monto: number;
-}
+import { ReservaService } from '../../../../../core/services/reserva.service';
 
 @Component({
   selector: 'app-usuario-detail',
@@ -26,8 +19,9 @@ export class UsuarioDetailComponent implements OnInit {
   // Tabs
   activeTab: 'info' | 'reservas' | 'actividad' = 'info';
 
-  // Reservas del usuario (simuladas por ahora)
+  // Reservas del usuario
   reservas: Reserva[] = [];
+  reservasLoading = false;
 
   // Actividad reciente
   actividades: any[] = [];
@@ -44,7 +38,8 @@ export class UsuarioDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private userService: UserService
+    private userService: UserService,
+    private reservaService: ReservaService
   ) {}
 
   ngOnInit(): void {
@@ -79,30 +74,24 @@ export class UsuarioDetailComponent implements OnInit {
   }
 
   loadReservas(): void {
-    // TODO: Implementar cuando tengas el servicio de reservas
-    // Por ahora datos de ejemplo
-    this.reservas = [
-      {
-        id: 1,
-        recurso: 'Cabaña Deluxe',
-        fechaInicio: new Date('2025-01-15'),
-        fechaFin: new Date('2025-01-20'),
-        estado: 'CONFIRMADA',
-        monto: 150000
+    this.reservasLoading = true;
+    this.reservaService.obtenerReservasUsuario(this.userId).subscribe({
+      next: (reservas) => {
+        this.reservas = reservas;
+        this.reservasLoading = false;
       },
-      {
-        id: 2,
-        recurso: 'Servicio Spa',
-        fechaInicio: new Date('2025-01-10'),
-        fechaFin: new Date('2025-01-10'),
-        estado: 'COMPLETADA',
-        monto: 45000
+      error: (error) => {
+        console.error('Error al cargar reservas:', error);
+        this.reservasLoading = false;
+        // No mostrar error, solo dejar vacío
+        this.reservas = [];
       }
-    ];
+    });
   }
 
   loadActividad(): void {
-    // Datos de ejemplo de actividad
+    // Por ahora datos de ejemplo
+    // TODO: Implementar cuando tengas tabla de auditoría/logs
     this.actividades = [
       { tipo: 'login', descripcion: 'Inició sesión', fecha: new Date() },
       { tipo: 'reserva', descripcion: 'Creó una nueva reserva', fecha: new Date() },

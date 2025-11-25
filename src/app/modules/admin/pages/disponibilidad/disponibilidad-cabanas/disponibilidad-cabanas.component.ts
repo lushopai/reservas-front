@@ -165,9 +165,25 @@ export class DisponibilidadCabanasComponent implements OnInit {
     }
 
     this.cargando = true;
+    const formValue = this.formBloqueo.value;
+    
+    // Convertir fechas de Date a string si es necesario
+    const fechaInicio = formValue.fechaInicio instanceof Date 
+      ? this.formatearFecha(formValue.fechaInicio)
+      : formValue.fechaInicio;
+    const fechaFin = formValue.fechaFin instanceof Date
+      ? this.formatearFecha(formValue.fechaFin)
+      : formValue.fechaFin;
+
+    const datosBloqueo = {
+      ...formValue,
+      fechaInicio: fechaInicio,
+      fechaFin: fechaFin
+    };
+
     this.disponibilidadService.bloquearFechasCabana(
       this.cabanaSeleccionada.id,
-      this.formBloqueo.value
+      datosBloqueo
     ).subscribe({
       next: (response) => {
         if (response.success) {

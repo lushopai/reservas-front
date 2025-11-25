@@ -1,153 +1,146 @@
-<div class="container-fluid py-4">
-  <div class="card shadow">
-    <div class="card-header">
-      <h5 class="mb-0">{{ modoEdicion ? 'Editar Item' : 'Nuevo Item de Inventario' }}</h5>
+<div class="inventario-form-container">
+  <!-- Header -->
+  <div class="form-header">
+    <div>
+      <h2 class="form-title">{{ modoEdicion ? 'Editar Item' : 'Nuevo Item de Inventario' }}</h2>
+      <p class="form-subtitle">Completa los datos del item para el inventario</p>
     </div>
-
-    <div class="card-body">
-      <form [formGroup]="form" (ngSubmit)="guardar()">
-        <!-- Información General -->
-        <div class="row mb-3">
-          <div class="col-12">
-            <h6 class="text-muted mb-3">Información General</h6>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Recurso (Cabaña o Servicio) <span class="text-danger">*</span></label>
-            <select
-              class="form-select"
-              formControlName="recursoId"
-              [class.is-invalid]="campoEsInvalido('recursoId')"
-            >
-              <option value="">Seleccione un recurso</option>
-              <option *ngFor="let recurso of recursos" [value]="recurso.id">
-                {{ recurso.nombre }}
-              </option>
-            </select>
-            <div class="invalid-feedback" *ngIf="campoEsInvalido('recursoId')">
-              {{ obtenerMensajeError('recursoId') }}
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Nombre del Item <span class="text-danger">*</span></label>
-            <input
-              type="text"
-              class="form-control"
-              formControlName="nombre"
-              [class.is-invalid]="campoEsInvalido('nombre')"
-              placeholder="Ej: Televisor Samsung 55 pulgadas"
-            />
-            <div class="invalid-feedback" *ngIf="campoEsInvalido('nombre')">
-              {{ obtenerMensajeError('nombre') }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Categoría y Estado -->
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label class="form-label">Categoría <span class="text-danger">*</span></label>
-            <select
-              class="form-select"
-              formControlName="categoria"
-              [class.is-invalid]="campoEsInvalido('categoria')"
-            >
-              <option value="">Seleccione una categoría</option>
-              <option *ngFor="let categoria of categorias" [value]="categoria">
-                {{ formatearCategoria(categoria) }}
-              </option>
-            </select>
-            <div class="invalid-feedback" *ngIf="campoEsInvalido('categoria')">
-              {{ obtenerMensajeError('categoria') }}
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">Estado <span class="text-danger">*</span></label>
-            <select
-              class="form-select"
-              formControlName="estadoItem"
-              [class.is-invalid]="campoEsInvalido('estadoItem')"
-            >
-              <option *ngFor="let estado of estadosItem" [value]="estado">
-                {{ formatearEstado(estado) }}
-              </option>
-            </select>
-            <div class="invalid-feedback" *ngIf="campoEsInvalido('estadoItem')">
-              {{ obtenerMensajeError('estadoItem') }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Cantidad y Precio -->
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <label class="form-label">Cantidad Total <span class="text-danger">*</span></label>
-            <input
-              type="number"
-              class="form-control"
-              formControlName="cantidadTotal"
-              [class.is-invalid]="campoEsInvalido('cantidadTotal')"
-              min="1"
-            />
-            <div class="invalid-feedback" *ngIf="campoEsInvalido('cantidadTotal')">
-              {{ obtenerMensajeError('cantidadTotal') }}
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <label class="form-label">Precio de Reserva (CLP) <span class="text-danger">*</span></label>
-            <input
-              type="number"
-              class="form-control"
-              formControlName="precioReserva"
-              [class.is-invalid]="campoEsInvalido('precioReserva')"
-              min="0"
-            />
-            <div class="invalid-feedback" *ngIf="campoEsInvalido('precioReserva')">
-              {{ obtenerMensajeError('precioReserva') }}
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <label class="form-label d-block">¿Es Reservable?</label>
-            <div class="form-check form-switch mt-2">
-              <input
-                class="form-check-input"
-                type="checkbox"
-                formControlName="esReservable"
-                id="esReservable"
-              />
-              <label class="form-check-label" for="esReservable">
-                {{ form.get('esReservable')?.value ? 'Sí' : 'No' }}
-              </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Botones -->
-        <div class="row mt-4">
-          <div class="col-12">
-            <button
-              type="submit"
-              class="btn btn-primary me-2"
-              [disabled]="cargando"
-            >
-              <span *ngIf="cargando" class="spinner-border spinner-border-sm me-1"></span>
-              {{ modoEdicion ? 'Actualizar' : 'Crear' }}
-            </button>
-            <button
-              type="button"
-              class="btn btn-secondary"
-              (click)="volver()"
-              [disabled]="cargando"
-            >
-              Cancelar
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
+    <button mat-icon-button (click)="volver()" matTooltip="Volver">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
   </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="cargando" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Formulario -->
+  <form *ngIf="!cargando" [formGroup]="form" (ngSubmit)="guardar()" class="form-content">
+    <!-- Información General -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">info</mat-icon>
+          Información General
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid">
+          <!-- Recurso -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Recurso (Cabaña/Servicio) <span class="required">*</span></mat-label>
+            <mat-select formControlName="recursoId">
+              <mat-option value="">Seleccione un recurso</mat-option>
+              <mat-option *ngFor="let recurso of recursos" [value]="recurso.id">
+                {{ recurso.nombre }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="campoEsInvalido('recursoId')">
+              {{ obtenerMensajeError('recursoId') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Nombre -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Nombre del Item <span class="required">*</span></mat-label>
+            <input matInput formControlName="nombre" placeholder="Ej: Televisor Samsung 55 pulgadas" />
+            <mat-error *ngIf="campoEsInvalido('nombre')">
+              {{ obtenerMensajeError('nombre') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Categoría -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Categoría <span class="required">*</span></mat-label>
+            <mat-select formControlName="categoria">
+              <mat-option value="">Seleccione una categoría</mat-option>
+              <mat-option *ngFor="let categoria of categorias" [value]="categoria">
+                {{ formatearCategoria(categoria) }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="campoEsInvalido('categoria')">
+              {{ obtenerMensajeError('categoria') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Estado -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Estado <span class="required">*</span></mat-label>
+            <mat-select formControlName="estadoItem">
+              <mat-option *ngFor="let estado of estadosItem" [value]="estado">
+                {{ formatearEstado(estado) }}
+              </mat-option>
+            </mat-select>
+            <mat-error *ngIf="campoEsInvalido('estadoItem')">
+              {{ obtenerMensajeError('estadoItem') }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Cantidad y Precios -->
+    <mat-card class="form-section">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="section-icon">inventory_2</mat-icon>
+          Cantidad y Precios
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="form-grid-3">
+          <!-- Cantidad Total -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Cantidad Total <span class="required">*</span></mat-label>
+            <input matInput type="number" formControlName="cantidadTotal" placeholder="10" min="1" />
+            <mat-hint>Unidades</mat-hint>
+            <mat-error *ngIf="campoEsInvalido('cantidadTotal')">
+              {{ obtenerMensajeError('cantidadTotal') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Precio de Reserva -->
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Precio de Reserva <span class="required">*</span></mat-label>
+            <span matPrefix>$&nbsp;</span>
+            <input matInput type="number" formControlName="precioReserva" placeholder="5000" min="0" />
+            <mat-error *ngIf="campoEsInvalido('precioReserva')">
+              {{ obtenerMensajeError('precioReserva') }}
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Es Reservable -->
+          <div class="checkbox-field">
+            <mat-checkbox formControlName="esReservable">
+              <mat-icon class="checkbox-icon">check_circle</mat-icon>
+              Es Reservable
+            </mat-checkbox>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Botones -->
+    <div class="form-actions">
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="volver()"
+        [disabled]="cargando"
+      >
+        Cancelar
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="cargando"
+      >
+        <mat-icon *ngIf="!cargando" class="me-2">{{ modoEdicion ? 'save' : 'add_circle' }}</mat-icon>
+        <mat-spinner diameter="20" *ngIf="cargando" class="me-2"></mat-spinner>
+        {{ modoEdicion ? 'Actualizar' : 'Crear' }} Item
+      </button>
+    </div>
+  </form>
 </div>

@@ -14,6 +14,8 @@ export interface ServicioEntretencion {
   capacidadMaxima: number;
   duracionBloqueMinutos: number;
   requiereSupervision: boolean;
+  horaApertura?: string;  // Hora de apertura (HH:mm)
+  horaCierre?: string;    // Hora de cierre (HH:mm)
   totalReservas?: number;
   disponibleHoy?: boolean;
   bloquesDisponibles?: number;
@@ -37,7 +39,9 @@ export interface ServicioRequest {
   tipoServicio: string;
   capacidadMaxima: number;
   duracionBloqueMinutos: number;
-  requiereSupervision: boolean;
+  requiereSupervision?: boolean;  // Valor por defecto: false
+  horaApertura?: string;  // Hora de apertura (HH:mm)
+  horaCierre?: string;    // Hora de cierre (HH:mm)
 }
 
 export interface ApiResponse<T> {
