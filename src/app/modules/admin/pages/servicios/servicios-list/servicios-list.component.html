@@ -125,9 +125,10 @@
             <th mat-header-cell *matHeaderCellDef>Imagen</th>
             <td mat-cell *matCellDef="let servicio">
               <div class="imagen-cell">
-                <img [src]="servicio.imagenUrl || 'assets/images/default-service.jpg'"
+                <img [src]="servicio.imagenPrincipalUrl || 'assets/images/default-service.svg'"
                      [alt]="servicio.nombre"
-                     class="servicio-img">
+                     class="servicio-img"
+                     (error)="onImageError($event)">
               </div>
             </td>
           </ng-container>

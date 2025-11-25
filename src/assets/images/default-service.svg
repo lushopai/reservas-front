@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <style>
+      .bg { fill: #f5f5f5; }
+      .icon { fill: #bdbdbd; }
+    </style>
+  </defs>
+  <rect class="bg" width="200" height="200"/>
+  <circle class="icon" cx="100" cy="70" r="30"/>
+  <path class="icon" d="M 160 200 L 160 140 Q 160 110 100 110 Q 40 110 40 140 L 40 200 Z"/>
+</svg>

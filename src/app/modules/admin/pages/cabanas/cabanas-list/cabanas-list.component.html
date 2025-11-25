@@ -126,13 +126,10 @@
             <td mat-cell *matCellDef="let cabana">
               <div class="image-container">
                 <img
-                  *ngIf="cabana.imagenPrincipalUrl"
-                  [src]="cabana.imagenPrincipalUrl"
+                  [src]="cabana.imagenPrincipalUrl || 'assets/images/default-service.svg'"
                   [alt]="cabana.nombre"
-                  class="table-image">
-                <div *ngIf="!cabana.imagenPrincipalUrl" class="no-image">
-                  <mat-icon>image</mat-icon>
-                </div>
+                  class="table-image"
+                  (error)="onImageError($event)">
               </div>
             </td>
           </ng-container>

@@ -347,6 +347,7 @@
         display: flex;
         align-items: center;
         gap: 1.5rem;
+        justify-content: space-between;
 
         .switch-icon-wrapper {
           flex-shrink: 0;

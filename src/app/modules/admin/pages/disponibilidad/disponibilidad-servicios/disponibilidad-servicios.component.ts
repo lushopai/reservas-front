@@ -9,6 +9,8 @@ interface ServicioSimple {
   id: number;
   nombre: string;
   duracionBloqueMinutos: number;
+  horaApertura?: string;
+  horaCierre?: string;
 }
 
 @Component({
@@ -54,6 +56,9 @@ export class DisponibilidadServiciosComponent implements OnInit {
     porcentajeOcupacion: 0
   };
 
+  // Validaciones de completitud
+  diasCompletos: Set<string> = new Set();
+
   // Vista actual
   vistaActual: 'generar' | 'calendario' = 'calendario';
   selectedTabIndex: number = 0;
@@ -74,22 +79,29 @@ export class DisponibilidadServiciosComponent implements OnInit {
   }
 
   inicializarFormulario(): void {
+    // Calcular fecha fin por defecto (7 días después de hoy)
+    const fechaFinDefecto = new Date();
+    fechaFinDefecto.setDate(fechaFinDefecto.getDate() + 7);
+    const fechaFinStr = fechaFinDefecto.toISOString().split('T')[0];
+
     this.generarForm = this.fb.group({
       servicioId: [null, Validators.required],
       fechaInicio: [this.fechaHoy, Validators.required],
-      fechaFin: ['', Validators.required],
+      fechaFin: [fechaFinStr, Validators.required],
       horaApertura: ['09:00', Validators.required],
       horaCierre: ['18:00', Validators.required],
       duracionBloqueMinutos: [60, [Validators.required, Validators.min(15)]]
     });
 
-    // Cuando cambia el servicio, actualizar duración
+    // Cuando cambia el servicio, actualizar duración y horarios
     this.generarForm.get('servicioId')?.valueChanges.subscribe(servicioId => {
       const servicio = this.servicios.find(s => s.id === servicioId);
       if (servicio) {
         this.servicioSeleccionado = servicio;
         this.generarForm.patchValue({
-          duracionBloqueMinutos: servicio.duracionBloqueMinutos
+          duracionBloqueMinutos: servicio.duracionBloqueMinutos,
+          horaApertura: servicio.horaApertura || '09:00',
+          horaCierre: servicio.horaCierre || '18:00'
         });
       }
     });
@@ -102,7 +114,9 @@ export class DisponibilidadServiciosComponent implements OnInit {
         this.servicios = servicios.map(s => ({
           id: s.id!,
           nombre: s.nombre,
-          duracionBloqueMinutos: s.duracionBloqueMinutos || 60
+          duracionBloqueMinutos: s.duracionBloqueMinutos || 60,
+          horaApertura: s.horaApertura || '09:00',
+          horaCierre: s.horaCierre || '18:00'
         }));
         this.cargando = false;
       },
@@ -174,25 +188,43 @@ export class DisponibilidadServiciosComponent implements OnInit {
       return;
     }
 
+    // Si no hay bloques cargados aún, cargarlos antes de mostrar el modal
+    if (this.bloques.length === 0) {
+      this.cargarBloques();
+      // Esperar a que se carguen los bloques
+      setTimeout(() => {
+        this.mostrarModalGeneracion(diasSeleccionados, valores);
+      }, 500);
+    } else {
+      this.mostrarModalGeneracion(diasSeleccionados, valores);
+    }
+  }
+
+  /**
+   * Muestra el modal de confirmación para generar bloques
+   */
+  mostrarModalGeneracion(diasSeleccionados: number[], valores: any): void {
     const bloquesEstimados = this.calcularBloquesEstimados();
 
-    // Validar si hay bloques existentes en la fecha seleccionada
+    // Validar si hay bloques existentes en TODO el rango seleccionado
     const fechaInicio = new Date(valores.fechaInicio + 'T00:00:00');
     const fechaFin = new Date(valores.fechaFin + 'T00:00:00');
-    
-    // Verificar si la fecha inicio ya tiene bloques
-    let hayBloquesExistentes = false;
-    let bloquesExistentesCuenta = 0;
-    
-    if (this.bloques.length > 0) {
-      const bloquesEnFecha = this.bloques.filter(b => b.fecha === valores.fechaInicio);
-      hayBloquesExistentes = bloquesEnFecha.length > 0;
-      bloquesExistentesCuenta = bloquesEnFecha.length;
-    }
+
+    // Contar cuántos bloques hay en el rango completo
+    let bloquesExistentesEnRango = 0;
+    let diasConBloques = 0;
+
+    this.bloquesPorDia.forEach((bloques, fecha) => {
+      const fechaBloques = new Date(fecha + 'T00:00:00');
+      if (fechaBloques >= fechaInicio && fechaBloques <= fechaFin) {
+        bloquesExistentesEnRango += bloques.length;
+        diasConBloques++;
+      }
+    });
 
     let mensajeAdvertencia = '';
-    if (hayBloquesExistentes) {
-      mensajeAdvertencia = `<p style="color: #f97316; font-weight: 600; margin-bottom: 12px;">⚠️ ADVERTENCIA: Ya existen ${bloquesExistentesCuenta} bloques en ${valores.fechaInicio}</p>`;
+    if (bloquesExistentesEnRango > 0) {
+      mensajeAdvertencia = `<p style="color: #f97316; font-weight: 600; margin-bottom: 12px;">⚠️ ADVERTENCIA: Existen ${bloquesExistentesEnRango} bloques en ${diasConBloques} día(s) dentro del rango</p>`;
     }
 
     Swal.fire({
@@ -214,9 +246,9 @@ export class DisponibilidadServiciosComponent implements OnInit {
       `,
       icon: 'question',
       showCancelButton: true,
-      confirmButtonText: hayBloquesExistentes ? 'Generar de todos modos' : 'Generar',
+      confirmButtonText: bloquesExistentesEnRango > 0 ? 'Generar de todos modos' : 'Generar',
       cancelButtonText: 'Cancelar',
-      confirmButtonColor: hayBloquesExistentes ? '#f97316' : '#3f51b5'
+      confirmButtonColor: bloquesExistentesEnRango > 0 ? '#f97316' : '#3f51b5'
     }).then((result) => {
       if (result.isConfirmed) {
         this.ejecutarGeneracion(diasSeleccionados);
@@ -379,10 +411,12 @@ export class DisponibilidadServiciosComponent implements OnInit {
   }
 
   cargarBloques(): void {
-    if (!this.servicioSeleccionado) return;
-
     const valores = this.generarForm.value;
-    if (!valores.fechaInicio || !valores.fechaFin) return;
+
+    // Validar que hay servicio seleccionado y fechas válidas
+    if (!valores.servicioId || !valores.fechaInicio || !valores.fechaFin) {
+      return;
+    }
 
     this.cargando = true;
     // Convertir fechas a formato YYYY-MM-DD si vienen como Date objects
@@ -431,6 +465,49 @@ export class DisponibilidadServiciosComponent implements OnInit {
     this.stats.porcentajeOcupacion = this.stats.totalBloques > 0
       ? Math.round((this.stats.ocupados / this.stats.totalBloques) * 100)
       : 0;
+
+    // Validar cuáles días tienen todos los bloques generados
+    this.validarDiasCompletos();
+  }
+
+  /**
+   * Valida si un día tiene todos los bloques generados según su rango horario
+   */
+  validarDiasCompletos(): void {
+    this.diasCompletos.clear();
+
+    if (!this.servicioSeleccionado) return;
+
+    const valores = this.generarForm.value;
+    const duracionBloques = valores.duracionBloqueMinutos || 60;
+
+    // Para cada fecha en bloquesPorDia
+    this.bloquesPorDia.forEach((bloques, fecha) => {
+      // Calcular bloques esperados para este día
+      const horaApertura = valores.horaApertura || '09:00';
+      const horaCierre = valores.horaCierre || '18:00';
+
+      const bloquesEsperados = this.calcularBloquesEsperados(horaApertura, horaCierre, duracionBloques);
+
+      // Si la cantidad de bloques coincide con lo esperado, el día está completo
+      if (bloques.length === bloquesEsperados) {
+        this.diasCompletos.add(fecha);
+      }
+    });
+  }
+
+  /**
+   * Calcula el número de bloques esperados entre dos horas
+   */
+  calcularBloquesEsperados(horaApertura: string, horaCierre: string, duracionMinutos: number): number {
+    const [horaInicioH, horaInicioM] = horaApertura.split(':').map(Number);
+    const [horaFinH, horaFinM] = horaCierre.split(':').map(Number);
+
+    const minutosApertura = horaInicioH * 60 + horaInicioM;
+    const minutosCierre = horaFinH * 60 + horaFinM;
+    const minutosTotales = minutosCierre - minutosApertura;
+
+    return Math.floor(minutosTotales / duracionMinutos);
   }
 
   bloquearBloque(bloque: BloqueHorario): void {
@@ -588,11 +665,11 @@ export class DisponibilidadServiciosComponent implements OnInit {
         return fecha;
       }
     }
-    
+
     if (fecha instanceof Date) {
       return fecha.toISOString().split('T')[0];
     }
-    
+
     return fecha;
   }
 }

@@ -310,6 +310,11 @@ export class ServiciosListComponent implements OnInit, AfterViewInit {
     }).format(precio);
   }
 
+  onImageError(event: Event): void {
+    const imgElement = event.target as HTMLImageElement;
+    imgElement.src = 'assets/images/default-service.svg';
+  }
+
   exportarCSV(): void {
     const data = this.dataSource.filteredData;
 

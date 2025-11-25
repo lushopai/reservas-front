@@ -276,6 +276,11 @@ export class CabanasListComponent implements OnInit, AfterViewInit {
     }
   }
 
+  onImageError(event: Event): void {
+    const imgElement = event.target as HTMLImageElement;
+    imgElement.src = 'assets/images/default-service.svg';
+  }
+
   exportarCSV(): void {
     const data = this.dataSource.filteredData;
 
