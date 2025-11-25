@@ -337,15 +337,25 @@ export class ConfirmarReservaComponent implements OnInit {
         }
       });
     } else if (this.reservaData.tipo === 'servicio') {
+      // Preparar equipamiento seleccionado
+      const equipamiento = Array.from(this.itemsSeleccionados.entries()).map(([itemId, cantidad]) => ({
+        itemId: itemId,
+        cantidad: cantidad
+      }));
+
       const request = {
         servicioId: this.reservaData.servicioId,
         clienteId: user.id,
         fecha: this.reservaData.fecha,
         horaInicio: this.reservaData.horaInicio,
         duracionBloques: this.reservaData.cantidadBloques,
-        equipamiento: [],
+        equipamiento: equipamiento,
         observaciones: this.observaciones
       };
+
+      console.log('=== RESERVA DE SERVICIO ===');
+      console.log('Items seleccionados:', this.itemsSeleccionados);
+      console.log('Equipamiento enviado:', request.equipamiento);
 
       this.reservaService.reservarServicio(request).subscribe({
         next: (response) => {
