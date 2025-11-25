@@ -383,7 +383,3 @@
     }
   }
 }
-// Extra spacing for form grids with hints
-.form-grid.with-hints {
-  margin-bottom: 32px !important;
-}
